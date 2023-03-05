@@ -45,8 +45,20 @@ int main(){
 
 
 
-LOGIC ===
+===  LOGIC  ===
 /*
+MAGIC of SHIFT OPERATORS
+>>1 Right shift operator divides by 2
+<<1 left shift operator multiplies by 2
+eg n1=2; b1=10
+
+n2=n1<<1;
+
+n2=4; b2=100
+in n2 bits are shifted to left for once
+
+***************
+
 M I: Keep on dividing n/2 and store there remainder and reverse it and print it.
 
 **********
