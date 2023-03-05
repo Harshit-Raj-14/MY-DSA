@@ -1,11 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-void decimalToBinarySimple(int n){      //this method does not ahdnle overlow
+void decimalToBinarySimple(int n){      //O(n) //this method does not handle overlow
     float binary=0;     //we need to keep binary float becuase: pow(10, 2) give 99.99999 if it int it convert to 99
     int i=0;
     while(n!=0){
-        int bit=n&1; 
+        int bit=n&1;    //to find the last digit // int r=n%2;
         binary=(bit*pow(10,i)) + binary;
         i++;
         n=n>>1;     //same as n/=2; right shifitng n to ge thte next int
@@ -13,7 +13,12 @@ void decimalToBinarySimple(int n){      //this method does not ahdnle overlow
     cout<<binary<<endl;
 }
 
-void decimalToBinarySimple2(int n){ 
+void decimalToBinaryAll(int n){     //O(1) Most Efficient
+    for(int i=31;i>=0;i--){     //assuming int is of 32 bits    //Also we have to do it in reverse becuase we want to print in reverse the bits for binary
+        int bit=n>>i;
+        if(bit & 1 == 1) cout<<"1";
+        else cout<<"0";     //keep this in string otherwise 0 will be neglected
+    }
 }
 
 void decimalToBinaryOnlyNegative(int n){
@@ -34,31 +39,31 @@ void decimalToBinaryOnlyNegative(int n){
     else cout<<binary<<endl;
 }
 
+
+void decimalToBinaryArray(int n){    //O(logn)
+    int binary[32];
+    int i=0;
+    while(n>0){
+        binary[i]=n%2;
+        i++;
+        n=n>>1;     //n/=2;
+    }
+    // printing binary array in reverse order
+    for (int j=i-1; j>=0; j--) cout << binary[j];
+    }
+
+
 void decimalToBinary(int n){    //handles all cases
 }
 
 int main(){
-    int n=-6;
+    int n=17;
     //cin>>n;
-    decimalToBinaryOnlyNegative(n);
+    decimalToBinaryArray(n);
 }
 
 
-
-===  LOGIC  ===
 /*
-MAGIC of SHIFT OPERATORS
->>1 Right shift operator divides by 2
-<<1 left shift operator multiplies by 2
-eg n1=2; b1=10
-
-n2=n1<<1;
-
-n2=4; b2=100
-in n2 bits are shifted to left for once
-
-***************
-
 M I: Keep on dividing n/2 and store there remainder and reverse it and print it.
 
 **********
@@ -97,7 +102,5 @@ ans=(digit*10^i)+ans;
 *********
 Then again storing bits and converting into number should not be our perfect way.
 Since, int has its range and it will eventually lead to overlfow.
-That's why we shoudl store bits in an array for better results.
-Or, we can 
-
+That's why we should store bits in an array or string for better results.
 */
