@@ -1,0 +1,24 @@
+class Main {
+    static int binarySearch(int arr[], int key){
+        int l=0;
+        int r = arr.length-1;
+        while(l<=r){
+            int mid = l+(r-l)/2;
+            if(arr[mid]==key) return mid;
+            else if(key>arr[mid]) l=mid+1;
+            else r=mid-1;
+        }
+        return -1;
+    }
+    public static void main(String[] args) {
+        int arr[] = {1,5,11,22,34,56,77,88,99};
+        int key = 5;
+        int index = binarySearch(arr, key);
+        System.out.println("Index of " + key + " is " + index);
+    }
+}
+
+
+NOTE: 
+> mid ,l ,r are indexes
+> Array should be montonous or sorted.
