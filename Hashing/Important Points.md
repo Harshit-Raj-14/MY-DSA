@@ -19,6 +19,12 @@
 
 ## Functions of HashMap
 * put(key, value)
+* getOrDefault()
+```
+for(int i=0;i<nums.length;i++){
+    map.put(nums[i],map.getOrDefault(nums[i],0)+1);
+}
+```
 
 
 # PROBLEMS
@@ -82,4 +88,26 @@ class Solution{
 ```
 <br>
 
-## 
+## Minimum operation to make all elements equal in array
+LOGIC ---
+The minimum number of operations required to make all elements equal is equal to the difference between the total number of elements in the array and the maximum frequency of any element in the hashmap. We will be converting all the elements to the lement with max frequency.
+```
+class Solution {
+    public int minOperations(int arr[]) {
+        HashMap<Integer, Integer> map = new Hashmap<>();
+        for(int i=0;i<arr.length;i++){
+            map.put(arr[i],map.getOrDefault(arr[i],0)+1);
+        }
+        int maxfreq=0;
+        for(int i=0;i<arr.length;i++){
+            maxfreq=Math.max(maxfreq,map.get(arr[i]));
+        }
+        return arr.length-maxfreq;
+    }
+}
+```
+<br>
+
+## Check if a given array contains duplicate elements within k distance from each other
+
+
