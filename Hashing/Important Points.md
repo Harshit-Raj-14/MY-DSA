@@ -12,3 +12,74 @@
 * The TreeMap in Java is a concrete implementation of the java.util.SortedMap interface. It provides an ordered collection of key-value pairs, where the keys are ordered based on their natural order or a custom Comparator passed to the constructor.
   The treemap implementation is not synchronized in the sense that if a map is accessed by multiple threads, concurrently and at least one of the threads modifies the map structurally, it must be synchronized externally.
   A TreeMap is implemented using a Red-Black tree, which is a type of self-balancing binary search tree. This provides efficient performance for common operations such as adding, removing, and retrieving elements, with an average time complexity of O(log n). Hnece it works better than hashmap which might have worst case O(n).
+
+## Functions of hashset
+* add()
+* remove()
+
+## Functions of HashMap
+* put(key, value)
+
+
+# PROBLEMS
+
+## Find whether an array is subset of another array(without duplicates)
+LOGIC --- USING HASHSET
+
+Put the first array as hashset
+
+Check whether second elements are present in hashset or not
+
+<br>
+
+## Find whether an array is subset of another array(with duplicates)
+LOGIC --- USING HASHMAP
+
+Put first array elemnt sin hashmap along with their frequencies
+Now iterate in second array while subtracting the frequencies in hahsmap
+If frequency is hit zero; it it is not a subset
+```
+class Compute {
+    public String isSubset( long a1[], long a2[], long n, long m) {
+        HashMap<Long, Integer> map = new HashMap<>();
+        for(int i=0;i<a1.length;i++){
+            if(!map.containsKey(a1[i])) map.put(a1[i],1);
+            else map.put(a1[i], map.get(a1[i])+1);
+        }
+        //subtracting second array elements from map
+        for(int i=0;i<a2.length;i++){
+            if(map.containsKey(a2[i])){
+                if(map.get(a2[i])==0) return "No"; //frequency has become zero, a2 has more of same element than a1
+                else map.put(a2[i], map.get(a2[i])-1);
+            }
+            else return "No";
+        }
+        return "Yes";
+    }
+}
+```
+<br>
+
+## Maximum distance between two occurrences of same element in array
+LOGIC ---
+Make a hashmap of index of first occurenc eof each elemnt
+Next find max distacne by subtracting the index of each element with its first occurence index =>(this will be the max distance)
+```
+class Solution{
+    int maxDistance(int arr[], int n){
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int i=0;i<arr.length;i++){
+            if(!map.containsKey(arr[i])) map.put(arr[i],i);
+        }
+        int maxDistance=0;
+        for(int i=0;i<arr.length;i++){
+            int distance=Math.abs(i-map.get(arr[i]));
+            maxDistance=Math.max(maxDistance, distance);
+        }
+        return maxDistance;
+    }
+}
+```
+<br>
+
+## 
