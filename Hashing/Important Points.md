@@ -109,5 +109,23 @@ class Solution {
 <br>
 
 ## Check if a given array contains duplicate elements within k distance from each other
-
+LOGIC ---
+Put all the first exisitng indexes on map
+iterte over array
+check the difference between indexes of same element is less than k and also update them
+```
+public boolean checkDuplicatesWithinK(int arr[]) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int i=0;i<arr.length;i++){
+            if(!map.containsKey(arr[i])) map.put(arr[i],i);
+        }
+        for(int i=0;i<arr.length;i++){
+            if(map.containsKey(arr[i])){
+                if(i-map.get(arr[i])<=k) return true;
+                map.put(arr[i],i);
+            }
+        }
+        return false;
+    }
+```
 
