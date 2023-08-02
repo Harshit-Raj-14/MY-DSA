@@ -116,6 +116,8 @@ int[] rightRotateK(int arr[], int n, int k){
 **Collections.rotate(list, k);**  //by how much to rotate
 
 
+### Making new rotated array
+
 
 ## Left Rotation of Array:
 ```
