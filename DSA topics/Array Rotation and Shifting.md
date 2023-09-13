@@ -127,3 +127,53 @@ for(int i=1;i<arr.length;i++){
 }
 arr[arr.length-1]=first;
 ```
+
+
+
+
+# HOW MANY TIMES ARRAY ROTATED
+**Using Linear Search**
+```
+public class Solution {
+    public static int findKRotation(int []arr){
+        for(int i=1;i<arr.length;i++){
+            if(arr[i]<arr[i-1]) return i;
+        }
+        return 0;
+    }
+}
+```
+LOGIC---
+TC-O(n)
+Seeing the point of difference that is arr[i]<arr[i-1]
+
+**Using BINARY SEARCH IMPORTANT!!!**
+```
+public class Solution {
+    public static int findKRotation(int []arr){
+        int l=0;
+        int r=arr.length-1;
+        int ans=0;
+        while(l<=r){
+            int mid=l+(r-l)/2;
+            if(check(mid, arr)) l=mid+1; //becuase the complete left side is true, let's check for no on right side
+            else{
+                ans=mid;
+                r=mid-1;  //let's check on left just to see are there other previous no's
+            }
+        }
+        return ans;
+    }
+
+    public static boolean check(int x, int arr[]){
+        if(arr[x]>=arr[0]) return true;
+        else return false;
+    }
+}
+```
+LOGIC---
+TC-O(logn)
+Check function : arr[i]>=arr[0] => mapping of real space of type YYYYNNNN
+our objective is to return first no where our rotation ends.
+The index is itself the numeber of times rotated.
+Refer copy for more details
