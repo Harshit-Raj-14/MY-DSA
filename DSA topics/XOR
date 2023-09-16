@@ -1,22 +1,21 @@
 Properties of XOR:
 a^a=0
 a^0=a
-
-(a+b) = (a^b) + (a&b) [Used to solve sum vs XOR problem]
-
+(a+b) = (a^b) + 2*(a&b) [Used to solve sum vs XOR problem]
 
 
-## Sum vs XOR
+
+## Sum vs XOR ##
 Given an integer n, find each x such that: 0<=x<=n & x+n==x^n. Return the number of x's satisfying the criteria.
 BRUTE FORCE: O(n) FAILS=> TLE
 Optimised Approach:
 Just understand the property of xor and addition in binary numbers. When you add two bits, it increases decimal value anyhow.....
-but if take xor of two bit, it cam decrease or increase both.....can decrease only when both bit are 1.
+but if you take xor of two bit, it can decrease or increase both.....can decrease only when both bit are 1.
 So if you put 1 anywhere where there is already 1 in number then it will make 0 at that position and decrease the value....but on the other side in addition, value will be getting increased anyhow
 So basically, try to observe and you will find that by placing 1 only on 0 bit position, the difference in both side are equal.
 the answer is 2^(no. of 0 bits in binary form of n)
 
-LOGIC---(a+b) = (a^b) + (a&b)
+LOGIC---(a+b) = (a^b) + 2*(a&b)
 that means, if(a&b)==0, then we have : (a+b)=a^b=>{half adder implementation}
 Now, our problem reduces to findign count of all possible values of 0<=x<=n such that n&x=0.
 To find count of such painrs => we need to unset all set bits of n.
@@ -25,4 +24,69 @@ Now its permutation and combination.
 Let's say our n is-> 0110111000
 So, all we need to make x something like => _00_ _000_ _ _
 And now to fill the boxes we have two chocies that is 0 or 1. => 2 chocies
-So, total permutatiosn of x can be => 2^(32-count of set bits in n) => becuase only at (32-count of set bits in x) will be the place where we ahve the chocie otherwise we cna only put 0.
+So, total permutations of x can be => 2^(32-count of set bits in n) => becuase only at (32-count of set bits in x) will be the place where we ahve the chocie otherwise we can only put 0.
+SOLUTION : In a way, ans=2^(unset bits in n)
+
+Approach : find no of unset bits. then 2^unsetbits)
+
+CODE:
+    public static long sumXor(long n) {
+        int unsetbits=0;
+        while(n>0){
+            if((n&1)==0) unsetbits++;
+            n=n>>1;
+        }
+        return (long)Math.pow(2,unsetbits);  //return 1<<unsetbits
+    }
+
+Note : Math.pow() is double so typecast to int.
+TC-O(logn)
+
+
+
+## Find two numbers from their sum and XOR ##
+Given the sum and xor of two numbers X and Y s.t. sum and xor lies in [0, 2^{64}-1] , we need to find the numbers minimizing the value of X.
+Input : Sum = 17, Xor = 13
+Output : a = 2, b = 15
+
+SOLUTION 1:
+A simple solution is to generate all possible pairs with given XOR. To generate all pairs, we can follow below rules. Let's cosndier the bits at position i and generalise:
+If XOR[i]=1, then both a[i] and b[i] will be different.
+If XOR[i]=0, then both a[i] and b[i] will be same.
+We also know that SUM always increases when we add, but in XOR we might get a 0 when 1^1.
+If XOR[i] = 0 and SUM[i] = 0, then a[i] = b[i] = 0. Only one possibility for this bit.
+If XOR[i] = 0 and SUM[i] = 1, then a[i] = b[i] = 1. Only one possibility for this bit.
+If XOR[i] = 1 and SUM[i] = 0, then (a[i] = 1 and b[i] = 0) or (a[i] = 0 and b[i] = 1), we can pick any of the two.
+If XOR[i] = 1 and SUM[i] = 1, result not possible (Note XOR[i] = 1 means different bits)
+CODE - https://www.geeksforgeeks.org/find-two-numbers-sum-xor/
+
+
+SOLUTIO 2:
+A nice property of both xor and addition is that they are commutative. That menas if we swap the set bits of a with corresponding unset bits of Y, we would minmise X.
+At the same time the value of SUM and XOR remains unchanged.
+Example:
+a=0111 =7
+b=1010 = 10
+Currently, SUM=17 and XOR=13
+
+Now, swap set bits of x with corresponding unset bits of y 
+a=0010 = 2 => minimised
+b=1111 = 15
+SUM=17 and XOR=13
+Now we know that;
+x+y=SUM
+y=XOR^x
+We can derive, x=(sum-xor)/2
+
+Pseudo code:
+if(SUM<XOR) return false;   //no solution
+else{
+    int x=(SUM-XOR)/2;
+    int y=SUM-x;
+}
+
+
+
+
+
+
