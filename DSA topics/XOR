@@ -1,0 +1,28 @@
+Properties of XOR:
+a^a=0
+a^0=a
+
+(a+b) = (a^b) + (a&b) [Used to solve sum vs XOR problem]
+
+
+
+## Sum vs XOR
+Given an integer n, find each x such that: 0<=x<=n & x+n==x^n. Return the number of x's satisfying the criteria.
+BRUTE FORCE: O(n) FAILS=> TLE
+Optimised Approach:
+Just understand the property of xor and addition in binary numbers. When you add two bits, it increases decimal value anyhow.....
+but if take xor of two bit, it cam decrease or increase both.....can decrease only when both bit are 1.
+So if you put 1 anywhere where there is already 1 in number then it will make 0 at that position and decrease the value....but on the other side in addition, value will be getting increased anyhow
+So basically, try to observe and you will find that by placing 1 only on 0 bit position, the difference in both side are equal.
+the answer is 2^(no. of 0 bits in binary form of n)
+
+LOGIC---(a+b) = (a^b) + (a&b)
+that means, if(a&b)==0, then we have : (a+b)=a^b=>{half adder implementation}
+Now, our problem reduces to findign count of all possible values of 0<=x<=n such that n&x=0.
+To find count of such painrs => we need to unset all set bits of n.
+If the kth bit is set at a particular position in n, kth bit in x must be 0 always, else kth bit of x can be 0 or 1.
+Now its permutation and combination.
+Let's say our n is-> 0110111000
+So, all we need to make x something like => _00_ _000_ _ _
+And now to fill the boxes we have two chocies that is 0 or 1. => 2 chocies
+So, total permutatiosn of x can be => 2^(32-count of set bits in n) => becuase only at (32-count of set bits in x) will be the place where we ahve the chocie otherwise we cna only put 0.
