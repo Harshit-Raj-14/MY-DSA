@@ -26,7 +26,32 @@ for(int i=0;i<nums.length;i++){
 }
 ```
 
+# IMPORTANT ERRORS TO AVOID
+error: incompatible types: boolean cannot be converted to List<String> =>>>> map.put(key, list.add(arr[i]));
 
+The error you're encountering is due to the fact that the List.add() method in Java doesn't return the list itself but rather a boolean value indicating whether the addition was successful or not. Therefore, you cannot directly use list.add(arr[i]) as an argument to map.put(key, list.add(arr[i])).
+
+To fix this error, you should first add the element to the list and then put the list into the map. You can do it like this:
+
+list.add(arr[i]);
+map.put(key, list);
+
+////////////////////////////
+Instead of adding the string to the list if the key exists in the map, you should retrieve the list associated with that key and then add the string to it.
+if the key exists in the map, it retrieves the list associated with that key using map.get(key). If the key doesn't exist, it creates a new empty list using new ArrayList<>(). 
+Then, it adds the current string to this list and puts it back in the map using map.put(key, list).
+So, correct way of writing is:
+if(!map.containsKey(key)){
+                List<String> list = new ArrayList<>();
+                list.add(arr[i]);
+                map.put(key, list);
+            }
+            else{
+                List<String> list = map.get(key);
+                list.add(arr[i]);
+            }
+
+            
 # PROBLEMS
 
 ## Find whether an array is subset of another array(without duplicates)
