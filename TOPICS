@@ -1,0 +1,73 @@
+ARRAY
+
+MATRIX
+
+STRING
+
+SLIDING WINDOW
+
+BINARY SEARCH
+
+BINARY SEARCH ON ANSWER
+
+Prefix Sum
+
+TWO POINTER
+
+Linked List
+
+Stack Queue
+
+Monotonic Stack Queue
+
+HEAP
+
+SORTING - Basic ones, question ones
+
+GREEDY
+
+BACKTRACKING
+
+DYNAMIC PROGRAMMING - 1D, 2,D bitmask-dp
+
+DFS BFS
+
+Trees
+
+Graphs
+
+
+Algotithms - KPM, Dijkstra's
+
+
+
+
+32 graph problems - https://www.linkedin.com/posts/karan-saxena-466b07190_32-top-graph-problems-you-should-solve-to-activity-7229842226002935808-h4-Q?utm_source=share&utm_medium=member_desktop
+
+
+
+
+
+
+
+
+
+SOME COMMON TOPCIS PROBLEM (GOOD) - https://www.linkedin.com/posts/srikanth-tekumudi-95b47216b_here-are-some-common-dsa-patterns-that-frontend-activity-7229105134427914240-KGX0/?utm_source=share&utm_medium=member_android
+
+
+
+
+Let n be the main variable in the problem.
+
+    If n ≤ 12, the time complexity can be O(n!).
+    If n ≤ 25, the time complexity can be O(2^n).
+    If n ≤ 100, the time complexity can be O(n^4).
+    If n ≤ 500, the time complexity can be O(n^3).
+    If n ≤ 10^4, the time complexity can be O(n^2).
+    If n ≤ 10^6, the time complexity can be O(n log n).
+    If n ≤ 10^8, the time complexity can be O(n).
+    If n > 10^8, the time complexity can be O(log n) or O(1).
+
+
+
+https://www.youtube.com/@blockchainfinance5270/videos

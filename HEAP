@@ -1,0 +1,243 @@
+THEORY---
+99% on questions in Heap will use the the words : "K" and "smallest/largest/closest".
+So, whenever you see a question involving these words, always run your mind to Heaps.
+
+Whenever we have been given to find position of any kth element then mostly we use priority queue/ heap 
+i.e to find kth smallest element use maxHeap & to find kth largest element we use minHeap. 
+
+When you are asked largest use min heap and when you are asked smallest use max heap.
+
+In min heap small elements are on top, in max heap larger elements are on top.
+
+
+pq.offer(x) -> add element to pq => O(log n), n is the size of priority queue
+pq.poll() -> remove the top element of pq =>  O(log n)
+pq.peek() -> see the top element of pq
+
+Difference between offer() and add() method-
+
+offer method - tries to add an element to a queue, and returns false if the element can't be added (like in case when a queue is full), 
+or true if the element was added, and doesn't throw any specific exception.
+
+add method - tries to add an element to a queue, returns true if the element was added, 
+or throws an IllegalStateException if no space is currently available.
+
+
+poll() and remove() => The poll() method returns an object of type Element, which represents a queue element. 
+The remove() method throws an exception if the queue is empty, and it returns nothing otherwise.
+
+
+
+/*******************************************************************************************************/
+PS- 
+703. Kth Largest Element in a Stream
+Design a class to find the kth largest element in a stream.
+
+/* CODE */
+class KthLargest {
+    PriorityQueue<Integer> pq;
+    int K;
+    public KthLargest(int k, int[] nums){  //Constructor method => O(n)*(O(log k) + O(log k)) => O(n * log k)
+        K=k;
+        pq = new PriorityQueue<>(k); //SC-O(k)
+        for(int num:nums){
+            pq.offer(num);  //O(log k)
+            if(pq.size()>k) pq.poll();  //O(log k)
+        }
+    }
+    
+    public int add(int val){    // O(log K)
+        pq.offer(val);  //O(log K)
+        if(pq.size()>K) pq.poll();  //O(log K)
+        return pq.peek();   //O(1)
+    }
+}
+
+/*
+LOGIC---
+Its obvious its heap.
+Largest k th element -> MIN HEAP
+
+Now, we have a array in beginning and then we have a stream of numbers being added to it.
+Each time we add we tell the kth largest element.
+
+Now let's make a pq of size k.
+Why size k we want to return the top element of the min heap which will be the kth largest element. Since min heap will have larger elements on bottom.
+
+Now if we put elements in heap, if it exceeds k we pop the top element since it was the (k+1)th largest and we don't need it.
+
+T.C : O(n*logK)
+S.C : O(K)
+
+
+
+
+Time Complexity: O((M+N)⋅logk) => M is the no of API calls for add
+
+The add function involves adding and removing an element from a heap of size k, which is an O(logk) operation. Since the add function is called N times, the total time complexity for all add calls is O(N⋅logk).
+
+The constructor also calls add M times to initialize the heap, leading to a time complexity of O(M⋅logk).
+
+Therefore, the overall time complexity is O((M+N)⋅logk).
+
+*/
+
+
+/*************************************************************************************************/
+PS-
+1508. Range Sum of Sorted Subarray Sums
+You are given the array nums consisting of n positive integers. You computed the sum of all non-empty continuous subarrays from the array and then sorted them in non-decreasing order, creating a new array of n * (n + 1) / 2 numbers.
+
+Return the sum of the numbers from index left to index right (indexed from 1), inclusive, in the new array. Since the answer can be a huge number return it modulo 109 + 7.
+
+LEARNING---
+Using heap to find subarray sums of an array in increasing and decreasing order.
+
+/* CODE */
+class Solution{
+    private static class Pair { // Pair<sum, i> -> (subarray sum, till index i)
+        int sum;
+        int index;
+
+        Pair(int sum, int index) {
+            this.sum = sum;
+            this.index = index;
+        }
+    }
+
+    public int rangeSum(int[] nums, int n, int l, int r) {
+        PriorityQueue<Pair> pq = new PriorityQueue<>(new Comparator<Pair>() {
+            public int compare(Pair p1, Pair p2) {
+                return Integer.compare(p1.sum, p2.sum);
+            }
+        });
+        for (int i = 0; i < n; i++){    //putting all elemnts along with their index in heap first
+            pq.offer(new Pair(nums[i], i)); //the one length subarrays
+        }
+        int ans = 0;
+        int mod=1000000007;
+        for (int i = 1; i <= r; i++) {
+            Pair p = pq.poll();
+            // If the current index is greater than or equal to left, add the value to the answer.
+            if (i >= l) ans = (ans + p.sum) % mod;  //only when counter is l we start consdiering it as ans
+            // If index is less than the last index, increment it and add its value
+            if (p.index < n - 1) {  //forming the new pair
+                p.index++;  //the next element to form a subarray with popped element
+                p.sum += nums[p.index];
+                pq.offer(p);    //putting back the new subarray formed into heap
+            }
+        }
+        return ans;
+    }
+}
+
+
+/*
+LOGIC---
+We can use heap to find subarray sums of an array in increasing and decreasing order.
+
+By storing the currsum along with their last index of subarray [currsum, itslastindex]. 
+When repeatedly popped and queried and the new sum pushed in would generate the subarray sums in increasing order.
+
+Since the sums will be gernated in increasing order we can do it r times.
+
+TC - O(n^2)*logn
+In first for loop we loop n times and it takes logn to push in pq. So for first for loop its O(nlogn)
+The second for loop will kep on running the number of sybarray(n*(n+1)/2) times => O(n^2) and becuase we are pushing in priority queue it becomes O(n^2)*logn
+
+SC - O(n) 
+*/
+
+/***************************************************************************************************/
+PS- Minimum Cost of ropes
+Given an array arr containing the lengths of the different ropes, we need to connect these ropes to form one rope. 
+The cost to connect two ropes is equal to sum of their lengths. The task is to connect the ropes with minimum cost.  
+Examples: Input: arr[] = [4, 3, 2, 6] || Output: 29
+
+/* CODE */
+class Solution {
+    public long minCost(long[] arr) {
+        if(arr.length<=1) return 0; //no ropes to connect already 1 rope
+        PriorityQueue<Long> pq=  new PriorityQueue<>();
+        for(int i=0;i<arr.length;i++) pq.add(arr[i]);
+        long sum=0;
+        while(pq.size()>1){
+            long min1=pq.poll();
+            long min2=pq.poll();
+            long curr=min1+min2;
+            pq.add(curr);
+            sum+=curr;
+        }
+        return sum;
+    }
+}
+
+/*
+LOGIC---
+Cost = sum of two ropes connected
+To have minimum cost at each step we would always want to conncet the two of the smallest ropes that we have in our hand.
+
+Note: different configuarion of joining ropes will give different costs.
+Greedy with sorting will fail becuase it could happen that even after sort there could be third and fourth rope 
+smaller than the sum of first and secodn rope. So, we would have to sort at each step.
+eg:[3,4,5,6]
+cost1=3+4=7
+[7,5,6]
+Now to get minimum sum/cost at that stage we should add 5 and 6 instead of 5 and 7.
+That's why sorting is required at each stage.
+
+In fact use heap to always have quick access to the two smallest ropes available evne if the array is modified after joining them.
+1 connection => to get 1 minimum from pq = O(logk)~O(logn) => k is size of pq
+we kame n connections => O(nllogn)
+TC-O(nlogn)
+SC-O(n)
+*/
+
+
+/****************************************************************************************************/
+PS- 215. Kth Largest Element in an Array
+
+/* CODE */
+/* USING MIN HEAP O(nLogk) */
+class Solution {
+    public int findKthLargest(int[] arr, int k) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for(int i=0;i<arr.length;i++){
+            pq.offer(arr[i]);
+            if(pq.size()>k) pq.poll();
+        }
+        return pq.peek();
+    }
+}
+
+/*
+LOGIC---
+A min-heap is a binary heap where the smallest element are on top. 
+By maintaining a min-heap of size k, you ensure that the heap contains the largest k elements from the array.
+You keep on putting elements in heap, bottom elements are bigger and top elements are smaller. The elements keeps on taking their place.
+Brining the largest element to bottom and the top elemnt smallest.
+But we need the kth largest element. So, every time heap goes beyond k remove the top element as it will not contribute to our cause.
+The root of the heap will always be the kth largest element after processing the entire array.
+
+TC - O(nLogk) -> iteration through array and O(logk) operation for heap
+SC- O(k) Size of heap
+*/
+
+
+/* SORTING O(nlogn) */
+class Solution {
+    public int findKthLargest(int[] arr, int k) {
+        Arrays.sort(arr);
+        return arr[arr.length-k];
+    }
+}
+
+/* OTHER O(nlogn) solutions */
+sorting: simple sort, and return kth element form back.
+Mapping: In this I mapped the frequency of all the number and then find the kth largest number.
+Binary search: In this I applied binary search between smallest and largest element and for every mid element I counted the number of larger element if it is equal to k - 1 
+then the mid element is our solution else update the end and start of the search space.
+
+The problem with all these solution was that all of then have time complexity equal to or nearly O(nlogn).
+
+COUNT SORT / HASHING - O(n) worst case run time. But this would be largely a waste in memory (to allocate an array of such a large size). => -104 <= nums[i] <= 104 => 10^8 + 1 size

@@ -1,0 +1,70 @@
+PS- 128. Longest Consecutive Sequence
+Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.
+
+Input: nums = [100,4,200,1,3,2]
+Output: 4
+Explanation: The longest consecutive elements sequence is [1, 2, 3, 4]. Therefore its length is 4.
+
+/* CODE */
+
+/* USING HASHSET O(n), O(n) */
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        HashSet<Integer> set = new HashSet<>();
+        for(int i=0;i<nums.length;i++) set.add(nums[i]);
+        int ans=0;
+        for(int i=0;i<nums.length;i++){
+            int curr=nums[i];
+            if(!set.contains(curr-1)){
+                int count=1;
+                while(set.contains(curr+count)) count++;
+                ans = Math.max(ans, count);
+            }
+        }
+        return ans;
+    }
+}
+
+/*
+Why hashset?
+The equal elements were causing us a problem.
+Hashset quickly allow us to access element so it will help us to tell whetehr there is a consecutive elent or not.
+
+Once put everything in hahset.
+We start iterating from first element and think to check whether next consecutive exist or not in hahsset. But that sounds just like bruteforce. Checking from every element.
+
+Trick: Instead of looking for next consecutive we try looking whether our curr is the start of a consecutive series or not. So, we look backward till we find the start.
+
+And from there we start looking in front.
+
+So, when we encounter a mid elemnt of a consecutive series, we don't reiterate till we say its start of a consecutive series.
+*/
+
+
+/* USING SORTING O(nlogn) */
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        int n = nums.length;
+        if(n==0) return 0;
+        Arrays.sort(nums);
+        int cnt = 1;
+        int max = 0;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] == nums[i-1]) continue;   //don't forget this step to skip consecutive term
+            if (nums[i] == nums[i-1] + 1) cnt++;
+            else{
+                max = Math.max(max, cnt);
+                cnt = 1;
+            }
+        }
+        return Math.max(max, cnt);
+    }
+}
+
+/*
+LOGIC---
+Why skip consecutive terms?
+Input: nums =[1,2,0,1]
+got Output: 2
+Expected output: 3
+*/

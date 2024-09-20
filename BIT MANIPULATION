@@ -1,0 +1,60 @@
+PS---
+To check if all bits in a number are set.
+
+/* CODE */
+public static boolean areAllBitsSet(int number) {
+    // For a 32-bit integer, the value with all bits set is -1 (in two's complement representation)
+    return number == -1;
+}
+
+/* 
+LOGIC---
+When all bits are set, the value is -1 due to two's complement representation.
+*/
+
+
+PS---
+check if a number has all bits set (i.e., it is of the form 2^n - 1)
+
+/* CODE */
+public static boolean areAllBitsSet(int number) {
+    // A number has all bits set if it is of the form 2^n - 1
+    // This can be checked using the property: n & (n + 1) == 0
+    return number > 0 && (number & (number + 1)) == 0;
+} 
+
+/*
+LOGIC---
+A number with all bits set is of the form 2^n - 1. 
+For example, 1 (1 in binary), 3 (11 in binary), 7 (111 in binary), and so on.
+Bitwise Check: The property n & (n + 1) == 0 holds true for numbers that have all bits set. 
+This is because adding 1 to such a number results in a number that is a power of 2 (which has exactly one bit set), 
+and the bitwise AND of a number and a power of 2 is zero.
+
+Reason : if number has all set bits like 3, then next number+1 will be 4. Whose only set bit will be the next bit which was previously 0.
+So when we AND them they give us always 0.
+ */
+
+
+ /**************************************************************************************************/
+ PS- 2220. Minimum Bit Flips to Convert Number
+Tell minimum  number of flips required to convert a number into goal.
+
+/* CODE */
+class Solution {
+    public int minBitFlips(int n, int goal) {
+        int xor=n^goal;
+        int flip=0;
+        while(xor!=0){
+            if((xor&1)==1) flip++;
+            xor=xor>>1;
+        }
+        return flip;
+    }
+}
+
+/*
+LOGIC---
+XOR of two numbers would have 1 where the bits were different.
+no of set bits in or = difference in bit at that place = no of flips required
+*/

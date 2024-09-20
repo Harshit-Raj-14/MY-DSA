@@ -1,0 +1,83 @@
+PS- Geek's Birthday Party - II
+There are n hungry people with hunger[i]. There are m food with calories[j].
+Find number of ways for each person to satisfy their hunger if anyone can eat any dish any number of times.
+Return an array of each person's ways and solution can be too large so use mod.
+
+/* CODE */
+```
+/* MEMOISATION TLE TC- O(n * hungermax * m) */
+class Solution{
+    static int mod=1000000007;
+    public int[] numberOfWays(int n, int hunger[], int m, int calories[]){
+        int ans[] = new int[n];
+        int memo[] = new int[1001];  //hunger is like queiries for a coin change problem
+        Arrays.fill(memo, -1);
+        for(int i=0;i<hunger.length;i++){
+            if(memo[hunger[i]]==-1){
+                int dp[][] = new int[1001][1001];
+                for(int row[]:dp) Arrays.fill(row, -1);
+                memo[hunger[i]]=solve(hunger[i], 0, calories, dp);
+            }
+            ans[i]=memo[hunger[i]];
+        }
+        return ans;
+    }
+    
+    public static int solve(int t, int idx, int cal[], int dp[][]){
+        if(t==0) return 1;
+        if(t<0 || idx>=cal.length) return 0;
+        if(dp[t][idx]!=-1) return dp[t][idx];
+        int not_take = solve(t,idx+1,cal, dp)%mod; 
+        int take = solve(t-cal[idx], idx, cal, dp)%mod;
+        return dp[t][idx] = (take+not_take)%mod;
+    }
+}
+
+/*
+LOGIC---
+Coin change problem with hunger(n) queries
+TC- O(n * hungermax * m)
+*/
+```
+```
+/* TABULATION ACCEPTED TC- O(m * hungermax) */
+class Solution {
+    static int mod = 1000000007;
+    public int[] numberOfWays(int n, int[] hunger, int m, int[] calories) {
+        int maxHunger = 0;
+        for (int h : hunger) {
+            maxHunger = Math.max(maxHunger, h);
+        }
+        // DP array to store number of ways to satisfy hunger from 0 to maxHunger
+        int[] dp = new int[maxHunger + 1];
+        dp[0] = 1; // One way to satisfy 0 hunger (by taking no food)
+        // Fill the DP array: for each calorie value, calculate ways to satisfy each hunger
+        for (int cal : calories) {
+            for (int i = cal; i <= maxHunger; i++) {
+                dp[i] = (dp[i] + dp[i-cal]) % mod;
+            }
+        }
+        int[] ans = new int[n];
+        for (int i = 0; i < n; i++){ // Prepare the answer array for each hunger query
+            ans[i] = dp[hunger[i]]; 
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+TC- O(m * hungermax)
+We can use dynamic programming to compute the number of ways to reach different hunger levels. 
+The key insight is that the number of ways to reach a particular hunger level depends on the ways 
+to reach the previous hunger levels.
+
+Approach-
+Iterate over each dish from the calories array.
+For each dish with calorie value calories[i], update the ways array:
+
+Traverse from calories[i] up to max_hunger.
+For each hunger value j, update ways[j] by adding the number of ways to achieve j - calories[i]. 
+This represents using the current dish (calories[i]) to reduce the hunger from j - calories[i] to j.
+*/
+```

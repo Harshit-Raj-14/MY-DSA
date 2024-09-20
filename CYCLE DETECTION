@@ -1,0 +1,211 @@
+SLOW POINTER & FAST POINTER - HARE TORTOISE Algorithm
+
+Note---
+=> fast pointer jumps twice, slow pointer jumps one
+
+=> as we iterate the distanc ebetween slow and fast pointer increases 
+slow: 1 2 3 4 5 6
+fast: 2 4 6 8 10 12
+diff: 1 2 3 4 5 6 => linearly increases differnece
+
+=> when fast pointer reaches end of iteration, slow pointer will be around middle of the sequence (mid of linkedlist)
+This helps us to reduce space compelxity and iterations
+
+=> It helps us to detect cycles
+
+
+/*****************************************************************************************************/
+PS- 207. Course Schedule
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*******************************************************************************************************/
+PS- 141. Linked List Cycle
+Return true if there is a cycle in the linked list. Otherwise, return false.
+
+/* CODE */
+/* FAST AND SLOW POINTER O(n), O(1) */
+public class Solution {
+    public boolean hasCycle(ListNode head){
+        if(head==null) return false;
+        ListNode fast = head;
+        ListNode slow = head;
+        while(fast!=null && fast.next!=null){   //remember these two checks always exist for fast pointer
+            slow=slow.next;
+            fast=fast.next.next;
+            if (slow == fast) return true;  // Check after moving pointers
+        }
+        return false;
+    }
+}
+
+/*
+LOGIC---
+Use a fast and slow pointer
+
+In case of no cycle -> eventually our fast pointer will hit null first either as fast.next==null || fast==null.
+
+Incase of a cycle:
+At one point fast would enter cycle first.  If at some point the two pointers meet on the same node, then that means a cycle exists.
+
+Why does this work? For a visual animation, please see the video, but for a simple explanation, think of two people running on a circular track. If both people run and one of them runs faster than the other, then the faster person will eventually catch up to the slower one and "lap" them. In other words, they will be back at the same position again. This is what we're looking for in the algorithm and it's how we detect a cycle.
+
+Why equality check after moving pointers?
+The reason you should move the slow and fast pointers first and then check for equality is that at the start of the loop, both slow and fast are pointing to the same node (the head of the list). If you check if (slow == fast) before moving them, the condition will be true right away, even if there is no cycle, because both pointers are still at the starting node.
+*/
+
+
+/* USING HASHSET O(n), O(n) */
+public class Solution {
+    public boolean hasCycle(ListNode head){
+        if(head==null) return false;
+        HashSet<ListNode> set = new HashSet<>();
+        ListNode curr = head;
+        while(curr.next!=null){
+            if(set.contains(curr))return true;  //cycle detected
+            else set.add(curr);
+            curr=curr.next;
+        }
+        return false;
+    }
+}
+
+/*
+LOGIC---
+If we encounter the same listnode having same val and next pointer, it means it was a cycle and we were redirected to a previous traversed node.
+*/
+
+
+/********************************************************************************************************/
+PS- 202. Happy Number
+A happy number is a number defined by the following process:
+Starting with any positive integer, replace the number by the sum of the squares of its digits.
+Repeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1.
+Those numbers for which this process ends in 1 are happy. Return true if n is a happy number, and false if not.
+
+/* CODE */
+/* FAST & SLOW POINTER */
+class Solution {
+    public boolean isHappy(int n) {
+        int slow=n;
+        int fast=n;
+        while(fast!=1 && sum(fast)!=1){ //double check fast twice here
+            slow=sum(slow);
+            fast=sum(sum(fast));
+            if(slow==fast) return false;    //slow ==fast check always comes after movign the pointers
+        }
+        return true;
+    }
+
+    public static int sum(int n){
+        int ans=0;
+        while(n!=0){
+            int r=n%10;
+            ans += r*r;
+            n/=10;
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+If sum of one number again yileds a previously calculated sum. it menas it is a loop and we will never reach 1.
+
+BRUTE FORCE---- use hashset 
+*/
+
+
+
+/**********************************************************************************************************/
+PS- 287. Find the Duplicate Number
+There is only one repeated number in nums, return this repeated number.
+
+/* CODE */
+class Solution {
+    public int findDuplicate(int[] nums) {
+        int slow=nums[0]; //starting points
+        int fast=nums[nums[0]];
+        while(fast!=slow){  //start a slow and fast pointer until they meet -> now this can happen anywhere in loop
+            slow=nums[slow];
+            fast=nums[nums[fast]];
+        }
+        //we need to find start of loop, so now move both pointers with same speed again
+        slow=0;
+        while(slow!=fast){
+            slow=nums[slow];
+            fast=nums[fast];
+        }
+        return slow;
+    }
+}
+
+/*
+Each element exists only once. And there is one duplicate.
+The numbers are from 1 -> n with ana rray size of n+1.
+And in an array we have nums[i] & i.
+Let's treat this combination as a node.
+
+Index range from 0 to n in fact which is inclusive of the range of numbers given to us
+
+Now just treat the elements of nums itself as pointer.
+So if nums[i]=x => x will now point to nums[x].
+
+eg: 
+arr: 2,6,4,1,3,1,5
+idx: 0,1,2,3,4,5,6
+
+Now start from first element, 2 will point to index 2 where we have 4=> 2->4
+So, now 4 will point to index 4where we have 3 => 2->4->3
+We can continue doing this:
+
+But at index 5 we again have 1. Meaning we have encountered a loop 1->6->5->1
+2->4->3->1->6->5
+         |<----| going back to point at 1
+
+So, now this has trnasformed into another problem which is a linked list which has a loop in it.
+And our duplicate is the start of this cycle.
+
+APPROACH---
+to detect cycle -> slow and fast starts with the starting point.
+
+Observation---
+the frist element is never a part of the cycle. that's what allows us to traverse this linkedlist.
+
+Note---
+why the distanc ebetween the start of linkedlist and where we left our fast pointer after the slow and fast becomes same is equal. Its this fact that helps us to find the start point of the loop.
+So, why? see proof at 10:00 -> https://www.youtube.com/watch?v=wjYnzkAhcNk
+*/
+
+/* ELEGANT CODE */
+class Solution {
+    public int findDuplicate(int[] nums) {
+        int slow = 0; // starting index
+        int fast = 0; // fast should also start at index 0
+        // Start a slow and fast pointer until they meet
+        do {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        } while (fast != slow);  // Keep going until they meet
+        // Now find the start of the loop (duplicate number)
+        slow = 0;
+        while (slow != fast) {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+        return slow; // return the duplicate number
+    }
+}

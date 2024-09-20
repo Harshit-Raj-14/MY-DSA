@@ -1,0 +1,89 @@
+PS- 947. Most Stones Removed with Same Row or Column
+On a 2D plane, we place n stones at some integer coordinate points. 
+A stone can be removed if it shares either the same row or the same column as another stone that has not been removed.
+Given an array stones of length n where stones[i] = [xi, yi] represents the location of the ith stone, 
+return the largest possible number of stones that can be removed.
+
+/* CODE */
+
+/* DFS */
+
+
+/* USING DSU */
+class Solution{
+    int parent[];
+    int rank[];
+    //find function with path compression
+    public int find(int i){
+        if(parent[i]!=i) parent[i]=find(parent[i]); //path compression
+        return parent[i];
+    }
+    //unin function with union by rank
+    public void union(int i, int j){
+        int rootI=find(i);
+        int rootJ=find(j);
+        if(rootI!=rootJ){
+            if(rank[rootI]>rank[rootJ]) parent[rootJ]=rootI;
+            else if(rank[rootI]<rank[rootJ]) parent[rootI] = rootJ;
+            else{
+                parent[rootJ]=rootI;
+                rank[rootI]++;
+            }
+        }
+    }
+    public int removeStones(int[][] stones) {
+        int n=stones.length;
+        parent=new int[stones.length];
+        rank=new int[stones.length];
+        //initialise parent and rank array
+        for(int i=0;i<stones.length;i++){
+            parent[i]=i;
+            rank[i]=i;
+        }
+        // Union stones that are in the same row or column
+        for(int i=0;i<stones.length;i++){
+            for(int j=i+1;j<stones.length;j++){ //trying out every stone pair with each other, to see which forms a group(set) together
+            if(stones[i][0]==stones[j][0] || stones[i][1]==stones[j][1]) union(i,j);
+            }
+        }
+        // Count the number of disjoint sets (connected components)
+        int groups=0;
+        for(int i=0;i<n;i++){
+            if(parent[i]==i) groups++;
+        }
+        return stones.length - groups;
+    }
+}
+
+/*
+LOGIC---
+Instead of viewing this question as "Remove the maximum number of stones with the same rows and columns",take this question to be "What is the number of stones that can be reached from one another, if reaching stone A to stone B requires either stone A and B having same row or column.
+
+Whenever are able to connect stones let's call it a group.
+
+Consider,
+1X1
+X1X
+1X1
+
+Now there are two groups:
+1 1
+    and   1
+1 1
+
+These are two group stones available as they form a connection to reach each other.
+Once we start applying operation of removal in a group, we reach the conclusion that each group will end up with atleast 1 stone after removing connected stones.
+
+Hence total stones left = 1+1 = no of groups formed
+total stones removed = n-total stones left = n-total groups formed
+
+So, we need number of groups.
+DSU helps us to tell number of groups(disjoint sets).
+
+T.C : O(n^2 * α(n)) 
+=> exploring each pair of stones O(n^2)
+=> For each pair, if the stones share the same row or column, the union operation is performed. The union (and subsequent find) operation takes O(α(n)), where α is the inverse Ackermann function.
+S.C : O(n)
+*/
+
+/* USING DSU OPTIMISED O(n) APPROACH SEE TO THIS AS WELL */

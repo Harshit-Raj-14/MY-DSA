@@ -1,0 +1,125 @@
+PS - Longest Exclusive Subarray - GFG
+You are given an array a consisting of n integers. 
+A subarray is considered exclusive if the bitwise OR of the subarray results in a number that has all bits set to one in its binary representation. 
+Your task is to find the length of the longest exclusive subarray.
+NOTE: An exclusive subarray must have a bitwise OR of the form: x = 2-1 (1 ≤ k ≤30).
+
+
+/* O(n) SOLUTION BIT MANIPULATION */
+class Solution {
+    public static int maxLength(int n, int[] arr){
+        int max_len=0;
+        for(int i=1;i<=31;i++){     //iterate over all masks which have all set bits
+            int mask = (1<<i)-1;    //2^n-1 => (2^i - 1) => basically 1,3,7,15 and so on
+            int or=0;
+            int curr_len=0;
+            for(int j=0;j<n;j++){
+                if((arr[j]&mask)!=arr[j]){  //if the element itself cannot give us mask after ANDING with mask (where all bits set till required place), that means it might have a set bit some place else which is not required for the current mask, hence we cannot take it anymore to build the mask.     
+                    or=0;       //so reset everything
+                    curr_len=0;
+                    continue;
+                }
+                or |= arr[j];
+                curr_len++;
+                if(or==mask) max_len = Math.max(max_len, curr_len);
+            }
+        }
+        return max_len;
+    }
+}
+
+/*
+OBSERVATION---
+OR -> Increasing function
+AND -> Decreasing function
+
+Remember, x|y >= x,y
+Remember, x&y <= x,y
+
+LOGIC---
+Just having one set bit in one position, it will make it set in the result value if OR is done.
+
+We iterate over all possible masks (from 1 to 30 bits), and for each mask, we check subarrays to see if their bitwise OR matches the mask. 
+If an element can’t be part of a valid subarray for the current mask, it resets the current OR and length. 
+If a valid subarray is found, it updates the maximum length. 
+This approach ensures that the longest subarray with the desired bitwise OR is identified.
+
+mask is basically the value we want
+*/
+
+
+/* BRUTE FORCE */
+class Solution {
+    public static int maxLength(int n, int[] arr) {
+        int max=0;
+        for(int i=0;i<arr.length;i++){
+            int or=0;
+            for(int j=i;j<arr.length;j++){
+                or |= arr[j];
+                if(or>0 && (or&(or+1))==0){ //checking if all bits are 1 like 1,3,7,15 and so on
+                    max = Math.max(max, j-i+1);
+                }
+            }
+        }
+        return max;
+    }
+}
+
+*/
+
+
+/*
+LOGIC---
+We need to find the longest subarray whose elements when are OR give us all set bits 1.
+
+*/
+
+
+/*****************************************************************************************************/
+PS- 1684. Count the Number of Consistent Strings (Why learn to use bit mask?)
+You are given a string allowed consisting of distinct characters and an array of strings words. 
+A string is consistent if all characters in the string appear in the string allowed.
+Return the number of consistent strings in the array words.
+
+Input: allowed = "cad", words = ["cc","acd","b","ba","bac","bad","ac","d"]
+Output: 4
+
+
+/* BIT MASKING O(m + n*k), O(1) */
+class Solution {
+    public int countConsistentStrings(String allowed, String[] words) {
+        int mask = 0;
+        for (int i=0; i<allowed.length(); i++) {
+            int n = allowed.charAt(i) - 'a';
+            mask = mask | (1<<n); // mark the presence of character as true
+        }
+        int inconsistentString = 0;
+        for (String word : words) {
+            if (isInconsistent(word, mask)) inconsistentString++;
+        }
+        return words.length - inconsistentString;
+    }
+
+    public static boolean isInconsistent(String s, int mask) {
+        for (int j=0; j<s.length(); j++) {
+            int n = s.charAt(j) - 'a';  
+            if (((mask>>n)&1) == 0) return true;  //at mask the character is labelled as false, so return true becuase we are checking inconsistent 
+        }
+        return false;
+    }
+}
+
+/*
+LOGIC---
+WHY BITMASK?
+Alphabests are only from 1 to 26. So, we can fit it inside an integer.
+Whether a string contains that character is marked as true otherwsie false.
+
+Build a bitmask out of allowed string.
+Check it against stream fo strings.
+
+Basic logic is to decrease space complexity by using one integer variable and replace it with the logic of a boolena array.
+
+BRUTE FORCE- USE HASHING OR BOOLEAN/COUNT ARRAY O(26)
+*/
+

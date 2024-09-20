@@ -1,0 +1,246 @@
+/*THEORY */
+Comaprative sorting  of matrix: type arr[n][2] => n rows and 2 columns
+// Sort the 2D array based only on the first column
+Arrays.sort(arr, (a, b) -> Integer.compare(a[0], b[0]));    //Arrays.sort(intervals, (a,b) -> a[0] - b[0]);
+
+// Sort the 2D array based only on the second column
+Arrays.sort(arr, (a, b) -> Integer.compare(a[1], b[1]));
+
+// Sort the 2D array based on both columns
+Arrays.sort(arr, (a, b) -> {
+    int cmp = Integer.compare(a[0], b[0]); // Compare by the first column
+    if (cmp == 0) {
+        cmp = Integer.compare(a[1], b[1]); // If first columns are equal, compare by the second column
+    }
+    return cmp;
+});
+
+
+PS-
+reads a string, finds the frequency of each character, and sorts them based on frequency
+
+/* COMPARATIVE SORTING USING HASHMAP */
+public static void main(String[] args) {
+    String s = "example";
+    HashMap<Character, Integer> map = new HashMap<>();
+    for (char c : s.toCharArray()) {
+        map.put(c, map.getOrDefault(c, 0) + 1);
+    }
+    // Comparitive sorting
+    // Convert the frequency map to a list of map entries
+    List<Map.Entry<Character, Integer>> list = new ArrayList<>(map.entrySet());
+    // Sort the list based on frequencies
+    Collections.sort(list, new Comparator<Map.Entry<Character, Integer>>() {
+        @Override
+        public int compare(Map.Entry<Character, Integer> e1, Map.Entry<Character, Integer> e2) {
+            return e2.getValue().compareTo(e1.getValue()); // Sort in descending order
+        }
+    });
+
+    //Now list has the sorted characters with their frequencies
+    for (Map.Entry<Character, Integer> entry : frequencyList) {
+        System.out.println(entry.getKey() + ": " + entry.getValue());
+    }
+}
+
+
+
+/* COMPARATIVE SORTING USING PAIR */
+import java.util.*;
+class Pair {
+    char character;
+    int frequency;
+
+    Pair(char character, int frequency) {
+        this.character = character;
+        this.frequency = frequency;
+    }
+}
+
+public class CharacterFrequency {
+    public static void main(String[] args) {
+        String S = "example"; 
+        HashMap<Character, Integer> map = new HashMap<>();
+        // Calculate frequency of each character
+        for (char c : S.toCharArray()) {
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+        // Convert the frequency map to a list of pairs
+        List<Pair> list = new ArrayList<>();
+        for (Map.Entry<Character, Integer> entry : map.entrySet()) {
+            list.add(new Pair(entry.getKey(), entry.getValue()));
+        }
+
+        // Sort the list based on frequencies
+        Collections.sort(list, new Comparator<Pair>() {
+            @Override
+            public int compare(Pair p1, Pair p2) {
+                return Integer.compare(p2.frequency, p1.frequency); // Sort in descending order
+            }
+        });
+
+        // Print the sorted characters with their frequencies
+        for (Pair pair : list) {
+            System.out.println(pair.character + ": " + pair.frequency);
+        }
+    }
+}
+
+
+/*****************************************************************************************************/
+PS- 56. Merge Intervals
+Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, 
+and return an array of the non-overlapping intervals that cover all the intervals in the input.
+
+/* CODE */
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        Arrays.sort(intervals, (a,b) -> Integer.compare(a[0], b[0]));       //Arrays.sort(intervals, (a,b) -> a[0] - b[0]);
+        int merged[][] = new int[intervals.length][2];
+        int i=0;
+        merged[i]=intervals[0]; //first row of merged is set to first row of intervals
+        for(int j=1;j<intervals.length;j++){
+            if(merged[i][1]>=intervals[j][0]){  //y1>=x2
+                merged[i][1]=Math.max(merged[i][1], intervals[j][1]);   //make y1->y2
+            }
+            else{
+                i++;
+                merged[i]=intervals[j];
+            }
+        }
+        return Arrays.copyOf(merged, i+1); //creates a new merged that contains the first i+1 elements of the merged
+    }
+}
+
+/*
+LOGIC---
+If we sort the intervals by their start value, then each set of intervals that can be merged will appear as a contiguous "run" in the sorted list.
+If they do, we merge them; if not, we simply move on to the next interval.
+
+We have intervals given:
+(x1,y1),(x2,y2) => sorted by x1
+Inteval overlap: y1>=x2 => overlap => merge intervals : (x1,y2)
+otherwise start to check next interval
+
+Approach---
+    Sort the Intervals: We begin by sorting the intervals based on their start time.
+    Initialize Merged List: Create a new list to store the merged intervals.
+    Iterate and Merge: Start with the first interval, then for each subsequent interval:
+        -If it overlaps with the last interval in the merged list, merge them by updating the end time.
+        -If it doesn't overlap, add it to the merged list as a new interval.
+    Return the Result: Finally, we return the list of merged intervals.
+
+Time complexity : O(nlogn)
+Space complexity : O(logN) or O(n)
+If we can sort intervals in place, we do not need more than constant additional space, although the sorting itself takes O(logn) space. Otherwise, we must allocate linear space to store a copy of intervals and sort that.
+*/
+
+/*********************************************************************************************************/
+PS- 3273. Minimum Amount of Damage Dealt to Bob
+You are given an integer power and two integer arrays damage and health, both having length n.
+Bob has n enemies, where enemy i will deal Bob damage[i] points of damage per second while they are alive (i.e. health[i] > 0).
+Every second, after the enemies deal damage to Bob, he chooses one of the enemies that is still alive and deals power points of damage to them.
+Determine the minimum total amount of damage points that will be dealt to Bob before all n enemies are dead.
+
+Input: power = 4, damage = [1,2,3,4], health = [4,5,6,8]
+Output: 39
+
+/* CODE */
+class Solution {
+    public long minDamage(int power, int[] damage, int[] health) {
+        int timetokill[] = new int[health.length];
+        for(int i=0;i<health.length;i++){
+            timetokill[i]=(health[i]+power-1)/power;    //same as (int)Math.ceil(health[i]/(power*1.0))
+        }
+        List<Integer> indexes = new ArrayList<>();  //indexes of monsters
+        for(int i=0;i<health.length;i++) indexes.add(i);
+        Collections.sort(indexes, (i, j) -> Integer.compare(timetokill[i] * damage[j], timetokill[j] * damage[i]));
+        // indexes.sort((i,j) -> {
+        //     return Integer.compare(timetokill[i]*damage[j], timetokill[j]*damage[i]);
+        // });
+        long ans=0;
+        long timepassed=0;
+        for(int i=0;i<indexes.size();i++){
+            timepassed += timetokill[indexes.get(i)]; //timepasssed is the total time taken while killing all enemies
+            ans+=timepassed*damage[indexes.get(i)];
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+We ened to know of a way to decide which enemy is more beneficial to kill first.
+We need to somehow comparatively sort their health and damage values.
+
+For any two enemies i and j with damages damage[i] and damage[j], 
+and time to take each of them down ti and tj,  
+it is better to choose enemy that have more damage per second on us to be killed first.
+
+Case I: All enemies have same damage => we kill the one with the smallest health to kill first
+Case II: All enemies have same health => we kill the one with the highest damage first
+Case III: General Case
+All enemies have different health and damages
+The best option is to take big damage but for lessr time on a whole.
+So, we prioritize factor damage/timetokill in decreasing order.
+
+Approach---
+Convert enemy's health into the time it takes Bob to kill them, and sort the indexes by ti​dj
+
+
+PROOF---
+The damage Bob takes is related to the time it takes him to kill each enemy. Let the damage per second dealt by each enemy be represented as [...,di​,...,dj​,...], and the time required to kill each enemy as [...,ti​,...,tj​,...].
+
+Consider two scenarios:
+Bob kills the i-th enemy first and the j-th enemy second. The total damage Bob takes in this case is:
+=> ti​di ​+ (ti​+tj​)dj ​+ others = ti​di ​+ tj​dj ​+ others + ti​dj​
+
+Bob kills the j-th enemy first and the i-th enemy second. The total damage Bob takes here is:
+=>tj​dj ​+ (ti​+tj​)di​ + others = ti​di ​+ tj​dj​ + others + tj​di​
+
+The difference between the two scenarios is the last term. If ti​dj​<tj​di​, then Bob should kill the i-th enemy first, and vice versa.
+*/
+
+/*
+ * APPROACH -2
+ * Make a priority queue on basis of damage/lowest time to kill
+ */
+
+
+/****************************************************************************************************/
+PS- Perfect Meeting
+You are given a 2D array arr[][] of size nx2, where each element represents the start and end times of a meeting. 
+Your task is to determine if there exists a time during which all the meetings are occurring simultaneously.
+Note :- The time of a particular meeting is inclusive of starting and ending time.
+Example 1:
+Input: n = 3 arr = [[1, 3], [2, 5], [3, 11]]
+Output: 1
+Explanation: At 3rd hour all the meeting will be occuring simultaneously. 
+
+/* CODE */
+class Solution {
+    public static int firsthour(int n, int[][] arr) {
+        int maxStart = Integer.MIN_VALUE;
+        int minEnd = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int start = arr[i][0];
+            int end = arr[i][1];
+            // Update the max start time and min end time
+            maxStart = Math.max(maxStart, start);
+            minEnd = Math.min(minEnd, end);
+        }
+        // If max start time is less than or equal to min end time, intervals overlap
+        if(maxStart <= minEnd) return 1;
+        else return 0;
+    }
+}
+
+/*
+LOGIC---
+Overlap Condition: For any two intervals to overlap, the latest starting point must be less than or equal to the earliest ending point.
+
+To solve this we iterate through each interval to find the maximum of the start times and the minimum of the end times. 
+If the minimum end time is greater than or equal to the maximum start time, it means there is an overlap, and we returns true. 
+otherwise, it returns false.
+In fact all the numbers between and inclusive maxstart and maxend are common meeting times.
+*/

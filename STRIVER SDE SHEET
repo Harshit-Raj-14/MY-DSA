@@ -1,0 +1,149 @@
+PS-73. Set Matrix Zeroes
+Given an m x n integer matrix matrix, if an element is 0, set its entire row and column to 0's.
+
+/* CODE */
+/* O(n), o(n) USING AUXILIARY ARRAY */
+class Solution {
+    public void setZeroes(int[][] matrix) {
+        int zeror[] = new int[matrix.length];
+        int zeroc[] = new int[matrix[0].length];
+        Arrays.fill(zeror, 1);
+        Arrays.fill(zeroc, 1);
+        for(int i=0;i<matrix.length;i++){
+            for(int j=0;j<matrix[0].length;j++){
+                if(matrix[i][j]==0){
+                    zeror[i]=0;
+                    zeroc[j]=0;
+                }
+            }
+        }
+        for(int i=0;i<matrix.length;i++){
+            for(int j=0;j<matrix[0].length;j++){
+                if(zeror[i]==0 || zeroc[j]==0) matrix[i][j]=0;
+            }
+        }
+    }
+}
+
+/*
+LOGIC---
+Use auxiliary array to stroe indexes where zero occurs and later mark those idnexes with 0.
+*/
+
+/* SPACE OPTIMIZED O(n), O(1) */
+/* O(n), o(n) USING AUXILIARY ARRAY */
+class Solution {
+    public void setZeroes(int[][] matrix) {
+        int col0=1; //for first column marking
+        //Step 1: Traverse the matrix and mark 1st row & col accordingly
+        for(int i=0;i<matrix.length;i++){
+            for(int j=0;j<matrix[0].length;j++){
+                if(matrix[i][j]==0){
+                    matrix[i][0]=0;
+                    if(j==0) col0=0;
+                    else matrix[0][j]=0;
+                }
+            }
+        }
+        //Step 2: Mark with 0 from (1,1) to (n-1, m-1)
+        for(int i=1;i<matrix.length;i++){
+            for(int j=1;j<matrix[0].length;j++){
+                if(matrix[i][0]==0 || matrix[0][j]==0) matrix[i][j]=0;
+            }
+        }
+        //Step 3: Finally mark the 1st col & then 1st row based on matrix[0][0] and col0
+        if(matrix[0][0]==0){    //row should be marked 0
+            for(int j=0;j<matrix[0].length;j++) matrix[0][j]=0;
+        }
+        if(col0==0){  //column should be marked 0
+            for(int i=0;i<matrix.length;i++) matrix[i][0]=0;
+        }
+    }
+}
+
+/*
+LOGIC---
+Use the first row and column of matrix in place of auxliary array and save space.
+In this case we will just make an extra variable for col0 since (0,0) cannot be shared between both row and column markings.
+
+Why we are marking the changes in 1st row first and then the 1st column?
+We modify the 1st row first because it relies on matrix[0][0]. If we change the 1st column first, we might alter matrix[0][0], which would affect the 1st row modification. By changing the 1st row first, we ensure that matrix[0][0] is used correctly before modifying the 1st column based on col0.
+*/
+
+
+
+/****************************************************************************************************/
+PS- 118. Pascals Triangle
+Return the first n rows of Pascals triangle. In Pascals triangle, each number is the sum of the two numbers directly above .
+
+/* CODE O(n^2) */
+class Solution {
+    public List<List<Integer>> generate(int n){
+        ArrayList<List<Integer>> ans = new ArrayList<>();
+        ArrayList<Integer> first = new ArrayList<>();
+        first.add(1);
+        ans.add(first);
+        for(int i=1;i<=n-1;i++){
+            ArrayList<Integer> curr = new ArrayList<>();
+            curr.add(1);
+            for(int j=1;j<ans.get(i-1).size();j++){
+                curr.add(ans.get(i-1).get(j) + ans.get(i-1).get(j-1));
+            }
+            curr.add(1);
+            ans.add(curr);
+        }
+        return ans;
+    }
+}
+
+
+/*****************************************************************************************************/
+PS- 31. Next Permutation
+
+/* CODE */
+class Solution {
+    public void nextPermutation(int[] nums){
+        int bp=-1;
+        // Step 1: Find the breakpoint where nums[i] < nums[i + 1]
+        for(int i=nums.length-2;i>=0;i--){ //look for the first break point from right (ascending)
+            if(nums[i]<nums[i+1]){bp=i; break;}
+        }
+        // Step 2: If no breakpoint found, reverse the entire array
+        //for sroting a descending array make a reverse function so that TC remains O(n)
+        if(bp==-1) Arrays.sort(nums);    //if no break point array is descending => return sorted array order
+        else{
+            //Step 3: Find the element greater than nums[bp] to the right
+            for(int i=nums.length-1;i>bp;i--){
+                if(nums[i]>nums[bp]){
+                    int temp=nums[bp];
+                    nums[bp]=nums[i];
+                    nums[i]=temp;
+                    break;
+                }
+            }
+            // Step 4: Reverse the part of the array to the right of bp
+            for (int i=bp+1, j=nums.length-1; i<j; i++,j--){ //don't do nums.length-i-i necuase i is not starting from 0 you will be subtracting bp which will be wrong
+                int temp = nums[i];
+                nums[i] = nums[j];
+                nums[j] = temp;
+            }
+        }
+    }
+}
+
+/*
+LOGIC---
+We want to find a larger number, but not too large, just the next larger one.
+We want to avoid chaning the number in the left => it will increase the number too much.
+Example: 432513 -> we can only change the last two numbers and have 432531
+
+What if it was 432531 in the first place? 31 cannot be increased.
+Lets try 531 - still no
+2531 - this can be increased - the smallest number that can be used to increase the 2 is swap 2 with 3. so for now we have 3521.
+Next we want to minimize 3521. 
+thats easier => just sort the numbers to the right of 3 
+=> or rather reverse them becuase they ar ein increasing so it will make them descending => 3125. 
+So the answer is 433125
+
+C++ STLE - next_permutation(nums.begin(), nums.end());
+*/

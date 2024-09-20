@@ -1,0 +1,142 @@
+PS- Max sum path in two arrays (GFG) (AMAZON)
+Given two sorted arrays of distinct integers arr1 and arr2. 
+Each array may have some elements in common with the other array. 
+Find the maximum sum of a path from the beginning of any array to the end of any array. 
+You can switch from one array to another array only at the common elements, but when you switch you need to consider the common element only once in the result.
+
+/* CODE */
+class Solution {
+    public int maxPathSum(List<Integer> arr1, List<Integer> arr2) {
+        int n=arr1.size();
+        int m=arr2.size();
+        int i=0;
+        int j=0;
+        int sum1=0;
+        int sum2=0;
+        int ans=0;
+        while(i<n && j<m){
+            if(arr1.get(i)<arr2.get(j)){ //this might look a bit absurd; but remember array is sorted that's why
+                sum1+=arr1.get(i);       //in fact this is being done so that sum1 and sum2 has all the elements accumulated when we reach common point together
+                i++;                     //apply this logic on example 2 you will uderstand its need
+            }
+            else if(arr1.get(i)>arr2.get(j)){
+                sum2+=arr2.get(j);
+                j++;
+            }
+            else{   //reached a common point
+                ans+=Math.max(sum1, sum2)+arr1.get(i);  //choose between max1 and max2, and add common point once
+                i++;
+                j++;
+                sum1=0; //reinitiate sums 
+                sum2=0;
+            }
+        }
+        while(i<n){sum1+=arr1.get(i); i++;}
+        while(j<m){sum2+=arr2.get(j); j++;}
+        ans+=Math.max(sum1, sum2);
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Arrays are sorted.
+We can begin from any array and end at any array.
+We need to return the maximum sum path it will take to do so.
+But we can switch between the two arrays at common points, 
+and these common points will contribute only once to the sum path.
+
+
+eg:
+0 1 2  3  4  -> indexes
+2 3 7 10 12 -> arr1
+1 5 7 8     -> arr2
+
+Here 7 is the common point
+
+So, we can traverse both array and calculate their sum till before 7 as sum1 and sum2.
+When we reach 7, it means we could have begin with any array and switched.
+That means instead of using 7 to make a choice forward.
+Let's say 7 will facilitate as a bridge giving us a choice to take the greater of sum1 or sum2. 
+since the vice versa backward is also same.
+
+After this we reinitiate sum1 and sum2 to see which segment gives greater sum before next common point appears.
+
+So, 
+sum1=2+3
+sum2=1+5
+common point = 7
+ans=math.max(sum1, sum2) + 7 = 6+7 = 13
+sum1=0. sum2=0
+sum1=10+12
+sum2=8
+ans=Math.max(sum1,sum2) = 22
+
+total ans = 22+13 = 35
+*/
+
+
+
+/*****************************************************************************************************/
+PS- Maxx Diff (GFG Weekly - 171)
+You are given 2 arrays arr1[] of size n and arr2[] of size m (m>n). 
+You have to pick n integers from arr2[] and rearrange it in any order and then make an array out of those chosen elements brr[] such that the sum of brr[i]-arr1[i]| (0 ≤ i ≤ n-1) is maximized.
+Find the maximum value of the sum of |brr[i]-arr1[i]| (0 ≤ i ≤ n-1) from all the different possible arrays brr[].
+Example 1:
+Input: n = 3, m = 5, arr1[] = {6, 3, 2}, arr2[] = {11, 3, 9, 7, 2}
+Output: 19
+Explanation:
+We can select elements brr[]=[2, 9, 11] from arr2 in order to get maximum value |12-6| + |9-3|+ |11-21| = 19.
+
+/* CODE */
+class Solution {
+    public static long fndMax(int n, int m, int[] arr1, int[] arr2) {
+        Arrays.sort(arr1);
+        Arrays.sort(arr2);
+        int l1=0, r1=n-1;
+        int l2=0, r2=m-1;
+        long ans=0;
+        while(l1<=r1 && l2<=r2){
+            if(Math.abs(arr1[l1]-arr2[r2])>=Math.abs(arr1[r1]-arr2[l2])){
+                ans+=Math.abs(arr1[l1]-arr2[r2]);
+                l1++;
+                r2--;
+            }
+            else{
+                ans+=Math.abs(arr1[r1]-arr2[l2]);
+                r1--;
+                l2++;
+                
+            }
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Max difference will only come when we subtract maximum wiht some minimum value.
+Sorting can help us to get max difference.
+
+Sorted arrays are:
+arr1=A1,A2,A3,A4
+arr2=B1,B2,B3,B4,B5,B6
+
+Case I: Taking n elements from last part of arr2
+=>subtracting while moving forward in arr1 and backward in arr2
+max_dif= B6-A1 + B5-A2 + B4-A3 + B3-A4 
+
+CaseII: Taking n elements from the front part of arr2 [can be when A1>B6 or soemthing like that at some threshold]
+=>subtracting while moving forward in arr1 and arr2
+max_dif= B1-A1 + B2-A2 + B3-A3 + B4-A4
+
+CaseIII: 
+=> Taking (first element from front of arr1 - last element of arr2) + (n-1 elements from back of arr1 - n-1 elements from front of arr2)
+=> Taking (first two element from front of arr1 - last two element of arr2) + (n-2 elements from back of arr1 - n-2 elements from front of arr2)
+=> Taking (first i element from front of arr1 - last i element of arr2) + (n-i elements from back of arr1 - n-i elements from front of arr2) and so on.....
+
+=>And in fact Case III: is a very general case
+ 
+Now how we can achieve doing case III in O(n) using two pointer
+where we check at each position which first nad last combination is fruitful
+*/

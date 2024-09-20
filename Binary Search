@@ -1,57 +1,170 @@
-## /* JAVA SOLUTION */
-class Main {
-    static int binarySearch(int arr[], int key){
+PS-
+FIND PEAK ELEMENT
+A peak element is an element that is strictly greater than its neighbors.
+Given a 0-indexed integer array nums, find a peak element, and return its index. 
+If the array contains multiple peaks, return the index to any of the peaks.
+
+/* CODE */
+class Solution {
+    public int findPeakElement(int[] nums) {
+        //edge cases
+        if (nums.length == 1) return 0;
+        if(nums[0]>nums[1]) return 0;   
+        if(nums[nums.length-1]>nums[nums.length-2]) return nums.length-1;
         int l=0;
-        int r = arr.length-1;
+        int r=nums.length-1;
         while(l<=r){
             int mid = l+(r-l)/2;
-            if(arr[mid]==key) return mid;
-            else if(key>arr[mid]) l=mid+1;
+            if(mid-1>=0 && mid+1<nums.length && nums[mid]>nums[mid-1] && nums[mid]>nums[mid+1]) return mid;
+            else if(nums[mid]<nums[mid+1]) l=mid+1;
             else r=mid-1;
         }
         return -1;
     }
-    
-    public static void main(String[] args) {
-        int arr[] = {1,5,11,22,34,56,77,88,99};
-        int key = 5;
-        int index = binarySearch(arr, key);
-        System.out.println("Index of " + key + " is " + index);
+}
+/*
+LOGIC---
+we have any unsorted array.
+we need to find the element which is greater than all its neighbours.
+That means for element X element to its left and right will be less than X. => Peak element
+
+By using Binary search, check whether the middle element is peak or not. if not, the middle element right side is the greater, obviously right will be the peak element. or else, the middle element left side is the greater element, we can go to the left side of an array.
+
+
+HINTS---
+No adjacent two numbers are the same
+the two end of the arrays are -∞
+You can return any peak.
+
+For any given point the array, we can have below conditions:
+-If element at point is greater that neighbours, then return the element.
+-If element at point is greater than next element, then peak can occur on the left of this element.
+-If element at point is lesser than next element, then peak can occur on the right of this element.
+-If element at point is smaller than neighbours, then peak can occur on the right of this element.
+
+
+If you think how to apply Binary Search when the array is not sorted:
+-Find mid element and check whether it is greater than its neighbors.
+-If not, reduce search space (same as in binary search) and try recursively search in left side of mid.
+-Then similarly perform above step right side of mid.
+-Think about base cases.
+-So finally this runs in O(logn).
+
+
+SOME EXTRA THOUGHTS---
+Adjacent numbers are never equal. This is what makes binary search possible and ensures there is always a peak.
+The decision on which subarray to pick - left or right - is made by comparing the pivot to its neighbors, in an array like this [x, x, 3, 3, 3, x, x, x] it would not be possible.
+
+
+A graphical explanation for using binary search in this question:
+Starting off, the left and right bounds are negative infinities, thus the whole array is of shape: /--------\ . 
+
+The middle elements' conditions are:
+If nums[0] > nums[n-1], there would be a peak in the middle or at nums[0], because the height gap between nums[0] and nums[n - 1] needs to be covered by the middle nodes, resulting at least a peak at nums[0].
+If nums[0] < nums[n-1], same reason for a peak possibly in middle or at least a peak at nums[n - 1].
+If nums[0] == nums[n-1], then because there are no plateaus in the array, the range between nums[0] and nums[n – 1] needs to be covered by slopes, thus there will for sure be a peak.
+
+In conclusion: there will for sure be a peak in the initial nums.
+
+When we update the left and right pointers, we choose the middle pointer’s local slope:
+if it is a rising slope: /, then we update the former left bound rising slope:
+(/----------)/------\
+the same shape of array is retained, thus the update guarantees a slope in the new range.
+If it is a falling slope: , similar updated problem set:
+/--------\ (--------\ )
+thus a valid update.
+
+In the end, the two bounding slopes meet /\ , and a peak is found.
+*/
+
+
+
+
+/*****************************************************************************************************/
+PS- 540. Single Element in a Sorted Array
+You are given a sorted array consisting of only integers where every element appears exactly twice, 
+except for one element which appears exactly once.
+Return the single element that appears only once.
+
+/* CODE */
+class Solution {
+    public int singleNonDuplicate(int[] nums){
+        if(nums.length==1) return nums[0];
+        int l=0;
+        int r=nums.length-1;
+        while(l<=r){
+            int mid=l+(r-l)/2;
+            if(checkBinary(nums, mid)){
+                l=mid+1;
+            }
+            else r=mid-1;
+        }
+        return nums[l];
+    }
+
+    public static boolean checkBinary(int nums[], int mid){
+        if(mid==nums.length-1) return false;    //the last element is our culprit
+        if (mid % 2 == 1) mid--;  // Adjust mid to even if it's odd
+        return nums[mid] == nums[mid + 1];  // Check if mid and mid+1 are the same
     }
 }
 
 
-** NOTE: 
-> mid ,l ,r are indexes
-> Array should be montonous or sorted.
+/*
+LOGIC---
+Let's consider the optimal case, every elements appears twice. Also array is sorted.
+[0,0,1,1,2,2,3,3,4,4,5,5]
+=> each element would shift from their original index by 2
+=> 0 starts from 0
+=> 1 starts from 2
+=> 2 starts from 4
+=> 3 starts from 6
 
-** Ways to find mid
-1. mid = l+(r-l)/2
-2. mid = (l+r)>>1
+Now consider another array:
+[0,0,1,1,2,2,3,4,4,5,5] => there is only one 3 now
+=> 0 starts from 0
+=> 1 starts from 2
+=> 2 starts from 4
+=> 3 starts from 6
+=> 4 starts from 5 => discrepancy
+
+Observation: each new element will start from even index.
+So, if a new element starts from odd index that is our answer.
+
+So, becuase array is sorted and the elements appearing twice.
+If the discrepancy has till yet not occured till mid. it should appear further.
+If the discrepancy has occured, there are still chances it might have started much before.
+
+Nature: NNNNNNNNYYYYYYYY 
+=> first discrepancy is at first Y 
+=> but our answer will be first N which caused the problem think in the example, 3 is at even index but it caused the discrepancy becuase it existed once
+=> so we need last N => l
+
+*/
 
 
+/*****************************************************************************************************/
+PS- Odd Element in a Sorted Array [AMAZON]
+You are given a sorted array of integers where every element appears exactly K times, except for one element that appears fewer than K times. 
+Your task is to find the element that occurs fewer than K times.
 
+Example:
+Array: [1, 1, 1, 5, 5, 5, 7, 7, 9, 9, 9, 10, 10, 10], K = 3 
+Answer: 7 
+Explanation: All elements except 7 appear exactly 3 times. However, 7 appears only twice.
 
-## /* C++ */
-// Online C++ compiler to run C++ program online
-#include <iostream>
-using namespace std;
+/*
+LOGIC---
+1)The better approach K.logn approach is about using binary search since sorted array starting from mid 
+and checking it's surroundings to find that the mid valued is in groups of k. (expand around centre)
 
-int binarySearch(int arr[], int n, int key){
-    int l=0;
-    int r=n-1;
-    while(l<=r){
-        int mid = l+(r-l)/2;
-        if(arr[mid]==key) return mid;
-        else if(key>arr[mid]) l=mid+1;
-        else r=mid-1;
-    }
-    return -1;
-}
+2)Coming to the log(n)² approach would be a slight modification of a better one where we perform binary search on the sorted array 
+and check whether middle part breaks pattern of appearing k times and appears at start of a group of k . 
+If pattern doesn't break move to right part of array where the breaking of pattern occurs else that element must be around this part 
+so check in middle and left until we get special element. Since we carry out binary search repeatedly with pattern check of k groups identical it is hence log n².
 
-int main() {
-    int arr[] = {0,1,2,4,5,6,7};
-    int key = 5;
-    cout<<binarySearch(arr,7, 2);
-    return 0;
-}
+3) Even there is a O(log n) Best approach where we find mid from binary search and get group_start index as mid-(mid%k) where mid belongs to and 
+check if array[group_start] index == array[group_start+k-1]: if yes move left to group start +k since the target is at right else move right implying target is at left. 
+Do this till left< right.
+
+*/

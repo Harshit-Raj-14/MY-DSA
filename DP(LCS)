@@ -1,0 +1,285 @@
+PS- 1143. Longest Common Subsequence
+Given two strings text1 and text2, return the length of their longest common subsequence. 
+
+/* CODE */
+class Solution {
+    public int longestCommonSubsequence(String s1, String s2) {
+        int dp[][] = new int[s2.length()+1][s1.length()+1];
+        return solve(s1, s2, dp);
+    }
+
+    public static int solve(String s1, String s2, int dp[][]){
+        for(int i=1;i<=s2.length();i++){    //the first column and rows will be filled with 0 so leave them out
+            for(int j=1;j<=s1.length();j++){
+                if(s2.charAt(i-1)==s1.charAt(j-1)){
+                    dp[i][j] = dp[i-1][j-1]+1;
+                }
+                else dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+            }
+        }
+        return dp[s2.length()][s1.length()];
+    }
+}
+
+/*
+DP on Strings
+s1 - > horizontally -> column
+s2 -> vertically -> row
+dp[s2.length()+1][s1.length()+1]
+
+    "" X Y Z
+""  0  0 0 0
+A   0
+B   0
+C   0
+
+you cannot have any common subsequence with empty string"" and s2 or s1 and empty string""
+So, first row and first column will be 0
+
+Now if A and X matches we can put it as 1
+If A and Y matches we can put it as 1
+If A and Z matches we can put it as 1.
+
+Now if B matches with X we can put it as 1.
+Now of B matches Y we cna put it as 1. But this time there's a twist.
+AB and XY are of length 2. If A=X and B=Y you should have put 2 there. because that would be the largest common subsequence..
+
+In fact dp[i][j] cell would contain the length of largest common subsequence till i and j.
+
+    "" X Y Z
+""  0  0 0 0
+A   0       
+B   0    P Q
+C   0    R S
+
+S will be our final longest common subsequence
+
+IF(Z==C) S=P+1           => dp[i][j] = dp[i-1][j-1] + 1 => the prev max value + 1
+IF(Z!=C) S=Math.max(R,Q) => dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]), since no equal character best to take the max len which previously occured upward or leftward 
+*/
+
+/**************************************************************************************************/
+PS- 583. Delete Operation for Two Strings
+Given two strings word1 and word2, return the minimum number of steps required to make word1 and word2 the same.
+In one step, you can delete exactly one character in either string.
+
+/* LCS TABULATION */
+class Solution {
+    public int minDistance(String s1, String s2){
+        int dp[][] = new int[s2.length()+1][s1.length()+1];
+        return solve(s1, s2, dp);
+    }
+
+    public static int solve(String s1, String s2, int dp[][]){
+        for(int i=1;i<=s2.length();i++){    //the first column and rows will be filled with 0 so leave them out
+            for(int j=1;j<=s1.length();j++){
+                if(s2.charAt(i-1)==s1.charAt(j-1)){
+                    dp[i][j] = dp[i-1][j-1]+1;
+                }
+                else dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+            }
+        }
+        return s1.length() - dp[s2.length()][s1.length()] + s2.length() - dp[s2.length()][s1.length()];
+    }
+}
+
+/*
+LOGIC---
+This time operation is applied on both string of deletion.
+In fact we can say that our LCS should be the common ans
+So, no of deletion steps = s1.length() - dp[s2.length()][s1.length()] + s2.length() - dp[s2.length()][s1.length()]
+
+I want to make two strings equal in min delete operations. Hmm...Let's not delete the common characters between both the strings.
+So, solve for LCS and return the above value
+*/
+
+/* RECURSION */
+class Solution {
+    public int minDistance(String s1, String s2) {
+        return solve(s1,s2,0,0);
+    }
+
+    public static int solve(String s1, String s2, int i, int j){
+        if(i==s1.length()) return s2.length()-j;  //s1 got over before s2, delete remaning char from s2
+        else if(j==s2.length()) return s1.length()-i;    //s2 got over before s1, delete remaning char from s1
+        if(s1.charAt(i)==s2.charAt(j)) return solve(s1,s2,i+1,j+1); //same character encountered
+        else{
+            int deleteins1= 1 + solve(s1,s2,i+1,j);
+            int deleteins2= 1 + solve(s1,s2,i,j+1);
+            return Math.min(deleteins1, deleteins2);
+        }
+    }
+}
+
+/* STRING ON DP */
+class Solution {
+    public int minDistance(String s1, String s2) {
+        int m = s1.length();
+        int n = s2.length();
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 0; i <= m; i++) {
+            dp[i][0] = i; // If s2 is empty, delete all characters from s1
+        }
+        for (int j = 0; j <= n; j++) {
+            dp[0][j] = j; // If s1 is empty, delete all characters from s2
+        }
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1]; // Characters match, no additional deletions needed
+                } else {
+                    dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1]); // Delete from either string
+                }
+            }
+        }
+        return dp[m][n];
+    }
+}
+
+/************************************************************************************************************/
+PS- EDIT DISTANCE
+Return the minimum number of operations required to convert word1 to word2.
+You have the following three operations permitted on a word:Insert a character, Delete a character, Replace a character
+
+/* CODE */
+
+/* DP ON STRING LCS TABULATION */
+class Solution{
+    public int minDistance(String s1, String s2){
+        int grid[][] = new int[s2.length()+1][s1.length()+1];
+        for(int i=0;i<=s2.length();i++){
+            grid[i][0]=i;   //filling first column -> converting empty string into s2
+        }
+        for(int j=0;j<=s1.length();j++){
+            grid[0][j]=j;   //filling first row -> converting s1 into empty string
+        }
+        return solve(s1, s2, grid);
+    }
+
+    public static int solve(String s1, String s2, int grid[][]){
+        for(int i=1;i<=s2.length();i++){
+            for(int j=1;j<=s1.length();j++){
+                if(s1.charAt(j-1)==s2.charAt(i-1)){ //no need to apply operation since same character
+                    grid[i][j] = grid[i-1][j-1]; // only take diagonal value
+                }
+                else grid[i][j] = Math.min(grid[i-1][j-1], Math.min(grid[i-1][j], grid[i][j-1])) + 1;
+            }
+        }
+        return grid[s2.length()][s1.length()];
+    }
+}
+
+/*
+LOGIC---
+We have three operations: insertion, deletion, replacement
+
+We make a table, which is described as:
+cell X => would read as number of steps it would take to convert PQRS into AB
+cell Z => would read as numbe rof steps it would take to convert PQRST into ABCDE
+
+    '' P Q R S T 
+''   0 1 2 3 4 5
+A    1
+B    2       X N
+C    3       M O
+D    4
+E    5          Z
+
+Also, 
+when character same => O=X (diagonal value)
+when characters different => O = Math.min(X,M,N) + 1
+
+APPROACH---
+s1 on which we have to apply operation is on columns horizontally
+s2 which is our transformed string is on row vertically
+The cells will contain value needed to transform that part of s1 into that part of s2 
+
+grid will be of size [s1.length()+1][s2.length()+1]
+Reason one extra space on column and row for empty string ""
+
+Answer returned will be grid[s1.length()][s2.length()]
+
+Character same => O=X (diagonal value)
+=>grid[i][j] = grid[i-1][j-1] 
+Why?
+=>Since the upcoming characters on both are same. We don't need to make any operation. So, using the back diagonal value makes sense where the s1 and s2 have already been equalised.
+*/
+
+
+/* RECURSION TLE */
+class Solution {
+    public int minDistance(String s1, String s2) {
+        return solve(s1,s2,0,0);
+    }
+
+    public static int solve(String s1, String s2, int i, int j){
+        if(i==s1.length()) return s2.length()-j;    //s1 is over, s2 remains, insert s2-j extra characters in s2
+        else if(j==s2.length()) return s1.length()-i;   //s2 is over, s1 remains, delete m-i characters in s1
+        if(s1.charAt(i)==s2.charAt(j)){ //same character no operation needed
+            return solve(s1,s2,i+1,j+1);
+        }
+        else{
+            int insert = 1 + solve(s1,s2,i,j+1);    //previously i has been made equal to j
+            int delete = 1 + solve(s1,s2,i+1,j);    //i was unnecessary, deleted, now check i+1 against j
+            int replace = 1 + solve(s1,s2,i+1,j+1); //i is made equal to j with replacement
+            return Math.min(insert, Math.min(delete, replace));
+        }
+    }
+}
+
+/*
+LOGIC---
+apply memoisation using dp[i][j]
+
+*/
+
+
+
+
+
+
+
+/*************************************************************************************************/
+PS- Minimum number of deletions and insertions(GFG)
+The task is to remove or insert the minimum number of characters from/in str1 so as to transform it into str2. 
+
+/* CODE */
+class Solution{
+	public int minOperations(String s1, String s2){ 
+	    int dp[][] = new int[s2.length()+1][s1.length()+1];
+	    for(int i=0;i<=s2.length();i++){
+	        dp[i][0]=i;
+	    }
+	    for(int j=0;j<=s1.length();j++){
+	        dp[0][j]=j;
+	    }
+	    return solve(s1,s2,dp);
+	} 
+	
+	public static int solve(String s1, String s2, int dp[][]){
+	    for(int i=1;i<=s2.length();i++){
+	        for(int j=1;j<=s1.length();j++){
+	            if(s1.charAt(j-1)==s2.charAt(i-1)){
+	                dp[i][j]=dp[i-1][j-1];
+	            }
+	            else dp[i][j] = Math.min(dp[i-1][j], dp[i][j-1]) +1;
+	        }
+	    }
+	    return dp[s2.length()][s1.length()];
+	}
+}
+
+/*
+LOGIC---
+DP ons trings => LCS => sme as Edit Distance problem 
+s1 -> horizontally as columns
+s2 -> vertically as rows
+
+Just think of dp equation when characters will be different and same
+
+A B
+C D
+characters same - dp[D]=A
+
+characters different - dp[D] = Math.min(C,B) + 1
+*/

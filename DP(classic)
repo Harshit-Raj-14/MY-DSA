@@ -1,0 +1,59 @@
+PS-
+
+/* CODE */
+/* MEMOISATION */
+
+/* BACKTRACKING */
+class Solution {
+    public List<List<String>> partition(String s) {
+        ArrayList<List<String>> ans = new ArrayList<>();
+        solve(s, 0, new ArrayList<String>(), ans);
+        return ans;
+    }
+
+    public static void solve(String s, int start, ArrayList<String> list, ArrayList<List<String>> ans){
+        if(start==s.length()){
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        //explore possiblity of partitions
+        for(int i=start;i<s.length();i++){    // i  means till where we consider first substring
+            if(isPalindrome(s.substring(start, i+1))){  //if curr substring is palidrome
+                list.add(s.substring(start, i+1));  //add it to list
+                solve(s,i+1,list,ans);    //recurse to find other partitions  
+                list.remove(list.size()-1); //backtrack
+            }
+        }
+    }
+
+    public static boolean isPalindrome(String s){
+        for(int i=0;i<=s.length()/2;i++){
+            if(s.charAt(i)!=s.charAt(s.length()-1-i)) return false;
+        }
+        return true;
+    }
+}
+
+/*
+See this pic and everything will be clear - https://assets.leetcode.com/users/images/b6f5ade4-d5b8-445e-8ee9-e16a0d4f2292_1711522213.8992066.png
+
+LOGIC---
+Backtracking - explore all substring and then its partitions.
+We have choice of partition. i.e., where to put partition.
+
+It makes sense to keep on exploring substrings in tree, as long as substrings left of partition are palindrome
+
+eg:aaba
+a|aba => {a,aba} => a is a palindrome so explore further
+a|a|ba => left side partitions are all palindrome explore further
+a|a|b|a => {a,a,b,a}
+Now backtrack
+aa|ba => aa is palindrome => aa|b|a => {aa,b,a}
+aab|a => aab is not a palidrome no need to explore further
+
+So we need to make a choice where to put palindrome
+TC- O(2^n * n)
+SC- O(2^n * n)
+*/
+
+

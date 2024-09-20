@@ -1,0 +1,376 @@
+PS- 394. Decode String
+Given an encoded string, return its decoded string.
+The encoding rule is: k[encoded_string], where the encoded_string inside the square brackets is being repeated exactly k times. 
+Note that k is guaranteed to be a positive integer.
+
+Input: s = "3[a]2[bc]"
+Output: "aaabcbc"
+
+Input: s = "3[a2[c]]"
+Output: "accaccacc"
+
+/* STACK O(n) */
+class Solution {
+    StringBuilder ans = new StringBuilder("");
+    public String decodeString(String s){
+        StringBuilder ans = new StringBuilder("");
+        Stack<String> stack = new Stack<>();
+        for(int i=0;i<s.length();i++){
+            if(s.charAt(i)!=']') stack.push(s.charAt(i)+"");    //Step I: push elements to the stack until meet ']'
+            else{
+                //Step II: pop elements from the stack until meet '[' => contents => take in the inside string
+                String curr="";
+                while(!stack.isEmpty() && !stack.peek().equals("[")){
+                    curr= stack.pop() + curr;
+                }
+                stack.pop();    //remove the open bracket
+                //Step III: pop elements digitals from the stack => number => take in the number
+                String n="";
+                while(!stack.isEmpty() && Character.isDigit(stack.peek().charAt(0))){
+                    n = stack.pop() + n;
+                }
+                if(!n.equals("")){  //we dont have an empty string number
+                    int no = Integer.parseInt(n);
+                    String originalCurr = curr;
+                    for(int j=1; j<no; j++){    //n times append curr string to ans, once already done above
+                        curr += originalCurr;
+                    }
+                }
+                //Step IV: push to the stack and then repeat step 1 to 4
+                stack.push(curr);
+            }
+        }
+        String leftover=""; //stack still has some characters left
+        while(!stack.isEmpty()) leftover = stack.pop() + leftover;
+        ans.append(leftover);
+        return ans.toString();
+    }
+}
+
+/*
+LOGIC---
+Remember in a bracket storing question of stack. You keep ons toring character ins stack. and the moment you encounter ']' start popping out till you po out '['. Means you got inside string.
+
+This helps us to get deep into string and access the last bracket contaiend part.
+
+Approach:-
+1.If the character is a closing square bracket ']', we pop characters off the stack until we find the corresponding opening square bracket '['. We then pop the opening bracket, the number before it (which specifies how many times the substring inside the brackets should be repeated), and the characters we just popped off the stack. We repeat this process until we have processed the entire string.
+2.Otherwise, if the character is not a closing square bracket ']', we push it onto the stack.
+
+Steps:
+    push elements to the stack until meet ']'
+    pop elements from the stack until meet '[' => contents
+    pop elements digitals from the stack => number
+    repeat "contents" by "number" times and push to the stack   => important
+    repeat step 1 to 4
+
+*/
+
+
+
+/**********************************************************************************************/
+PS- Stock span problem
+We have a series of n daily price quotes for a stock and we need to calculate the span of stocks price for all n days. 
+The span Si of the stocks price on a given day i is defined as the maximum number of consecutive days just before the given day, 
+for which the price of the stock on the given day is less than or equal to its price on the current day.
+
+Input: price[] = [100 80 60 70 60 75 85]
+Output: 1 1 1 2 1 4 6
+
+/* CODE */
+
+/* STACK storing with indexes O(n) */
+class Solution {
+    public static int[] calculateSpan(int prices[], int n) {
+        int ans[] = new int[n];
+        Stack<Integer> stack = new Stack<>();
+        for(int i=0;i<n;i++){
+            while(stack.size()!=0 && prices[stack.peek()]<=prices[i]){
+                stack.pop();
+            }
+            if(stack.isEmpty()) ans[i]=i+1;
+            else ans[i]=i-stack.peek();
+            stack.push(i);
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Span(days) is defiend as the consecutive smaller or equal elements directly to the left of curr element.
+
+We store the indexes of prices in stack.(unique values)
+
+Case I: stack is empty => meaning there are no elements to the left side of curr, that are greater than it.
+=>So it is the largest price till now.
+So, we can say that total no of span = i+1 => total days till i (including itself, 0 indexed, so adding 1)
+
+Case II: stack is not empty
+Since we have indexes stored in our stack. We compare prices[stack.peek()] with prices[i]
+If we learn that the topmost index in stack refers to  a price that is smaller than or equal to curr prices
+=> we say it can form part of a consecutive series
+=> so keep on popping it, till we reach index where it no longer form a consecutive series
+=> in this case span will be elemnts after the top of stack till prices[i].
+=> span= i-stack.peek()
+*/
+
+/* USING STACK PAIR<arr[i], span> */
+class Solution {
+    public static int[] calculateSpan(int[] arr, int n) {
+        Stack<Pair<Integer, Integer>> st = new Stack<>();
+        int[] ans = new int[n];
+        for (int i = 0; i < n; i++) {
+            int count = 1;
+            while (!st.isEmpty() && st.peek().getKey() <= arr[i]) {
+                count += st.peek().getValue();
+                st.pop();
+            }
+            st.push(new Pair<>(arr[i], count));
+            ans[i] = count;
+        }
+        return ans;
+    }
+    
+    // Pair class implementation 
+    public static class Pair<K, V> {
+        private K key;
+        private V value;
+        public Pair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+        public K getKey() {
+            return key;
+        }
+        public V getValue() {
+            return value;
+        }
+    }
+}
+
+/* BRUTE FORCE O(n^2) */
+class Solution {
+    public static int[] calculateSpan(int prices[], int n) {
+        int ans[] = new int[n];
+        for(int i=0;i<n;i++){
+            int days=0;
+            for(int j=i;j>=0;j--){
+                if(prices[i]>=prices[j]) days++;
+                else break;
+            }
+            ans[i]=days;
+        }
+        return ans;
+    }
+}
+
+
+
+/**********************************************************************************************/
+PS- 739. Daily Temperatures
+Given an array of integers temperatures represents the daily temperatures, 
+return an array answer such that answer[i] is the number of days you have to wait after the ith day to get a warmer temperature. 
+
+Input: temperatures = [73,74,75,71,69,72,76,73]
+Output: [1,1,4,2,1,1,0,0]
+
+/* CODE */
+/ * MONOTONIC STACK */
+class Solution {
+    public int[] dailyTemperatures(int[] arr){
+        int ans[] = new int[arr.length];
+        Stack<Integer> stack = new Stack<>(); 
+        for(int i=arr.length-1; i>=0; i--){
+            while(!stack.isEmpty() && arr[stack.peek()]<=arr[i]) stack.pop();  //we want the latest element where we have the closes higher temeprature to curr
+            if(stack.isEmpty()) ans[i]=0;   //there was no day where we got higher temp
+            else ans[i]=stack.peek()-i;
+            stack.push(i);
+        }  
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+We store the index of temperatures in our stack from backward.
+Reason, its much quicker to predict the last day's temp because it wil always be 0 for the last day.
+To predict answer for present we ened to know what we holdin the future and act accordignly.
+
+Compare the current day value with the value of index avaialble in stack.
+
+*/
+
+
+
+/*****************************************************************************************************/
+PS- 20. Valid Parentheses
+/* CODE */
+class Solution {
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>(); 
+        for(int i=0;i<s.length();i++){
+            char c = s.charAt(i);
+            if(stack.isEmpty() && (c==')' || c=='}' || c==']')) return false;  //valid s will never start with open brackets
+            if(c=='(' || c=='{' || c=='[') stack.push(c);
+            else{
+                if(c==')' && stack.peek()=='(') stack.pop();
+                else if(c=='}' && stack.peek()=='{') stack.pop();
+                else if(c==']' && stack.peek()=='[') stack.pop();
+                else return false;
+            }
+        }
+        if(stack.isEmpty()) return true;
+        else return false;
+    }
+}
+
+/*********************************************************************************************************/
+PS- 32. Longest Valid Parentheses
+Given a string containing just the characters '(' and ')', return the length of the longest valid parentheses substring.
+
+/* CODE */
+/* USING STACK O(n), O(n) */
+class Solution {
+    public int longestValidParentheses(String s) {
+        Stack<Integer> stack = new Stack<>();   //index monotonic stack
+        int ans=0;
+        stack.push(-1);
+        for(int i=0;i<s.length();i++){
+            if(s.charAt(i)=='(') stack.push(i);
+            else{
+                stack.pop();
+                if(stack.isEmpty()) stack.push(i); //Push the current index as a new base for future valid substrings
+                else ans=Math.max(ans, i-stack.peek());
+            }
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Why stack is pushed with -1 intially?
+The -1 acts as a base index for calculating lengths of valid substrings starting from index 0.
+eg : s="()" ans=1-(-1)= 2 length substring
+
+Why when stack becomes empty we push index of ")"?
+Since we encountered a closing bracket when stack is empty, meaning now we don't have a valid substring parenthesis in our hand at that index. So to act as base for the next substring calculation we need to push the closign bracket index, otherwise in all cases we would alsways add index of opening bracket.
+eg: s="())()"
+At i=2 our stack becoems empty as index 0 and -1 are popped.
+So we add index 2 now.
+At i=3 => "(" stack is again pushed with index 3.
+At i=4 => ")" stack is popped. now it contains only index 2 again.
+And so ans = 4-(2) = 2 that is substring ()
+*/
+
+/* LONGEST CONSECUTIVE ONEs O(n), O(n) */
+class Solution {
+    public int longestValidParentheses(String s) {
+        int arr[] = new int[s.length()];
+        Stack<Integer> stack = new Stack<>();
+        for(int i=0;i<s.length();i++){
+            if(s.charAt(i)=='(') stack.push(i);
+            else{
+                if(!stack.isEmpty()){
+                    arr[i]=1;
+                    arr[stack.pop()] = 1;   //we found pair "()" so mark both places as 1
+                }    
+            }
+        }
+        //find longest consecutive sequence of 1
+        int ans=0;
+        int temp=0;
+        for(int i=0;i<arr.length;i++){
+            if(arr[i]==1){
+                temp++;
+                ans=Math.max(ans, temp);
+            }
+            else temp=0;
+        }
+        return ans;
+    }
+}
+
+
+/*
+LOGIC---
+Transform the parnathesis string into an array of 0 and 1.
+Where 1 marks a successsful valid substring length and 0 would mark as false substring.
+Longest valid parathesis = longest consecutive sequence of 1
+
+use stack and an array, and then change this problem as finding longest continuous 1 in a 01 array. 
+
+First, in stack push position of each '(', then when we meet ')'.
+Pop stack to find its match'('， 
+Place both ')' and '(' as 1 in array
+
+For example, (()()，array should look like[0,1,1,1,1]
+
+Then it is super easy, to find out longest substring that all items are 1 !!!
+
+
+APPROACH---
+Approach
+Initialize an array arr of length n, where n is the length of the input string s, filled with zeros.
+Initialize an empty stack.
+Iterate through each character s[i] in the input string s.
+If s[i] is '(', push its index i onto the stack.
+If s[i] is ')' and the stack is not empty, mark the corresponding opening parenthesis index and the current index as valid by setting arr[stack.pop()] = 1 and arr[i] = 1.
+The false places or invalid (, ) will remain marked as 0, while we successfully makred the valid places as 1.
+Now we need to find longest consecutive 1s in the array.
+*/
+
+
+/* TWO POINTER O(n), O(1) */
+class Solution {
+    public int longestValidParentheses(String s) {
+        int left=0;
+        int right=0;
+        int ans=0;
+        for(int i=0;i<s.length();i++){ 
+            if(s.charAt(i)=='(') left++;
+            else right++;
+            if(left==right) ans=Math.max(ans, right*2);
+            else if(right>left) left=right=0;   //from here on our valid substring breaks so restart
+        }
+        left=right=0;   //reset left and right pointers
+        for(int i=s.length()-1;i>=0;i--){  //do it in reverse order as well
+            if(s.charAt(i)=='(') left++;
+            else right++;
+            if(left==right) ans=Math.max(ans, right*2);
+            else if(left>right) left=right=0;
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Maintain a two pointer left and right which shows count of ( and ) bracket. Ifa t some index they become equalthat means its valid.
+
+Prefix case : if ()) in this scenario if right>left would mean that at that point valid string breaks. becuase an extra closed bracket from frotn means its invalid while the open ones can wait for their chance to be closed.
+
+Suffx case : if (() in this scenario if left>right wold mean that at that point valid string breaks. becuase an extra open bracket from back means its invalid while the closed ones will still be given a chance to find their opening partner.
+
+Why do it from reverse order?
+In the first loop we have only considered prefix substrings but we should check suffix side as well.
+eg: (((((((()))))
+the longes valid is ((((())))) => and this valid substring is starting from behind so e need to check form behind also.
+Also, in backward case left>right should reset becuase at this point we have encoutnered ( opening bracket from backward which will make our string bad
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+

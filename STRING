@@ -1,0 +1,342 @@
+PS- 6. Zigzag Conversion
+The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this:
+
+P   A   H   N
+A P L S I I G
+Y   I   R
+
+And then read line by line: "PAHNAPLSIIGYIR"
+Write the code that will take a string and make this conversion given a number of rows:
+
+
+/* O(n) SOLUTION */
+class Solution {
+    public String convert(String s, int r){
+        if(r==1 || s.length()<=r) return s;  //edge case: one row only case
+        StringBuilder matrix[] = new StringBuilder[r];  //matrix we want to make
+        for(int i=0;i<r;i++) matrix[i] = new StringBuilder();   //making empty matrix by intiallizing strignbuilder, could have gone with a arraylist as well
+        int idx=0;
+        int currlevel=0;
+        int maxlevel = r-1;
+        while(idx<s.length()){
+            while(idx<s.length() && currlevel <= maxlevel){
+                matrix[currlevel].append(s.charAt(idx));
+                currlevel++;   
+                idx++;
+            }
+            currlevel = maxlevel-1;   //bringing it back to maxlevel-1 say here 2
+            while(idx<s.length() && currlevel!=0){
+                matrix[currlevel].append(s.charAt(idx));
+                currlevel--;
+                idx++;
+            }
+        }
+        StringBuilder ans = new StringBuilder("");
+        for(StringBuilder x : matrix){  
+            ans.append(x);
+        }
+        return ans.toString();
+    }
+}
+
+/*
+LOGIC---
+P A Y P A L I S H I R  I  N  G
+0 1 2 3 4 5 6 7 8 9 10 11 12 13
+
+row = 4
+A matrix pattern of zig zag can be formed
+0     6          12
+1   5 7      11  13
+2 4   8  10 
+3     9 
+
+A generality sequence can be observed: (labelling based on row number)
+0 1 2 3 (2 1) 0 1 2 3 (2 1) 0 1 2 3 and so on
+
+0 1 2 3 -> vertically downward portion
+2 1 -> basically the zig-zag portion
+
+So, the matrix actually looks like this pattern
+
+0     0       0
+1   1 1    1  1
+2 2   2  2 
+3     3 
+
+That means our string can be labelled as:
+
+P A Y P A L I S H I R I N G
+0 1 2 3 2 1 0 1 2 3 2 1 0 1 
+
+So, the sequence can be read as first travelling 0 -> 3 downward row-wise and then again travelling upward in a zig-zag fashion 2->1 to go up
+and again reach 0 to restart pattern
+
+By this we have labeleld each stage with 0 1 2 3.
+
+So, first we print the 0's index(chars on 0th row) then 1 then 2 then 3 labelled.
+
+Now how to do this?
+Work on looping from 0 -> 3 then a dcreasing loop 
+
+We make a string array of the required no of levels.
+
+HOW TO SAVE TIME COMPLEXITY FROM O(n^2) -> O(n) ?
+⭐️ Points -> Use 2d array instead of 1d array
+Why?
+That's because if we use 1d array, we have to concatenate all characters in the same row when we add a new character which is O(n). 
+We will repeat the process length of s times, so that is O(n^2). n is the length of the string s.
+To avoid O(n^2), we use 2d array so that we just append a new character to the last position of a target row which is O(1).
+
+This enables us to keep O(n) time instead of O(n^2).
+*/
+
+
+/* O(n^2) APPROACH LABELLING BY LEVELS */
+class Solution {
+    public String convert(String s, int r){
+        if(r==1) return s;  //one row only case
+        int label[] = new int[s.length()];  //label according to levels
+        int idx=0;
+        int currlevel=0;
+        int maxlevel = r-1;
+        while(idx<s.length()){
+            while(idx<s.length() && currlevel <= maxlevel){
+                label[idx] = currlevel;
+                currlevel++;    //putting labels say from 0 to 3
+                idx++;
+            }
+            currlevel = maxlevel-1;   //bringing it back to maxlevel-1 say here 2
+            while(idx<s.length() && currlevel!=0){
+                label[idx]=currlevel;
+                currlevel--;
+                idx++;
+            }
+        }
+        StringBuilder ans = new StringBuilder("");
+        for(int i=0;i<r;i++){   //start putting character level wise first all 0 labels then 1, then 2 and so on...
+            for(int j=0;j<s.length();j++){
+                if(label[j]==i) ans.append(s.charAt(j));
+            }
+        }
+        return ans.toString();
+    }
+}
+
+
+
+/*************************************************************************************************/
+PS- 1071. Greatest Common Divisor of Strings
+Given two strings str1 and str2, return the largest string x such that x divides both str1 and str2.
+Input: str1 = "ABABAB", str2 = "ABAB"
+Output: "AB"
+
+/* CODE */
+
+/* OPTMISED SOLUTION GCD MATHS O(m+n) */
+class Solution {
+    public String gcdOfStrings(String s1, String s2){
+        if(!(s1+s2).equals(s2+s1)) return "";   //no GCD substring
+        int gcdlength = gcd(s1.length(), s2.length());
+        return s1.substring(0, gcdlength);
+    }
+
+    public int gcd(int a, int b){
+        if(b==0) return a;
+        return gcd(b, a%b);
+    }
+}
+
+
+/* 
+LOGIC---
+REMEMBER: if str1+str2 == str2+str1 -> divisible strings Exists and vice versa
+So, a divisbile string exists when:
+str1 = "ABCABC", str2 = "ABC"
+str1+str2 = str2+str1 = "ABCABC(ABC)" = "(ABC)ABCABC"
+
+Proof - Suppose there exists a divisible string base, we can write str1 and str2 in the form of multiples of base. Since both strings contains multiples of the identical segment base, their concatenation must be consistent, regardless of the order (str1 + str2 = str2 + str1).
+
+Therefore, we need to check if two concatenations made by str1 and str2 in both orders are the same. If they are not consistent, it means there is no divisible strings and we should return "" as required. Otherwise, there exists a GCD string of str1 and str2.
+
+Now that we have established we have a GCD string, we need that GCD string.
+
+The GCD string will be equal to the length of gcd(len of s1, len of s2).
+
+Return the prefix string with a length of gcdLength of either str1 or str2 as the answer.
+
+
+Time complexity: O(m+n)
+    We need to compare the two concatenations of length O(m+n), it takes O(m+n) time.
+    We calculate the GCD using binary Euclidean algorithm, it takes log(m⋅n) time.
+    To sum up, the overall time complexity is O(m+n).
+
+Space complexity: O(m+n)
+    We need to compare the two concatenations of length O(m+n).
+
+*/
+
+
+/* BRUTE FORCE O(n^2), O(n) */
+class Solution {
+    public String gcdOfStrings(String s1, String s2){
+        String ans = "";
+        StringBuilder sb = new StringBuilder("");
+        for(int i = 0; i < s1.length(); i++){
+            sb.append(s1.charAt(i));
+            if(possible(s1, s2, sb)) ans = sb.toString();
+        }
+        return ans;
+    }
+
+    public boolean possible(String s1, String s2, StringBuilder sb){
+        System.out.println("hello1");
+        String pattern = sb.toString();
+        int len = pattern.length();
+        // Check if s1 can be fully constructed by repeating the pattern
+        for(int i=0; i <s1.length(); i+=len){
+            if(i+len>s1.length() || !s1.substring(i, i+len).equals(pattern)) return false;
+        }
+        System.out.println("hello");
+        // Check if s2 can be fully constructed by repeating the pattern
+        for(int i=0; i<s2.length(); i+=len){
+            if(i+len>s2.length() || !s2.substring(i, i+len).equals(pattern)) return false;
+        }
+        return true;
+    }
+}
+
+
+/* 
+LOGIC---
+We need the longest string that can make up the both string.
+So, start checking which pattern works by increasing prefix size
+*/ 
+
+
+
+/*************************************************************************************************/
+PS- 5. Longest Palindromic Substring
+Given a string s, return the longest palindromic substring in s.
+Input: s = "babad", Output: "bab"
+
+/* CODE */
+class Solution {
+    public String longestPalindrome(String s){
+        String ans=""+s.charAt(0);
+        int max=1;  
+        for(int i=1;i<s.length();i++){
+            //Case I: For odd length palindrome with center as c => XXXXYXXXX
+            int l=i-1, r=i+1;
+            int curr=1;
+            while(l>=0 && r<s.length()){
+                if(s.charAt(l)==s.charAt(r)){
+                    l--; r++;
+                    curr+=2;
+                }
+                else break;
+            }
+            if(max<curr){
+                max=curr;
+                ans=s.substring(l+1, r);
+            }
+            //Case II: For even length palindromes with centre as c => XXXXXXX
+            l=i-1; r=i;
+            curr=0;
+            while(l>=0 && r<s.length()){
+                if(s.charAt(l)==s.charAt(r)){
+                    l--; r++;
+                    curr+=2;
+                }
+                else break;
+            }
+            if(max<curr){
+                max=curr;
+                ans=s.substring(l+1, r);
+            }
+        }
+        return ans;
+    }
+}
+
+
+/*
+LOGIC---
+expandAroundCenter Technique
+TC- O(n^2), SC-O(1)
+
+Manacher's Algorithm - O(n)
+*/
+
+
+/*********************************************************************************************************/
+PS- Max Splits (MTS DSA Intern GFG)
+Consider two strings, s and t which are anagram. 
+Geek wants to partition both strings into k non-empty segments such that each segment of s 
+is an anagram of the corresponding segment of t. 
+Determine the maximum value of k.
+
+Input: s = "aaabc", t = "aaacb"
+Output: 4
+Explanation:
+The four partitions of string s are {a,a,a,bc), similarly the four parts of string t are {a,a,a,cb}. 
+The ith partition of s is an anagram of the ith part of string t.
+
+/* CODE */
+class Solution {
+    public static int maxSplits(String s1, String s2){
+        HashMap<Character, Integer> map1 = new HashMap<>();
+        HashMap<Character, Integer> map2 = new HashMap<>();
+        int partitions=0;
+        for(int i=0;i<s1.length();i++){
+            map1.put(s1.charAt(i), map1.getOrDefault(s1.charAt(i),0)+1);
+            map2.put(s2.charAt(i), map2.getOrDefault(s2.charAt(i),0)+1);
+            if(map1.equals(map2)) partitions++;
+        }
+        return partitions;
+    }
+}
+
+/*
+ * LOGIC---
+ * Since s1 and s2 are anagram.
+ * So, if s1=XY, s2=AB
+ * So, if X=A then Y=B
+ * So, if at some poitn as we calculate freuqency of s1 and s2 and they becoem equal the remaining part would also be an anagram.
+ * The maximum number of these map equality occurs as we iterate, that will be the maximum number of partititons.
+ 
+EXAMPLE--- s1 = "abca", s2 = "bcab"
+At i = 0:
+s1: [a]bca
+s2: [b]cab
+map1: {a: 1}, map2: {b: 1} -> Not Equal, No partition
+
+At i = 1:
+s1: a[b]ca
+s2: b[c]ab
+map1: {a: 1, b: 1}, map2: {b: 1, c: 1} -> Not Equal, No partition
+
+At i = 2:
+s1: ab[c]a
+s2: bc[a]b
+map1: {a: 1, b: 1, c: 1}, map2: {a: 1, b: 1, c: 1} -> Equal, Partition!
+
+At i = 3:
+s1: abc[a]
+s2: bca[b]
+map1: {a: 2, b: 1, c: 1}, map2: {a: 1, b: 2, c: 1} -> Not Equal, No partition
+
+This dry run confirms that only one valid partition occurs at i = 2.
+
+ANS=1
+
+TC-O(n)
+SC-O(26) => you could have also used int count[26] and compared equality of two arrays
+
+*/
+
+/* BRUTE FORCE */
+LOGIC---
+The simple idea is to iterate through the string and check if the substrings up to each position form anagrams. 
+We can do this by sorting the substrings and comparing them. 
+If they are anagrams, we increment the count of segments.

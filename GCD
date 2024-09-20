@@ -1,0 +1,37 @@
+/* PRIME CHECKING ALGORITHM 6k ± 1 optimization */
+public class PrimeNumbers {
+    public static void generatePrimes(int n) {  //generate primes till n
+        boolean[] primes = new boolean[n + 1];
+        Arrays.fill(primes, false);
+        primes[2] = primes[3] = true;
+        for (int i=1; i<= n/6; i++) {
+            int prod6k = 6 * i;
+            if (prod6k + 1 <= n) primes[prod6k + 1] = true;
+            if (prod6k - 1 <= n) primes[prod6k - 1] = true;
+        }
+        for (int i=0; i<=n; i++){   // Not all primes labelled true ar ecorrect so relabel with Sieve of Eratosthenes logic
+            if (primes[i]){
+                int k=i;
+                for (int j=k*k; j<=n && j>0; j+=k) {
+                    primes[j] = false;
+                }
+            }
+        }
+        for (int i = 0; i <= n; i++) {  //printing prime numbers
+            if (primes[i]) {
+                System.out.print(i + " ");
+            }
+        }
+    }
+/*
+LOGIC---
+We know that all primes above 3 can be generated using:
+6*i + 1
+6*i - 1
+However we all numbers generated from the above formulas are not prime.
+For Example: 6 * 6 - 1 = 35 which is clearly divisible by 5.
+
+To Eliminate such conditions, I used a Sieve Method and removing the numbers 
+which are factors of the numbers generated from the above formula.
+
+*/

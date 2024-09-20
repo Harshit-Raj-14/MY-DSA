@@ -1,0 +1,11 @@
+Note: If in a question when you want to repeatedly apply operation on the smallest elemnt of an array. 
+But its value changes such that the smallest element in array keeps on changing and it can be anywhere.
+Use priority queue to keep the min lement on top. And as soon as operation is applied. 
+The priority queue will reexamine for the correct min element.
+
+eg: For array [2,4,5,6] find smallest element if the min element of the array is doubled every k times.
+while (k-- > 0) {
+   long minElement = pq.poll(); // Get and remove the smallest element
+    minElement = (2 * minElement); // Double it 
+    pq.add(minElement); // Insert back into the priority queue
+}

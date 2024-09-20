@@ -1,0 +1,104 @@
+PS- Make Array consecutive
+Given an array, we want to change the minimum number of elements to make all elements consecutive.
+One operation allows you to change one element into any number you want.
+Essentially, the goal is to ensure that if the element at index 1 is x, then the element at index 2 should be x + 1, and so on. 
+Basically after the operations, the array should be of format [x, x + 1, x + 2, ….]
+
+Input:[2,5,4,7,6] Output:2 Explanation: arr will become [2,3,4,5,6]
+
+/* CODE */
+
+public class int consecutive(int arr[]){
+    int n=arr.length;
+    HashMap<Integer, Integer> map = new HashMap<>();
+    for(int i=0;i<n;i++){
+        int key = arr[i] - i;
+        map.put(key, map.getOrDefault(key, 0) + 1);
+    }
+    int biggestfamily=0;
+    for(Map.Entry<Integer, Integer> entry: map.entrySet()){
+        biggestfamily = Math.max(biggestfamily, entry.getValue());
+    }
+    return n-biggestfamily;
+}
+/*
+LOGIC---
+If I were to fix the first element 2, the array would have been [2, 3, 4, 5, 6] which would cost me 2 operations 
+since I need to make the second and fourth element equal to 3 and 5. 
+Notice that the elements [2, 4, 6] in the original array belong to the same family. 
+If we fix one of them, we don't need to change the others because they complement each other.
+
+By determining the size of each element's family, we can fix the elements in the largest family 
+(in this case if we fix [2, 4, 6], we need to change only 2 elements in the array) to minimize the number of changes.
+
+APPROACH---
+If the element at index i is x, then the element at index i + 1 should be x + 1, index i + 2 should be x + 2, and so on.
+
+Notice this pattern:
+element - index
+(x - i) = (x - i) 
+(x + 1) - (i + 1) = (x - i) 
+(x + 2) - (i + 2) = (x - i)
+
+EUREKA---
+Our general term tn = x-i
+This pattern reveals that elements in the same family have a constant value of arr[i] - i. 
+We can use this property to store family sizes in a map.
+
+We create famileis of x-i and find the greatest frequency against each family.
+Ops = n - biggest family
+*/
+
+
+
+/* DIFFERENCE ARRAY TECHNIQUE */
+Problem
+Let’s assume we have given an array of some size with some initial values (possibly all zeros). 
+Now we have given a bunch of range update query like (l, r, x) — add x to all the element between l and r (both inclusive). 
+After handling all the queries we have to return the array. Also, there should be very less (better to have zero) number of get query for an element or whole array.
+
+Difference Array
+So let’s use Difference Array (DA). We have to allocate another array (lets call it DA) which will handle the queries and whose size is one greater than that of given array 
+(Size of (DA array) = Size of (given array) + 1).
+
+Update Query
+To perform a update query, we simply have to do, DA[l] += x and DA[r + 1] -= x (where l and r are starting and ending of the range and x is the value to be added). 
+Since we have to add and subtract x at two indices, respectively, this operation is constant time.
+
+Final array
+After performing above operation on all queries, to get final array, simply calculate prefix sum of array DA.
+
+
+In case of XOR
+DA[l]^=x and DA[r+1]^=x 
+xor khud ka hi pata kat deta hai
+
+
+
+
+/*******************************************************************************************************/
+PS- 
+You are given a matrix nxm. Find the number of subgrids that has maximum of that subgrid=x.
+
+/*
+APPROACH 1---
+Modify given grid as: elements == x as 1, >x as 2 and <x as 0. 
+We need only 0s and 1s in our grid. Solely 0s won't count, total 1s would be our 1x1 subgrids. 
+
+APPROACH 2---
+1. Number of submatrices which has maximum <=X, and Number of submatrices whose maximum<=X-1. 
+From these two results, you can get the number of submatrices whose maximum is exactly X.
+
+2. To solve the problem Number of submatrices with max<=X, you can make all elements with>X as 0 and the rest as 1. 
+Now your problem turns out to be the number of submatrices which contains all 1's. [LEETCODE - 1504. Count Submatrices With All Ones]
+
+3. To solve the above problem, store the number of continuous ones  which are above the cell (including the cell), in a matrix. 
+And then, in each row, assuming that the submatrix base lies in this row, take a sub array( which forms the base of the rectangle). 
+Now, the minimum value in this array is the number of rectangles(submatrices) that can be formed with this base. 
+So, for each row, if the row is the base of this rectangle, then number of rectangles is same as sum of all minimums of all sub arrays. 
+This problem( sum of all minimums of all sub arrays) can be solved in O(n) using stack
+(hint: for each element store the index of next greater element to left and right of that element.). 
+Thats it.
+*/
+
+

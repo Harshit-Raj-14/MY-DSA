@@ -1,0 +1,736 @@
+17. Letter Combinations of a Phone Number
+PS-
+Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
+Input: digits = "23"
+Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+
+/* BACKTRACKING */
+class Solution {
+    public static void solve(String digits, HashMap<Character, String> map, int idx, String temp, List<String> ans){
+        if(temp.length()==digits.length()){
+            ans.add(temp);
+            return;
+        }
+        for(int i=0; i<map.get(digits.charAt(idx)).length(); i++){
+            temp+=map.get(digits.charAt(idx)).charAt(i);  //add curr letter, do the job on current number
+            // Recursively explore the next digit
+            solve(digits, map, idx+1, temp, ans);   //let's move to the next number
+            StringBuilder sb= new StringBuilder(temp);  //I want another possiblity of that no
+            // backtracking to explore other combinations
+            sb.deleteCharAt(sb.length()-1);  // Remove the current letter from the path before
+            temp = sb.toString();
+        }
+    }
+
+    public List<String> letterCombinations(String digits) {
+        HashMap<Character, String> map = new HashMap<>();
+        map.put('2', "abc");
+        map.put('3', "def");
+        map.put('4', "ghi");
+        map.put('5', "jkl");
+        map.put('6', "mno");
+        map.put('7', "pqrs");
+        map.put('8', "tuv");
+        map.put('9', "wxyz");
+        
+        ArrayList<String> ans = new ArrayList<>();
+
+        if(digits.equals("") || digits==null) return ans;
+        solve(digits, map, 0, "", ans);
+        return ans;
+    }
+}
+
+
+/*
+LOGIC---
+Thought it simply what to do as question ask us to do.
+First you put everything in map to have a record of.
+Then think first you press first digit of pad. that is something you must increase at every next step. 
+What you have a choice is to choose which alphabet of that number or not.
+So, first consider taking that alphabet or not taking it(backtrack to previous state).
+
+Now choose only those formed string sthat will be equal to the length of digits. only that much character we cna type after all.
+
+Time complexity: O(3^n) or O(4^n) [Simple permutation ways]
+n is length of input string. Each digit has 3 or 4 letters. For example, if you get "23"(n) as input string, we will create 9 combinations which is O(3^2) = 9
+
+Space complexity: O(n)
+n is length of input string. This is for recursive call stack.
+*/
+
+
+/*************************************************************************************************/
+
+22. Generate Parentheses
+PS-
+Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+
+Input: n = 3
+Output: ["((()))","(()())","(())()","()(())","()()()"]
+
+
+/* BACKTRACKING */
+class Solution {
+    public List<String> generateParenthesis(int n){
+        ArrayList<String> ans = new ArrayList<>();
+        HashSet<String> set = new HashSet<>();
+        solve(n, 0, new StringBuilder(""), set, ans);
+        return ans;
+    }
+
+    public static void solve(int n, int idx, StringBuilder temp, HashSet<String> set, ArrayList<String> ans){
+        if(idx==n){
+            String curr = temp.toString();
+            if(!set.contains(curr)) ans.add(curr);
+            set.add(curr);
+            return;
+        }
+        if(idx==0){
+            temp.append("()");   //this will be the first addition
+            solve(n, idx+1, temp, set, ans);
+        }
+        else{   //next we decide where to put next bracket in our temp string
+            for(int i=0; i<temp.length(); i++){
+                temp.insert(i, "()");
+                solve(n, idx+1, temp, set, ans);
+                temp.delete(i, i+2);    //you can also do this backtracking to previous state by storing the previous temp as another temporary string and bringing it back again
+            }
+        }
+    }
+}
+
+/*
+LOGIC---
+First we have an empty string.
+Now the first n use would always be ().
+From here we recursively need to explore where to put brackets.
+
+Now temp=()
+Think if in our hand we have another (), we cna put it anywhere in temp.
+=> ()(), (()), ()() n=2
+=> ()()(), (())(), ()(()), ((())) n=3
+=> duplicates will be removed by hashset. 
+But on observation we can form all substring by planting "()" anywhere in our temp and growing it.
+*/
+
+
+
+/* DFS - open parentheses AND close parentheses METHOD */
+class Solution {
+    public List<String> generateParenthesis(int n) {
+        List<String> res = new ArrayList<>();
+        dfs(0, 0, "", n, res);
+        return res;        
+    }
+
+    public void dfs(int openP, int closeP, String s, int n, List<String> res) {
+        if (openP == closeP && openP + closeP == n * 2) {res.add(s); return;}   //another base condition can be s.length()==2*n
+        if (openP < n) dfs(openP + 1, closeP, s + "(", n, res);
+        if (closeP < openP) dfs(openP, closeP + 1, s + ")", n, res);
+    }    
+}
+
+/*
+LOGIC---
+The idea is to add ')' only after valid '('
+We have open parentheses before close parentheses. That's why the strategy is to increase number of open parentheses until n at first, then increase number of close parentheses until n whenever close paranthesis are less than open paranthesis.
+
+EXAMPLE---
+How it works
+First of all, we start
+
+number of open parenthese: 0
+number of close parenthese: 0
+Increase open until we reach n.
+
+open: 1
+close: 0
+parenthese: (
+Increase open until we reach n.
+
+open: 2
+close: 0
+parenthese: ((
+Now we reach n, then increase close until we reach n
+
+open: 2
+close: 1
+parenthese: (()
+Increase close until we reach n
+
+open: 2
+close: 2
+parenthese: (())
+Now we succeefully created one of well-formed parentheses.
+
+res = ["(())"]
+Now we have 2 open and 2 close, so let's go back to 1 open and 0 close, so that we can move in different way.
+
+open: 1
+close: 0
+parenthese: (
+Increase close to move in a different way.
+
+open: 1
+close: 1
+parenthese: ()
+Now we have 1 open. We will increase open until n.
+
+open: 2
+close: 1
+parenthese: ()(
+Now we reach n with 2 open. Then increase close until n.
+
+open: 2
+close: 2
+parenthese: ()()
+We successfully created one of well-formed parentheses.
+
+return res (= ["(())","()()"])
+
+Time complexity:O(2^(2n))
+Space complexity: O(n)
+
+*/
+
+/* ANOTHER WAY TO WRITE */
+class Solution {
+    public List<String> generateParenthesis(int n) {
+        ArrayList<String> ans = new ArrayList<>();
+        HashSet<String> set = new HashSet<>();
+        int size=2*n;
+        solve(n, 1, new StringBuilder("()"), set, ans); //this will be the first addition
+        return ans;
+    }
+
+    public static void solve(int n, int size, StringBuilder sb, HashSet<String> set, ArrayList<String> ans){
+        if(size==n){
+            if(!set.contains(sb.toString())){
+                ans.add(sb.toString());
+                set.add(sb.toString());
+                return;
+            }
+            else return;
+        }
+        if(size>n) return;
+        for(int i=0;i<sb.length();i++){ //next we decide where to put next bracket in our temp string
+            sb.insert(i,"()");
+            solve(n, size+1, sb, set, ans);
+            sb.delete(i,i+2);
+        }
+    }
+}
+
+
+/*************************************************************************************************/
+401. Binary Watch
+PS-
+A binary watch has 4 LEDs on the top to represent the hours (0-11), and 6 LEDs on the bottom to represent the minutes (0-59). 
+Each LED represents a zero or one, with the least significant bit on the right.
+Given an integer turnedOn which represents the number of LEDs that are currently on (ignoring the PM), return all possible times the watch could represent. You may return the answer in any order.
+
+
+NOTE - JUST SEE IN THE CODE THE WAY YOU PRINTED ALL PERMUTATIONS OF 1 AND 0.
+/* CODE */
+class Solution {
+    public List<String> readBinaryWatch(int on) {
+        int set = on;    //no of set bits
+        int n = 10;  //total no of bits
+        ArrayList<String> binary = new ArrayList<>();   //will have all permutations with on set bits
+        getAllPermutations(n, set, 0, 0, new StringBuilder(""), binary);
+        
+        ArrayList<String> ans = new ArrayList<>();
+        timeConverter(binary, ans);
+        return ans;
+    }
+
+    public static void getAllPermutations(int n, int set, int in, int iset, StringBuilder sb, ArrayList<String> binary){
+        if(in==n && iset==set && sb.length()==n){
+            binary.add(sb.toString());
+            return;
+        }
+        if(in>n || iset>set) return;
+        sb.append('1');
+        getAllPermutations(n, set, in+1, iset+1, sb, binary);
+        sb.deleteCharAt(sb.length()-1);
+        sb.append('0');
+        getAllPermutations(n, set, in+1, iset, sb, binary);
+        sb.deleteCharAt(sb.length()-1);
+    }
+
+    public void timeConverter(ArrayList<String> binary, ArrayList<String> ans){
+        for(int i=0;i<binary.size();i++){
+            int h = 0;
+            int min=0;
+            String curr = binary.get(i);
+            int idx=0;
+            for(int j=3;j>=0;j--){
+                if(curr.charAt(j)=='1') h += (int)(Math.pow(2, idx));
+                idx++;
+            } 
+            idx=0;
+            for(int j=curr.length()-1;j>=4;j--){
+                if(curr.charAt(j)=='1') min += (int)Math.pow(2, idx);
+                idx++;
+            }
+            if(h>=0 && h<=11){
+                if(min>=0 && min<=59){
+                    String time = Integer.toString(h);
+                    time+=":";
+                    if(min<10) time+="0";
+                    time+=Integer.toString(min);
+                    ans.add(time);
+                }
+            }
+        }
+    }
+}
+
+
+/*
+LOGIC---
+We have 4 bits to represent -> hours [0,11]
+We have 6 bits to represent -> minutes [0,59]
+size of binary string = 10
+
+Based on the number of given set bits we need to predict possible times.
+
+Now with backtracking we get a list of strigns which are all permutations of possible binary strigns with on set bits.
+
+Each binary string can be treated as:
+[XXXX][XXXXXX]
+the first four bits would be taken into account for hour and the rest six bits would go for minutes
+
+we try them to convert into possible hours and minutes and check which can yield correct possible conversions.
+*/
+
+
+
+
+/*************************************************************************************************/
+PS-Permutations II
+Given a collection of numbers, nums, that might contain duplicates, return all possible unique permutations in any order.
+
+/* CODE */
+class Solution {
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        ArrayList<List<Integer>> ans = new ArrayList<>();
+        HashSet<List<Integer>> set = new HashSet<>();
+        Arrays.sort(nums); // Sort the array to handle duplicates
+        solve(nums, 0, set, ans);
+        return ans;
+    }
+
+    public void solve(int nums[], int idx, HashSet<List<Integer>> set, ArrayList<List<Integer>> ans){
+        if(idx==nums.length){
+            ArrayList<Integer> list = new ArrayList<>();
+            for(int i=0;i<nums.length;i++) list.add(nums[i]);
+            if(!set.contains(list)){
+                ans.add(list);
+                set.add(list);
+            }
+            return;
+        }
+
+        for(int i=idx;i<nums.length;i++){
+            int temp = nums[i];
+            nums[i]=nums[idx];
+            nums[idx]=temp;
+
+            solve(nums, idx+1, set, ans);
+
+            temp = nums[i];
+            nums[i]=nums[idx];
+            nums[idx]=temp;
+        }
+    }
+}
+
+
+/*
+LOGIC---
+We choose one index and then start iterating array from their. And wonder what happens if we swap with each element while traversing. And then backtrack.
+
+*/
+
+
+/*************************************************************************************************/
+PS- Combination I
+Given an array of distinct integers candidates and a target integer target, 
+return a list of all unique combinations of candidates where the chosen numbers sum to target. 
+The same number may be chosen from candidates an unlimited number of times. 
+You may return the combinations in any order.
+
+/* CODE */
+/* MORE EFFICIENT BACKTRACKING */
+class Solution {
+    public List<List<Integer>> combinationSum(int[] nums, int target) {
+        ArrayList<List<Integer>> ans = new ArrayList<>();
+        Arrays.sort(nums);
+        solve(nums, target, 0, new ArrayList<Integer>(), ans);
+        return ans;
+    }
+
+        public void solve(int[] nums, int target, int idx, List<Integer> list, ArrayList<List<Integer>> ans){
+        if(target==0){
+            ans.add(new ArrayList<>(list));   //Create a new list to avoid modification issues
+            return;
+        }
+        if(idx>=nums.length || target<0) return;
+        for(int i=idx; i<nums.length;i++){
+            list.add(nums[i]);
+            solve(nums, target-nums[i], i, list, ans);   // not i + 1 because we can reuse same elements
+            list.remove(list.size()-1);
+        }
+    }
+}
+
+
+/* LESS EFFICIENT BACKTRACKING */
+class Solution {
+    public List<List<Integer>> combinationSum(int[] nums, int target) {
+        ArrayList<List<Integer>> ans = new ArrayList<>();
+        HashSet<List<Integer>> set = new HashSet<>();
+        solve(nums, target, 0, new ArrayList<Integer>(), set, ans);
+        return ans;
+    }
+
+        public void solve(int[] nums, int target, int idx, List<Integer> list, HashSet<List<Integer>> set, ArrayList<List<Integer>> ans){
+        if(target==0){
+            ArrayList<Integer> temp = new ArrayList<>(list); //Create a new list to avoid modification issues
+            Collections.sort(temp);
+            if(!set.contains(temp)){
+                set.add(temp);
+                ans.add(temp); 
+            }
+            return;
+        }
+        if(idx>=nums.length || target<0) return;
+        for(int i=idx; i<nums.length;i++){
+            list.add(nums[i]);
+            solve(nums, target-nums[i], idx, list, set, ans);   
+            list.remove(list.size()-1);
+        }
+    }
+}
+
+
+
+/*************************************************************************************************/
+PS- Combination II
+Combination Sum with (cant reuse same element)
+
+/* CODE */
+/* BEST BACKTRACKING SOLUTION */
+class Solution {
+    public List<List<Integer>> combinationSum2(int[] arr, int t) {
+        ArrayList<List<Integer>> ans = new ArrayList<>();
+        Arrays.sort(arr);
+        solve(arr, t, 0, new ArrayList<Integer>(), ans);
+        return ans;
+    }
+
+    public void solve(int arr[], int k, int idx, ArrayList<Integer> temp, ArrayList<List<Integer>> ans){
+        if(k==0){
+            ans.add(new ArrayList<>(temp));
+            return;
+        }
+        if(idx>arr.length-1 || k<0) return;
+        for(int i=idx; i<arr.length;i++){
+            if(i>idx && arr[i]==arr[i-1]) continue; // skip duplicates
+            temp.add(arr[i]);
+            solve(arr, k-arr[i], i+1, temp, ans);
+            temp.remove(temp.size() - 1);   //think without selecting element
+        }
+    }
+}
+
+
+/* SIMPLE BACKTRACKING TLE */
+class Solution {
+    public List<List<Integer>> combinationSum2(int[] arr, int t) {
+        ArrayList<List<Integer>> ans = new ArrayList<>();
+        HashSet<List<Integer>> set = new HashSet<>();
+        solve(arr, t, 0, new ArrayList<Integer>(), set, ans);
+        return ans;
+    }
+
+    public void solve(int arr[], int k, int idx, ArrayList<Integer> temp, HashSet<List<Integer>> set, ArrayList<List<Integer>> ans){
+        if(k==0){
+            ArrayList<Integer> list = new ArrayList<>(temp);
+            Collections.sort(list);
+            if(!set.contains(list)){
+                ans.add(list);
+                set.add(list);
+            }
+            return;
+        }
+        if(idx>arr.length-1 || k<0) return;
+        solve(arr, k, idx+1, temp, set, ans);
+        if(idx<arr.length) {
+            temp.add(arr[idx]);
+            solve(arr, k-arr[idx], idx+1, temp, set, ans);
+            temp.remove(temp.size() - 1);
+        }
+    }
+}
+
+
+
+/*************************************************************************************************/
+PS- Combination III
+Find all valid combinations of k numbers that sum up to n such that the following conditions are true:
+Only numbers 1 through 9 are used. Each number is used at most once.
+Return a list of all possible valid combinations. 
+
+/* CODE */
+class Solution {
+    public List<List<Integer>> combinationSum3(int k, int t) {
+        ArrayList<List<Integer>> ans = new ArrayList<>();
+        solve(k, t, 1, new ArrayList<Integer>(), ans);  
+        return ans;
+    }
+
+    public static void solve(int k, int t, int start, ArrayList<Integer> temp, ArrayList<List<Integer>> ans){
+        if(t==0 && k==0){
+            ans.add(new ArrayList<>(temp));
+            return;
+        }
+        if(t<0 || k<=0) return;
+        for(int i=start;i<=9;i++){  // Iterate from the current start => we need start for unique combination
+            temp.add(i);
+            solve(k-1, t-i, i+1, temp, ans);    // Recurse with reduced k, t, and incremented start
+            temp.remove(temp.size()-1); //backtrack
+        }
+    }
+}
+
+/*
+LOGIC---
+We need start/idx for maintaing unqiue combinations. To prevent reusing the same number in different positions, you should include a parameter to track the start of the next number to include in the combination.
+*/
+
+
+
+/******************************************************************************************************/
+PS- Rat in a Maze Problem (GFG)
+
+Consider a rat placed at (0, 0) in a square matrix of order N * N. It has to reach the destination at (N - 1, N - 1). 
+Find all possible paths that the rat can take to reach from source to destination. 
+The directions in which the rat can move are 'U'(up), 'D'(down), 'L' (left), 'R' (right). 
+Value 0 at a cell represents that it is blocked and the rat cannot move to it while value 1 represents that rat can travel through it.
+Note: In a path, no cell can be visited more than one time.
+
+/* CODE */
+class Solution {
+    public ArrayList<String> findPath(int[][] arr) {
+        ArrayList<String> ans = new ArrayList<>();
+        if(arr[0][0]==0){ans.add("-1"); return ans;}    //in case the first cell itself is immovable
+        solve(arr, 0, 0, new StringBuilder(""), ans);
+        if(ans.size()==0) ans.add("-1");
+        return ans;
+    }
+    
+    public void solve(int arr[][], int i, int j, StringBuilder sb, ArrayList<String> ans){
+        if(i==arr.length-1 && j==arr.length-1){
+            StringBuilder temp = new StringBuilder(sb);
+            ans.add(temp.toString());
+            return;
+        }
+        if(i>=arr.length || j>=arr.length) return;
+        arr[i][j]=0;
+        if(i+1<arr.length && arr[i+1][j]==1) {sb.append('D'); solve(arr, i+1, j, sb, ans);sb.deleteCharAt(sb.length()-1);}
+        if(j+1<arr.length && arr[i][j+1]==1) {sb.append('R'); solve(arr, i, j+1, sb, ans);sb.deleteCharAt(sb.length()-1);}
+        if(i-1>=0 && arr[i-1][j]==1) {sb.append('U'); solve(arr, i-1, j, sb, ans);sb.deleteCharAt(sb.length()-1);}
+        if(j-1>=0 && arr[i][j-1]==1) {sb.append('L'); solve(arr, i, j-1, sb, ans);sb.deleteCharAt(sb.length()-1);}
+        arr[i][j]=1;    //backtrack making the cell reavailable
+
+    }
+}
+
+
+/**************************************************************************************************************/
+PS- Password Cracker (Hackerrank)
+passwords: because can do must we what
+loginattempt: wedowhatwemustbecausewecan
+Return the passwords as a single string in the order required for the login attempt to be accepted, each separated by a space. 
+If it is not possible to form the string, return the string WRONG PASSWORD. 
+
+/* MEMOISATION */
+public static String passwordCracker(List<String> passwords, String login) {
+    ArrayList<String> possible = new ArrayList<>();
+    Map<Integer, Boolean> memo = new HashMap<>(); // Memoization map
+    if (solve(passwords, login, 0, new ArrayList<>(), possible, memo)) {
+        return String.join(" ", possible);
+    } 
+    else return "WRONG PASSWORD";
+}
+
+public static boolean solve(List<String> passwords, String login, int start, ArrayList<String> list, ArrayList<String> possible, Map<Integer, Boolean> memo) {
+    if (start == login.length()) {
+        possible.addAll(list);
+        return true;
+    }
+    if(memo.containsKey(start)) return memo.get(start);
+    for (String password : passwords) {
+        int end = start + password.length();
+        if (end <= login.length() && login.substring(start, end).equals(password)) {
+            list.add(password);
+            if (solve(passwords, login, end, list, possible, memo)) {
+                memo.put(start, true);
+                return true;
+            }
+            list.remove(list.size() - 1);  // Backtrack
+        }
+    }
+    memo.put(start, false);
+    return false;
+}
+
+
+/* RECURSION BACKTRACKING TLE */
+public static String passwordCracker(List<String> passwords, String login) {
+    ArrayList<String> possible = new ArrayList<>();
+    if (solve(passwords, login, 0, new ArrayList<String>(), possible)) {
+        return String.join(" ", possible);
+    } 
+    else return "WRONG PASSWORD";
+}
+
+public static boolean solve(List<String> passwords, String login, int start, ArrayList<String> list, ArrayList<String> possible) {
+    if (start == login.length()) {
+        possible.addAll(list);
+        return true;
+    }
+
+    for(String password : passwords) {
+        int end = start + password.length();
+        if (end <= login.length() && login.substring(start, end).equals(password)) {
+            list.add(password);
+            if (solve(passwords, login, end, list, possible)) {
+                return true;
+            }
+            list.remove(list.size() - 1);  // backtrack
+        }
+    }
+    return false;
+}
+
+Follow UP--- possible contaisna ll psosible combinations of words to form password
+/* RECURSION BACKTRACKING TLE */
+public static String passwordCracker(List<String> passwords, String login) {
+    ArrayList<ArrayList<String>> possible = new ArrayList<>();
+    ArrayList<String> currentList = new ArrayList<>();
+    solve(passwords, login, 0, currentList, possible);
+    
+    if (!possible.isEmpty()) {
+        // Return the first valid solution or process as needed
+        return String.join(" ", possible.get(0)); // You may sort or choose which solution to return
+    } else {
+        return "WRONG PASSWORD";
+    }
+}
+
+public static void solve(List<String> passwords, String login, int start, ArrayList<String> list, ArrayList<ArrayList<String>> possible) {
+    if (start == login.length()) {
+        possible.add(new ArrayList<>(list)); // Add a copy of the current valid solution
+        return;
+    }
+
+    for (String password : passwords) {
+        int end = start + password.length();
+        if (end <= login.length() && login.substring(start, end).equals(password)) {
+            list.add(password);
+            solve(passwords, login, end, list, possible); // Continue to explore
+            list.remove(list.size() - 1); // Backtrack
+        }
+    }
+}
+
+
+/****************************************************************************************************/
+PS- N-Queen Problem
+The n-queens puzzle is the problem of placing n queens on a (nxn) chessboard such that no two queens can attack each other.
+Return all distinct solutions to the n-queens puzzle, in form of a list where each element represent the column where it is placed and index represent the row.
+
+/* CODE */
+class Solution {
+    public ArrayList<ArrayList<Integer>> nQueen(int n){
+        int grid[][] = new int[n][n];   
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+        solve(grid, 0, new ArrayList<>(), ans);
+        return ans;
+    }
+    
+    public static void solve(int grid[][], int r, ArrayList<Integer> list, ArrayList<ArrayList<Integer>> ans){
+        if(r==grid.length){
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for(int j=0;j<grid.length;j++){   
+            if(isSafe(grid, r, j)){
+                grid[r][j]=1;   //1 means queen placed
+                list.add(j+1);  //1-indexed
+                solve(grid, r+1, list, ans);
+                grid[r][j]=0;   //backtrack
+                list.remove(list.size()-1); //backtrack
+            }
+        }
+    }
+    
+    public static boolean isSafe(int grid[][], int r, int c){
+        //check upwards for any queen
+        for(int i=r;i>=0;i--){
+            if(grid[i][c]==1) return false;
+        }
+        //check upwards-left diagonally
+        int i=r, j=c;
+        while(i>=0 && j>=0){
+            if(grid[i][j]==1) return false;
+            i--;
+            j--;
+        }
+        //check upwards-right diagonally
+        i=r; j=c;
+        while(i>=0 && j<grid.length){
+            if(grid[i][j]==1) return false;
+            i--;
+            j++;
+        }
+        return true;
+    }
+}
+
+/*
+LOGIC---
+nxn board => n queens => no queens cut each other
+
+LOGIC---
+=>no two queen can have same row and column.
+=>So, each row is going to have one queen. => (each has n choice so => O(n!)
+
+
+APPROACH---
+Since, we have to atleast place a queen in first row. 
+We can start calling our recursive function by putting our first queen in each block of first row.
+
+=> We again iterate the next row and see which blocks are safe and put queen there and move to next row.
+
+=> How to know which row is safe?
+Since we putting queens from top to bottom. Our downward board is unmarked from where we are putting the queen.
+So, instead we just look upwards. Instead of tryign to put the queen where the above already placed queens cannot kill her.
+We say, why not put the queen where the queen to be put is unable to kill the above placed queens.
+So, we only need to look upward, upward-left and upward-right direction(3 directions only).
+If no above queen is killed if we place our queen in that cell then it is safe.
+
+
+=>row=0, column=i => for first queen => we have freedom to loop for first array to place it anywhere
+
+TC-O(n!)
+SC-O(n^2)
+
+*/
+
+FOLLOW UP----
+Print total number of solutions for n queen problem.

@@ -1,0 +1,161 @@
+PS- Minimize Cost GFG WEEKLY 169
+You are given two integer arrays a and b, each of length n. You have to make the two arraysidentical (a should be a permutation of b) 
+by performing a series of swap operations between their elements.
+Choose an index i (1≤ i ≤ n) from array a and index j (1≤ j ≤n) from array b. Swap aj and bj with the cost as min(aj, bj).
+Your task is to minimize the total cost of all swaps needed to make the arrays identical. 
+If it is impossible to make the arrays identical, return -1.
+
+/* CODE */
+class Solution {
+    public static long minCost(int n, int[] a, int[] b) {
+        HashSet<Integer> set = new HashSet<>(); //get all elements in set we need to work with
+        HashMap<Integer, Integer> map1 = new HashMap<>();
+        HashMap<Integer, Integer> map2 = new HashMap<>();
+        for(int i=0;i<n;i++){
+            set.add(a[i]);
+            set.add(b[i]);
+            map1.put(a[i], map1.getOrDefault(a[i], 0) + 1);
+            map2.put(b[i], map2.getOrDefault(b[i], 0) + 1);
+        }
+        ArrayList<Integer> extras = new ArrayList<>();  //exras on which we need to apply swaps
+        for(int x: set){
+            int fa = map1.getOrDefault(x, 0);   //in case a or b do not have that element we give back 0 freq
+            int fb = map2.getOrDefault(x, 0);
+            int diff = Math.abs(fa-fb);
+            if(diff%2!=0) return -1;    //we would never be able to divide or swap elemnts equally => so not possible
+            //if there is a difference, we need to supply the extra half to other array
+            if(diff!=0){
+                for(int i=0;i<diff/2;i++) extras.add(x);
+            }
+        }
+        Collections.sort(extras);    //sort them for organisaed elements so that we have minimum elements in frotn and bigger elements at last
+        //we swap the starting element with the als telemtn of extras, and so on to get minimum cost
+        long ans=0;
+        for(int i=0;i<extras.size()/2;i++){ //we can do this becuase we do not care where the element comes form we care about the final output
+            ans+=Math.min(extras.get(i), extras.get(extras.size()-1-i));    
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+We want to make the two array nay permutations of each other.
+So frequency of each element in array a = frequency of each element in array b
+
+We are allowed to apply swap operation betweeen elements of two arrays 
+=> at a cost of min(a[i], b[i])
+
+We are using map becuase range of elemnts of a and b is very big
+*/
+
+
+
+
+PS- Minimum Swaps To Make Identical Array Coding Ninja
+You are given two arrays, A and B, with the same elements in a different order. 
+Your task is to make B identical to the A by swapping the elements in array B. 
+You have to find out the minimum number of swaps required.
+
+/* CODE */
+/* O(n), O(n) */
+public class Solution {
+    public static int minimumSwaps(int n, int[] a, int[] b) {
+        Map<Integer, Integer> map = new HashMap<>();
+        // Fill the map with elements of array 'a' and their indices
+        for (int i = 0; i < n; i++) {
+            map.put(a[i], i);
+        }
+        int swaps = 0;
+        // Perform swaps to match array 'b' with array 'a'
+        for (int i = 0; i < n; i++) { // Swap elements in 'b' to match with 'a'
+            if (a[i] != b[i]) {
+                int swapIndex = map.get(b[i]);
+                int temp = b[i];
+                b[i] = b[swapIndex];
+                b[swapIndex] = temp;
+                swaps++;
+                i--; // Recheck the new value at index 'i'
+            }
+        }
+        return swaps;
+    }
+}
+
+/*
+LOGIC---
+We can only swaps elements inside B array. Its also given that the two arrays are permutation.
+We need to find minmum number of swaps to be done in array b to make the two equal.
+
+So, let's say you encounter at index i that the two elements in a and b are unequal.
+To change this we send the element in b to the location where it is stored in a, by gettign the inde xform hashmap.
+By implementing this we get the minimum swaps.
+*/
+
+
+
+/************************************************************************************************/
+PS- Find Max Inversions (GFG Weekly 171)
+You are given an array arr[] of size n which contains distinct non negative elements. 
+You want to find out the minimum number of swaps required to get maximum number of inversions.
+Note :- Two array elements arr[i] and arr[j] form an inversion if arr[i] > arr[j] and i<j.
+
+/* CODE */
+class Solution {
+    public static int findswaps(int n, int[] arr) {
+        //Step I: Create a sorted copy of the array in descending order
+        int[] temp = arr.clone();  
+        Arrays.sort(temp);
+        reverse(temp); 
+        //Step II: Create a mapping of values to their indices in the original array
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) map.put(arr[i], i);
+        boolean[] visited = new boolean[n]; // To mark visited elements
+        int swaps = 0;
+        // Loop through each element to find cycles
+        for (int i = 0; i < n; i++) {
+            if(arr[i]!=temp[i]){    //we try to bring the element to its correct place
+                swaps++;
+                int idx = map.get(temp[i]); //curr posiiton of the sorted element
+                //swap indexes in map for the element
+                map.put(arr[i], idx);
+                map.put(temp[i], i);
+                //swap elements in array as well
+                int t=arr[i];
+                arr[i]=arr[idx];
+                arr[idx]=t;
+            }
+        }
+        return swaps;
+    }
+    
+    private static void reverse(int[] arr) {
+        int left = 0, right = arr.length - 1;
+        while (left < right) {
+            int temp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
+            left++;
+            right--;
+        }
+    }
+}
+
+/*
+LOGIC---
+An array will have maximum inversion if its in descending order. example tc-2
+
+So, just find the no of swaps to make array descending order.
+
+APPROACH---
+Step I: Make a sorted array in reverse order => descending to compare how our final array should look like
+Step II: Make a hashmap with indexes of actual unsorted array
+Step III: decide whether to swap or not
+*/
+
+
+/*****************************************************************************************************/
+
+PS- Min Swaps For All Elements to Be The Same || Google OA 2019
+1007. Minimum Domino Rotations For Equal Row
+

@@ -1,0 +1,273 @@
+PS- Validate distribution (GFG weekly 170)
+Given an array of candies. Tell whether you can distribute candies such that bob gets twice what alice gets.
+
+/* CODE */
+class Solution {
+    public static int isValid(int n, int[] arr) {
+        int sum = 0;
+        for (int sweet : arr) {
+            sum += sweet;
+        }
+        // If total sum is not divisible by 3, return 0 => possible to divide into x and 2x => x in three parts
+        if (sum % 3 != 0) return 0;
+        int half = sum / 3;
+        boolean dp[][] = new boolean[n+1][sum+1];
+        if (solve(n, arr, 0, 0, half, dp)) return 1;
+        else return 0;
+    }
+    
+    public static boolean solve(int n, int[] arr, int idx, int currsum, int half, boolean dp[][]){
+        if (currsum == half) return true;
+        if (idx >= n || currsum > half) return false;
+        if (dp[idx][currsum]==true) return dp[idx][currsum];
+        // Explore the possibility of including the current candy in the half or not
+        // boolean take = solve(n, arr, idx + 1, currsum + arr[idx], half, dp);    //put in half
+        // boolean notTake = solve(n, arr, idx + 1, currsum, half, dp);    //do not put in half
+        // return dp[idx][currsum] = take || notTake;
+        return dp[idx][currsum] = solve(n, arr, idx + 1, currsum + arr[idx], half, dp) || solve(n, arr, idx + 1, currsum, half, dp);
+    }
+}
+
+/*
+ * LOGIC---
+ * We are to make two kinds of sum(x) such that x + 2*x = sum of array
+ * With the given array tell whether such x and 2*x can exist or not.
+ * 
+ * So, we have a choice when iterating over array, either we put arr[i] to the half or either we don't (indirectly sayign we add it to the double x).
+ *
+ * This is usally referred to as subset sum dp problem. Where we fidn the sum of a specific subset based on conditin.
+ * /
+
+
+ /***********************************************************************************************/
+PS- Sherlock and Cost(Hackerrank)
+Find the maximum sum of difference of absolute of adjacent eelemnts of array A which is constructed from array B.
+An element of arr A can be anything between 1<=A[i]<=B[i]. 
+
+/* CODE */
+/* GREEDY + DP */
+public static int cost(List<Integer> b){
+        int n=b.size();
+        int dp[][] = new int[n][2];
+        dp[0][0]=0; //there is no back element so sum will still be 0
+        dp[0][1]=0; //there is no back element so sum will still be 0
+        for(int i=1;i<b.size();i++){
+            dp[i][0]=Math.max(dp[i-1][0]+Math.abs(1-1), dp[i-1][1]+Math.abs(1-b.get(i-1)));
+            dp[i][1]=Math.max(dp[i-1][0]+Math.abs(b.get(i)-1), dp[i-1][1]+Math.abs(b.get(i)-b.get(i-1)));
+        }
+        return Math.max(dp[n-1][0], dp[n-1][1]);
+    }
+    
+/*
+LOGIC---
+Why pure dp fails with TLE?
+Pure dp will give you TLE. Constraints high.
+TC of recursion- O(m)^n => where m is the maximum value in list b and n is the size of list b. 
+Now see contraint of n is very high.
+
+NEW APPROACH--- GREEDY + DP
+Why greedy?
+Consider b=[2,4]
+Now a=[(1,2), (1,4)]
+For maximum sum to occur we would want a[0] to be minimum and a[1] be maximum.
+a[0]=1 = 1
+a[1]=4 = b[1]
+sum = ABS(a[1]-a[0]) = 4-1 = 3
+Don't forget our sum is absolute so we are only adding magnitude of differences.
+
+Now let's take another example:
+b=[2,4,3]
+a[0]=1
+a[1]=4
+ABS(a[1]-a[0]) => 4-1 = 3 till now this can be maximum reached sum
+Now, a[2]=1 => why,
+because we want now a[2]-a[1]
+Since a[2] is already maximised it makes sense to take a[1] minimum.
+ABS(a[2]-a[1]) = abs(1-4) = 3
+totalsum=3+3 = 6
+
+Now from here we know array have two choices to be a[i] = 1 or b[i]
+
+Hence we can write a greedy dp tabulation solution
+dp[b.size][2] => why 2 to represent the above two choices which to choose
+dp[i][0]=1
+dp[i][1]=b[i]
+
+The dp array stores the maximum sum up to each index i with two states:
+dp[i][0]: Maximum cost if the ith element is set to 1.
+dp[i][1]: Maximum cost if the ith element is set to B[i].
+
+So,
+dp[i][0] : a[i]=1 : 2 cases
+->maxsum will be same as maxsum till i-1 becuase we took both a[i-1]=1 and a[i]=1 
+    =>we can simply write it as dp[i][0]=dp[i-1][0]
+    =>read it as maxsum till i-1 when a[i-1]=1 and adding currsum(Math.abs(1,1))
+->maxsum will be made when we took a[i-1]=b[i-1] and for a[i]=1 
+    =>dp[i][0]=dp[i-1][1] + Math.abs(1-b[i-1]) 
+    =>read it as maxsum till i-1 when a[i-1]=b[i-1] + currsum(|a[i]-a[i-1]|) => where a[i]=1 and a[i-1]=b[i-1]
+
+dp[i][1]: a[1]=b[i] : 2 cases
+->maxsum when we took both a[i-1]=b[i-1] and a[i]=b[i] 
+    =>dp[i][1]=dp[i-1][1] + Math.abs(b[i]-b[i-1])
+    =>read it as maxsum till i-1 when a[i-1]=b[i-1] adding with currsum(Math.abs(a[i]-a[i-1]))
+->maxsum when we took a[i-1]=1 and a[i]=b[i]
+    =>dp[i][1]=dp[i-1][0] + Math.abs(b[i]-1)
+    =>read it as maxsum till i-1 when a[i-1]=1 adding with currsum(Math.abs(a[i]-a[i-1]))
+
+In fact if you plot arr a on graph it will be triangles 1,b[i],1,b[i],1,b[i] and so on....
+*/
+
+
+/* RECURSION TLE */
+public static int cost(List<Integer> b) {
+    return solve(b, new ArrayList<Integer>(), 0);
+}
+
+public static int solve(List<Integer>b, List<Integer> a, int idx){
+    if(a.size()==b.size()){
+        int sum=0;
+        for(int i=1;i<a.size();i++) sum+=Math.abs(a.get(i)-a.get(i-1));
+        return sum;   
+    }
+    int maxsum=0;
+    for(int x=1;x<=b.get(idx);x++){
+        a.add(x);
+        maxsum=Math.max(maxsum, solve(b, a, idx+1));
+        a.remove(a.size()-1);
+    }
+    return maxsum;
+}
+
+/* MEMOISATION TLE */
+public static int cost(List<Integer> b){
+    HashMap<String, Integer> map = new HashMap<>();
+    return solve(b, new ArrayList<Integer>(), 0, map);
+}
+
+public static int solve(List<Integer>b, List<Integer> a, int idx, HashMap<String, Integer> map){
+    if(a.size()==b.size()){
+        int sum=0;
+        for(int i=1;i<a.size();i++) sum+=Math.abs(a.get(i)-a.get(i-1));
+        return sum;   
+    }
+    // Generate a key for the current state
+    String key = idx + ":" + a.toString();
+    if(map.containsKey(key)) return map.get(idx);
+    int maxsum=0;
+    for(int x=1;x<=b.get(idx);x++){
+        a.add(x);
+        maxsum=Math.max(maxsum, solve(b, a, idx+1, map));
+        a.remove(a.size()-1);
+    }
+    map.put(a.toString(), maxsum);
+    return maxsum;
+}
+
+
+
+
+/******************************************************************************************************/
+PS- Minimize the Heights II [ADOBE]
+Given an array arr[] denoting heights of N towers and a positive integer K, 
+you have to modify the height of each tower either by increasing or decreasing them by K only once.
+Find out what could be the possible minimum difference of the height of shortest and longest towers after you have modified each tower.
+Note: Assume that height of the tower can never be negative and its necessary to apply operations on all.
+
+/* CODE */
+class Solution {
+    int getMinDiff(int[] arr, int k) {
+        Arrays.sort(arr);
+        int ans=arr[arr.length-1] - arr[0];
+        int smallest = arr[0]+k;
+        int largest=arr[arr.length-1]-k;
+        for(int i=0;i<arr.length-1;i++){    //travel till n-2 elements only
+            int min = Math.min(smallest, arr[i+1]-k);
+            int max = Math.max(largest, arr[i]+k);
+            if(min>=0) ans=Math.min(ans, max-min);  //negative heights not allowed
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Goal: minimise the differnece between the largest and smallest
+
+min = larges - smallest
+so, to decrease min we need to make our largest smaller and increase our smallest.
+
+Operation: choose +k and -k to apply to the array.
+
+Sorted array [ a...... b]
+min=b-a
+
+Now to minimise min we can push a a bit forward and b a bit to right.
+
+This can be done by a+k and b-k
+min = b-k - (a+k) = b-a -2k
+
+But its also possible that if we push a alittle too much to right, 
+it may no longer remain the smallest element, and the same goes for b.
+Both smallst and largest might change to something else.
+
+arr = [....a+k.....b-k....] So, a+k and b-k no longer cna be used as min, 
+becasue min is the difference between the largest and smallest element in array.
+
+So, we need to actually find the pivot where a+k might not remain the smallest or b-k might not remain the largest.
+
+Condition: the height always needs to remain positive.
+So, we can't have arr[0]-k<0 or rather in general arr[i]-k<0 shouldn't happen
+=> in fact this is our pivot till where we have only choice to do +k.
+
+eg:
+[a,p,q,r,b]
+smallest = a+k
+As for p -> we have two option p+k and p-k.
+But what if p-k<0 so we can't do -k. So, p cna be only transformed to p+k
+So, p is our pivot at index i.
+
+Now for q let's say both +k and -k are feasible.
+So, what if q-k<a+k => can be possible
+So, if p was our pivot say at index i. then q will be at i+1
+We need to update min = Math.min(arr[0]+k, q-k) = Math.min(arr[0]+k, arr[i+1]-k);
+
+Now same goes for largest
+largest=b-k
+Now r has two choices +k, -k
+So, what if r+k>b-k
+We need to update max = Math.max(arr[n-1]-k, r+k)
+Since any elements can work as our r
+max = Math.max(arr[n-1]-k, arr[i]+k)
+So, we iterate through whole array except for the last element, never makes ense to do arr[n-1]+k to fetch our ans and it will also push min out of bound
+
+Now in code since we are considering every element to be treated as q (next eleemnt to pivot)
+we only calculate our min answer when min>=0.
+
+Why we calculate intial ans without +k,-k updateion, case : arr=[1,1,1,1], ans=1-1=0
+In this situation we do all +k or -k doesn't matter effect is neutralised.
+
+TC-O(nlogn)
+SC-O(1)
+
+
+FOLLOW UP----
+What if negative heights were allowed.
+Just remove this condition - if(min>=0) 
+*/
+
+
+/* CODE CAN BE ADJUSTED TO MORE ELEGANCY */
+class Solution {
+    int getMinDiff(int[] arr, int k) {
+        Arrays.sort(arr);
+        int ans=arr[arr.length-1] - arr[0];
+        int smallest = arr[0]+k;
+        int largest=arr[arr.length-1]-k;
+        for(int i=1;i<arr.length;i++){
+            int min = Math.min(smallest, arr[i]-k);
+            int max = Math.max(largest, arr[i-1]+k);
+            if(min>=0) ans=Math.min(ans, max-min);
+        }
+        return ans;
+    }
+}

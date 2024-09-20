@@ -1,0 +1,106 @@
+import java.util.*;
+public class Solution {
+    public static void main(String[] args) {
+        Scanner sc=  new Scanner(System.in);
+        int t = sc.nextInt();
+        String arr[] = new String[t];
+        for(int i=0;i<t;i++) arr[i]=sc.next();
+        //System.out.println(Arrays.toString(arr));
+        ArrayList<String> ans = new ArrayList<>();
+        int idx=0;
+        String dis = "";
+        HashMap<String, Integer> map = new HashMap<>();
+        HashSet<String> set = new HashSet<>();
+        while(idx<arr.length){
+            String s = arr[idx];
+            if(s.substring(0,4).equals("VISA") || s.substring(0,6).equals("PAYPAL") || 
+                s.substring(0,4).equals("AMEX") || s.substring(0,3).equals("JCB")){
+                    if(s.charAt(0)=='J') dis="JCB";
+                    else if(s.charAt(0)=='V') dis="VISA";
+                    else if(s.charAt(0)=='P') dis="PAYPAL";
+                    else if(s.charAt(0)=='A') dis="AMEX";
+                    
+                    idx++;
+                    String s1 = arr[idx];
+                    String temp[] = s1.split(",");
+                    for(int i=0;i<temp.length;i++){
+                        map.put(temp[i],i);
+                    }
+            }
+            else{
+                String trans[]= s.split(",");
+                if(!isWholeNumber(trans[map.get("amount")])){
+                    idx++;
+                    continue;
+                }
+                if(!isWholeNumber(trans[map.get("evidence_due_by")])){
+                    idx++;
+                    continue;
+                }
+                StringBuilder sb = new StringBuilder("");
+                sb.append(dis);
+                sb.append(trans[map.get("transaction")]);
+                sb.append(",");
+                sb.append(trans[map.get("merchant")]);
+                sb.append(",");
+                int amt = Integer.parseInt(trans[map.get("amount")]);
+                String curr = trans[map.get("currency")];
+                double amtf=0;
+                if(curr.equals("JPY") || curr.equals("ISK") || curr.equals("KRW")){
+                    amtf=amt/1.0;
+                }
+                else if(curr.equals("EUR") || curr.equals("USD") || curr.equals("SGD") || curr.equals("BRL")){
+                    amtf=amt/100.00;  
+                }
+                else{
+                    idx++;
+                    continue;
+                }                    
+                String now = String.format("%.2f", amtf)+curr;
+                sb.append(now);
+                sb.append(",");
+                sb.append(trans[map.get("evidence_due_by")]);
+                if(set.contains(trans[map.get("transaction")])){
+                    if(trans[map.get("reason")].equals("withdrawn")){
+                        ans.removeIf(st -> st.contains(trans[map.get("transaction")]));
+                        idx++;
+                        continue;
+                    }
+                }
+                set.add(trans[map.get("transaction")]);
+                ans.add(sb.toString());
+            }
+            idx++;
+        }
+        
+        Collections.sort(ans, new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                String prefix1 = s1.split(",")[0];
+                String prefix2 = s2.split(",")[0];
+                return prefix1.compareTo(prefix2);
+            }
+        });
+        
+        for(int i=0;i<ans.size();i++){
+            System.out.println(ans.get(i));
+        }
+    }
+    
+        public static boolean isWholeNumber(String str) {
+        if (str.equals("0") || str == null || str.isEmpty()) return false;
+        return str.matches("\\d+");
+    }
+}
+
+/*
+8
+VISA_20236662.csv
+transaction,merchant,amount,currency,evidence_due_by,reason
+123890132,47821,37906,USD,1686812400,fraudulent
+116450953,63724,12758,JPY,1686898800,withdrawn
+VISA_26230601.csv
+transaction,merchant,currency,amount,evidence_due_by,reason
+116450953,63724,JPY,12750,1686898860,duplicate
+123890132,47821,USD,37986,1686812400,withdrawn
+*/
