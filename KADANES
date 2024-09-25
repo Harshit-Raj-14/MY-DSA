@@ -27,7 +27,8 @@ Case2 :- Array have positive and negative elements both :
 =>If the number of negative elements is odd then you have to remove just one negative element and for that you need to check your subarrays to get the max product.
 In fact the problem is all about solving odd number of negative elements
 
-Case3 :- Array also contains 0 : Then there will be not much difference...its just that your array will be divided into subarray around that 0. This is like breaking the problem into two differnet same problems and starting again.So, when you encounter 0, reset your max and min to nums[i+1]. 
+Case3 :- Array also contains 0 : Then there will be not much difference...its just that your array will be divided into subarray around that 0. This is like breaking the problem into two differnet same problems and starting again.
+So, when you encounter 0, reset your max and min to nums[i+1]. 
 Or, rather, just as soon as your product becomes 0 make it 1 for the next iteration, now you will be searching new subarray and previous max will already be updated.
 
 Observation---
@@ -40,13 +41,14 @@ ans=2x3x-2x-5x6
 But what you notice is that the positive products that can be found as subarray are(specifically containg odd numbers becuase that's what we are interested in):
 =>you can remove the odd negative -1:  [2,3,-2,-5,6]
 => you can remove the odd negative -2: [-5,6,-1,4]
-=> can you try removing -5: [2,3] or [6], [4] => theseare the only +ve product subarrays
+=> can you try removing -5: [2,3] or [6], [4] => these are the only +ve product subarrays
 
-We can't specifically remove -5 becuse it comes in te middle of the series of odds specficially. This will not allow us to take help of even odd numbers.
+We can't specifically remove -5 becuse it comes in the middle of the series of odds specficially. This will not allow us to take help of even odd numbers.
 
-So, technically what we saw from the above example by rmeoving odds from the left most side or rightmost side is a valid move to get rid of the odd-th negaative while making comparisons. [just think you answer could have been differnet if instead of -1. we had -10 over there]. So, we ened to look both sides.
+So, technically what we saw from the above example by rmeoving odds from the left most side or rightmost side is a valid move to get rid of the odd-th negative while making comparisons. 
+[just think you answer could have been differnet if instead of -1. we had -10 over there]. So, we need to look both sides.
 
-Yoiu can again think of a scenario of all odd numbers in an odd legth array. then our maxproduct will be a subarray leaving out eithe rthe first element or the last element.
+You can again think of a scenario of all odd numbers in an odd legth array. then our maxproduct will be a subarray leaving out either the first element or the last element.
 
 IMPORTANT----
 In fact this points us in the direction that we need to find a prefix product and a suffix product to be maintained.

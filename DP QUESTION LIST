@@ -1,0 +1,91 @@
+Well, this list will make your life easy (All you need to Master DP from A-Z)
+
+
+2. Kadane's Algorithm
+ - Maximum Sum Circular Subarray
+
+
+3. 0/1 Knapsack
+ - Partition Equal Subset Sum
+ - Target Sum
+ - Last Stone Weight II
+
+4. Unbounded Knapsack
+ - Coin Change 2
+ - Perfect Squares
+
+5. Longest Common Subsequence (LCS)
+ - Longest Common Subsequence
+ - Delete Operation for Two Strings
+ - Shortest Common Supersequence
+
+6. Longest Increasing Subsequence (LIS)
+ - Longest Increasing Subsequence
+ - Number of Longest Increasing Subsequence
+ - Russian Doll Envelopes
+
+7. Palindromic Subsequence
+ - Longest Palindromic Subsequence
+ - Palindromic Substrings
+ - Minimum Insertion Steps to Make a String Palindrome
+
+8. Edit Distance
+ - Edit Distance
+ - Delete Operation for Two Strings
+ - Minimum ASCII Delete Sum for Two Strings
+
+9. Subset Sum
+ - Partition Equal Subset Sum
+ - Target Sum
+ - Partition to K Equal Sum Subsets
+
+10. String Partition
+ - Word Break
+ - Palindrome Partitioning II
+ - Concatenated Words
+
+11. Catalan Numbers
+ - Unique Binary Search Trees
+
+
+12. Matrix Chain Multiplication
+ - Minimum Score Triangulation of Polygon
+ - Burst Balloons
+ - Minimum Cost to Merge Stones
+
+13. Count Distinct Ways
+ - Decode Ways
+ - Count Number of Texts
+
+14. DP on Grids
+ - Unique Paths
+ - Minimum Path Sum
+ - Longest Increasing Path in a Matrix
+
+15. DP on Trees
+ - House Robber III
+ - Binary Tree Maximum Path Sum
+ - Binary Tree Cameras
+
+16. DP on Graphs
+ - Cheapest Flights Within K Stops
+ - Find the City With the Smallest Number of Neighbors at a Threshold Distance
+
+17. Digit DP
+ - Count Numbers With Unique Digits
+ - Number of Digit One
+ - Numbers At Most N Given Digit Set
+
+18. Bitmasking DP
+ - Minimum Number of Work Sessions to Finish the Tasks
+ - Fair Distribution of Cookies
+ - Shortest Path Visiting All Nodes
+
+19. Probability DP
+ - Knight Probability in Chessboard
+ - Soup Servings
+ - New 21 Game
+
+20. State Machine DP
+ - Best Time to Buy and Sell Stock With Cooldown
+ - Best Time to Buy and Sell Stock III

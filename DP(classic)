@@ -1,4 +1,4 @@
-PS-
+PS- PALINDROME PARTITIONING
 
 /* CODE */
 /* MEMOISATION */
@@ -57,3 +57,226 @@ SC- O(2^n * n)
 */
 
 
+
+/****************************************************************************************************/
+PS- 322. Coin Change
+
+/* CODE */
+
+/* MEMOISATION */
+class Solution {
+    public int coinChange(int[] coins, int amt){
+        int dp[][] = new int[13][10001];
+        for(int row[] : dp) Arrays.fill(row, -1);
+        int ans=solve(coins, amt, 0, dp);
+        if(ans>=10000000)return -1;
+        return ans;
+    }
+
+    public int solve(int coins[], int amt, int i, int dp[][]){
+        if(amt==0) return 0;
+        if(i>=coins.length || amt<0) return 10000000;
+        if(dp[i][amt]!=-1) return dp[i][amt];
+        int not_take=solve(coins,amt,i+1, dp);
+        int take=10000000;
+        if(coins[i]<=amt){
+            take=1+solve(coins,amt-coins[i],i, dp);
+        }
+
+        return dp[i][amt] = Math.min(take, not_take);
+    }
+}
+
+
+/* RECURSION  */
+class Solution {
+    public int coinChange(int[] coins, int amt) {
+        int ans=solve(coins, amt, 0);
+        if(ans>=10000000)return -1;
+        return ans;
+    }
+
+    public int solve(int coins[], int amt, int i){
+        if(amt==0) return 0;
+        if(i>=coins.length)return 10000000;
+        int not_take=solve(coins,amt,i+1);
+        int take=10000000;
+        if(coins[i]<=amt){
+            take=1+solve(coins,amt-coins[i],i);
+        }
+
+        return Math.min(take, not_take);
+    }
+}
+
+
+
+/*******************************************************************************************************/
+PS- 70. Climbing Stairs
+
+/* CODE */
+/* TABULATION DP O(n) */
+class Solution {
+    public int climbStairs(int n) {
+        if(n==1) return 1;
+        int dp[] = new int[n+1];
+        dp[1]=1;
+        dp[2]=2;
+        for(int i=3;i<=n;i++){
+            dp[i]=dp[i-1]+dp[i-2];
+        }
+        return dp[n];
+    }
+}
+
+LOGIC ---
+recurrence relation :
+dp[n] = dp[n-1] + dp[n-2]
+dp[n-1] -> by a jump of 1
+dp[n-2] -> by a jump of 2
+
+
+/* ELEGANT SOLUTION TABULATION  USING CONSTRAINTS */
+class Solution {
+    public int climbStairs(int n) {
+        int dp[] = new int[46]; //based on constraints
+        dp[1]=1;
+        dp[2]=2;
+        for(int i=3;i<=n;i++){
+            dp[i]=dp[i-1]+dp[i-2];
+        }
+        return dp[n];
+    }
+}
+
+
+/* ELEGANT SOLUTION TABULATION  USING ARRAYLIST */
+class Solution {
+    public int climbStairs(int n) {
+        ArrayList<Integer> dp = new ArrayList<>();
+        dp.add(0);  //dp[0]
+        dp.add(1);  //dp[1]
+        dp.add(2);  //dp[2]
+        for(int i=3;i<=n;i++){
+            dp.add(dp.get(i-1)+dp.get(i-2));
+        }
+        return dp.get(n);
+    }
+}
+
+
+/* MEMOISATION DP */
+class Solution {
+    public int climbStairs(int n) {
+        int dp[]= new int[n+1];
+        Arrays.fill(dp,-1);
+        return ways(n,dp);
+    }
+
+    public int ways(int n, int dp[]){
+        if(n==0) return 1;
+        if(n<0) return 0;
+        if(dp[n]!=-1) return dp[n];
+        dp[n]=ways(n-1,dp) + ways(n-2,dp);
+        return dp[n];
+    }
+}
+
+
+/* RECURSION O(2^n) TLE */
+class Solution {
+    public int climbStairs(int n) {
+        if(n==0) return 1;
+        if(n<0) return 0;
+        return climbStairs(n-1)+climbStairs(n-2);
+    }
+}
+
+/****************************************************************************************************/
+PS- 746. Min Cost Climbing Stairs
+
+/* TABULATION DP */
+class Solution {
+    public int minCostClimbingStairs(int[] cost) {
+        //steps 0 indexed
+        int n=cost.length;  //top=cost.length
+        int dp[] = new int[cost.length+1];  //dp will contain the cost to reach that stair
+        dp[0]=0;   //to reach 0 costs 0
+        dp[1]=0;   //to reach 1 cost 0 since we are starting from 1
+        if(cost.length>1) dp[2]=Math.min(dp[1]+cost[1], dp[0]+cost[0]);
+        if(cost.length>2) dp[3]=Math.min(dp[2]+cost[2], dp[1]+cost[1]);
+        for(int i=4;i<dp.length;i++){
+            dp[i]=Math.min(dp[i-1]+cost[i-1], dp[i-2]+cost[i-2]);
+        }
+        return dp[cost.length];
+    }
+}
+
+LOGIC ---
+You only pay when you have to climb from it
+
+GENERAL FORMULA---
+dp[i]=Math.min(dp[i-1]+cost[i-1], dp[i-2]+cost[i-2]);
+
+by jump of 1 => dp[i-1]+cost[i-1] => cost to reach i-1 stair and making a jump form it
+by jump of 2 => dp[i-2]+cost[i-2] => cost to reach i-2 stair and making a jump form it
+
+
+/*****************************************************************************************************/
+PS- 91. Decode Ways
+Given a string s containing only digits, return the number of ways to decode it. 
+If the entire string cannot be decoded in any valid way, return 0.
+
+/* CODE */
+/* MEMOISATION O(n), O(n) */
+class Solution {
+    public int numDecodings(String s){
+        int dp[] = new int[s.length()];
+        Arrays.fill(dp, -1);
+        return solve(s, 0, dp);
+    }
+
+    public static int solve(String s, int i, int dp[]){
+        if(i==s.length()) return 1;
+        if(s.charAt(i)=='0') return 0;  //invalid string => string exist from 1 to 26, only 10 ans 20 has 0
+        if(dp[i]!=-1) return dp[i];
+        int one = solve(s, i+1, dp);    //encode single digit
+        int two=0;
+        if(i+1<s.length() && Integer.parseInt(s.substring(i, i+2))<=26){    //encode two digit while making sure valid number between 1 to 26 
+            two = solve(s, i+2, dp);
+        }
+        return dp[i]=one+two;
+    }
+}
+
+
+/* RECURSION TLE O(2^n), */
+class Solution {
+    public int numDecodings(String s){
+        return solve(s, 0);
+    }
+
+    public static int solve(String s, int i){
+        if(i==s.length()) return 1;
+        if(s.charAt(i)=='0') return 0;  //invalid string => string exist from 1 to 26, only 10 ans 20 has 0
+        int one = solve(s, i+1);    //encode single digit
+        int two=0;
+        if(i+1<s.length() && Integer.parseInt(s.substring(i, i+2))<=26){    //encode two digit
+            two = solve(s, i+2);
+        }
+        return one+two;
+    }
+}
+
+/*
+LOGIC---
+Decoding : a->1,....b->26
+For example, "11106" can be decoded into:
+    "AAJF" with the grouping (1, 1, 10, 6)
+    "KJF" with the grouping (11, 10, 6)
+    The grouping (1, 11, 06) is invalid because "06" is not a valid code (only "6" is valid).
+
+Hence we have choice to choose only one digit or two digit.
+*/
+
+/* TABULATION */

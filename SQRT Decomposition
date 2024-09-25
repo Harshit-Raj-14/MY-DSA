@@ -1,0 +1,118 @@
+Given an arr with elements a1 to an.
+You are given two types of q queries:
+1) Find sum of range l to r
+2) change a[x]=y
+
+TECHNIQUE I:
+-> iterate array from l to r and find sum -> O(q) * O(n)
+-> change arr[x]=y -> O(q) * O(1)
+
+TECHNIQUE II:
+Find prefix sum of array.
+
+-> sum in l to r = prefix[r] - prefix[l-1] -> O(q) * O(1)
+-> update prefix sum -> update all values of prefix sum from x to n -> O(q) * O(n)
+
+Did you see trying to optimise the first query made our second query go bad.
+
+So, we need to come up with some trade-off to minimise the TC in both cases without one being completely O(n).
+
+And this balance is called Square Root Decomposition.
+Find Sum -> O(sqrt(n))
+Changing value -> O(sqrt(n))
+
+So, 
+Method -> TC
+MI ->   O(qn)
+MII ->  O(qn)
+MIII -> O(qsqrt(n))
+
+TECHNIQUE III:
+Square Root Decomposition -> is a combination of technique I and II
+Step I: Divide the array into blocks of size of sqrt(n).
+And at max we can have sqrt(n) blocks.
+total no of blocks = n/(sqrt(n)) = sqrt(n)
+IMPORTANT - Only blockwise prefix sum is calculated.
+
+
+SUM QUERY---
+sum range = Whole block sums falling in that range + 2 incomplete blocks that can occur on either side
+=O(sqrt(n)) + O(1)
+TC - O(sqrt(n)) there are sqrt(n) blocks to iterate to calculate sum
+
+CHANGE QUERY---
+Change in one block
+=> length of 1 block is atmost sqrt(n)
+=> at any position in tha tblock update to x, and apply the same change till where that block ends, no more than that
+TC - O(sqrt(n)) -> size of block is sqrt(n) to iterate
+
+
+
+/*********************************************************************************************************/
+PS- Dynamic Range Sum Queries [CSES]
+Given an array of n integers, your task is to process q queries of the following types:
+1 -> update the value at position k to u
+2 -> what is the sum of values in range [a,b]?
+The first input line has two integers n and q: the number of values and queries.
+The second line has n integers x1,x2,...,xn: the array values.
+Finally, there are q lines describing the queries. Each line has three integers: either "1 k u" or "2 a b".
+Print the result of each query of type 2.
+
+/* CODE */
+/* SQRT DECOMPOSITION */
+import java.util.*;
+public class Main {
+    static final int LIM = 300010;
+    static long[] prefixsum = new long[LIM];
+    static long[] arr = new long[LIM];
+    
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int q = sc.nextInt();
+        for (int i = 0; i < n; i++) {
+            prefixsum[i] = arr[i] = sc.nextLong();
+        }
+        final int BLOCK_SIZE = 300;
+        for (int i = 1; i < n; i++) {
+            if (i % BLOCK_SIZE != 0) {
+                prefixsum[i] += prefixsum[i - 1];
+            }
+        }
+        
+        while (q-- > 0) {
+            int type = sc.nextInt();
+            if (type == 1) {
+                int ind = sc.nextInt() - 1;
+                long val = sc.nextLong();
+                change(ind, val, n, BLOCK_SIZE);
+            } 
+            else {
+                int l = sc.nextInt() - 1;
+                int r = sc.nextInt() - 1;
+                System.out.println(findSum(l, r, n, BLOCK_SIZE));
+            }
+        }
+        sc.close();
+    }
+    
+    static long findSum(int l, int r, int n, int BLOCK_SIZE) {
+        long sum = (l % BLOCK_SIZE == 0) ? 0 : -prefixsum[l - 1];
+        while (l / BLOCK_SIZE < r / BLOCK_SIZE) {
+            int end = Math.min(n - 1, (l / BLOCK_SIZE) * BLOCK_SIZE + BLOCK_SIZE - 1);
+            sum += prefixsum[end];
+            l = end + 1;
+        }
+        sum += prefixsum[r];
+        return sum;
+    }
+
+    static void change(int ind, long x, int n, int BLOCK_SIZE) {
+        x -= arr[ind];  //find out how much arr[idx] prev differed by new value
+        arr[ind] += x;
+        int end = Math.min(n-1, (ind/BLOCK_SIZE)*BLOCK_SIZE + BLOCK_SIZE-1);    //increment the diff in the prefixsum for that block till the end
+        for (int i = ind; i <= end; i++) {
+            prefixsum[i] += x;
+        }
+    }
+}

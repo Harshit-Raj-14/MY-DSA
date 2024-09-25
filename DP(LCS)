@@ -283,3 +283,35 @@ characters same - dp[D]=A
 
 characters different - dp[D] = Math.min(C,B) + 1
 */
+
+
+/********************************************************************************************************/
+PS- Longest Common Substring
+Your task is to find the length of the longest common substring among the given string s1 and s2.
+
+/* CODE */
+class Solution {
+    public int longestCommonSubstr(String s1, String s2) {
+        int dp[][] = new int[s1.length()+1][s2.length()+1];
+        int ans=0;
+        for(int i=1;i<dp.length;i++){   
+            for(int j=1;j<dp[0].length;j++){
+                if(s1.charAt(i-1)==s2.charAt(j-1)){
+                    dp[i][j]=1+dp[i-1][j-1];
+                    ans=Math.max(ans, dp[i][j]);
+                }
+                else dp[i][j]=0;    //reset
+            }
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Think as per the LCS table
+Simply apply LCS
+first row and first column filled with 0
+
+SIMILAR PROBLEM - 718. Maximum Length of Repeated Subarray instead of string we are given arrays
+*/

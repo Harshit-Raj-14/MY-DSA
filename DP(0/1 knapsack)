@@ -1,0 +1,39 @@
+PS- 0 1 Knapsack 
+A thief wants to rob a store. He is carrying a bag of capacity W. The store has ‘n’ items. Its weight is given by the ‘wt’ array and its value by the ‘val’ array. He can either include an item in its knapsack or exclude it but can’t partially have it as a fraction. We need to find the maximum value of items that the thief can steal.
+
+/* CODE */
+/* MEMOISATION O(N*W) */
+public class Solution{
+    static int knapsack(int[] weight, int[] value, int n, int w) {
+        int dp[][] = new int[weight.length+1][w+1];
+        for(int row[]:dp) Arrays.fill(row, -1);
+        return solve(weight, value, w, 0, dp);
+    }
+
+    public static int solve(int weight[], int value[], int w, int i, int dp[][]){
+        //if(w==0) return 0; not required
+        if(i>=weight.length || w<0) return 0;
+        if(dp[i][w]!=-1) return dp[i][w];
+        int not_take = solve(weight, value, w, i+1, dp);
+        int take = 0;
+        if(i<weight.length && weight[i]<=w) take = value[i] + solve(weight, value, w-weight[i], i+1, dp);
+        return dp[i][w]=Math.max(take, not_take);
+    }
+}
+
+
+/* RECURSION TLE */
+public class Solution{
+    static int knapsack(int[] weight, int[] value, int n, int w) {
+        return solve(weight, value, w, 0);
+    }
+
+    public static int solve(int weight[], int value[], int w, int i){
+        //if(w==0) return 0; not required
+        if(i>=weight.length || w<0) return 0;
+        int not_take = solve(weight, value, w, i+1);
+        int take = 0;
+        if(i<weight.length && weight[i]<=w) take = value[i] + solve(weight, value, w-weight[i], i+1);
+        return Math.max(take, not_take);
+    }
+}

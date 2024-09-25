@@ -5,7 +5,7 @@ Find the maximum sum of a path from the beginning of any array to the end of any
 You can switch from one array to another array only at the common elements, but when you switch you need to consider the common element only once in the result.
 
 /* CODE */
-class Solution {
+class Solution{
     public int maxPathSum(List<Integer> arr1, List<Integer> arr2) {
         int n=arr1.size();
         int m=arr2.size();
@@ -139,4 +139,109 @@ CaseIII:
  
 Now how we can achieve doing case III in O(n) using two pointer
 where we check at each position which first nad last combination is fruitful
+*/
+
+
+
+
+/*****************************************************************************************************/
+PS- Smallest window in a string containing all the characters of another string
+Given two strings s and p. Find the smallest window in the string s consisting of all the characters(including duplicates) of the string p.  
+Return "-1" in case there is no such window present. 
+In case there are multiple such windows of same length, return the one with the least starting index.
+
+Input: s = "timetopractice", p = "toc"
+Output: toprac
+
+/* CODE */
+/* TWO POINTER + SLIDING WINDOW  OPTIMIZEED */
+class Solution{
+    public static String smallestWindow(String s, String p){
+        int countp[] = new int[26];
+        for(int i=0;i<p.length();i++) countp[p.charAt(i)-'a']++;
+        String ans="-1";
+        int len=Integer.MAX_VALUE;
+        int l=0;
+        int r=0;
+        int counts[] = new int[26];
+        while(r<s.length()){
+            counts[s.charAt(r)-'a']++; //updating frequency of s in count
+            while(check(counts, countp)){   //once equality found, start checking can we make the window smaller by removing left part until we no longer can
+                if(len>r-l+1){
+                    len=r-l+1;
+                    ans=s.substring(l,r+1);
+                }
+                counts[s.charAt(l)-'a']--;
+                l++;
+            }
+            r++;
+        }
+        return ans;
+    }
+    
+    public static boolean check(int counts[], int countp[]){ //check p is contained in curr substring
+        for(int i=0;i<counts.length;i++){
+            if(countp[i]>counts[i]) return false;
+        }
+        return true;
+    }
+}
+/*
+LOGIC---
+To decrease iterations make the window of each substrign first by maintiang their coutn at each step.
+
+*/
+
+/* TWO POINTER TLE */
+class Solution{
+    public static String smallestWindow(String s, String p){
+        int count[] = new int[26];
+        for(int i=0;i<p.length();i++) count[p.charAt(i)-'a']++;
+        String ans="";
+        int len=Integer.MAX_VALUE;
+        int l=0;
+        int r=0;
+        while(r<s.length() && l<=r){    //once equality found, start checking can we make the window smaller by removing left part
+            while(check(s.substring(l,r+1), count)){
+                if(len>r-l+1){
+                    len=r-l+1;
+                    ans=s.substring(l,r+1);
+                }
+                l++;
+            }
+            r++;
+        }
+        return ans;
+    }
+    
+    public static boolean check(String s, int count[]){ //check p is contained in curr substring
+        int temp[] = new int[26];
+        for(int i=0;i<s.length();i++) temp[s.charAt(i)-'a']++;
+        for(int i=0;i<count.length;i++){
+            if(count[i]>temp[i]) return false;
+        }
+        return true;
+    }
+}
+/*
+LOGIC---
+Goal: p should exist as a part of substring of s. sequence or continuity does not matter.
+There could be extra elements in s as well. Just p sould be there too in s.
+
+TWO POINTER technique
+start l=0, r=0;
+We will increment r when we don't have the right numbers of char of p in s.
+Once p is found in curr config of l,r
+We start increasing l and see whether the substring still contains p or not.
+Once again if it stops containing we increase r.
+Do it till r reaches n
+Store the favorable states.
+
+TC-O(n)
+*/
+
+/*
+BRUTE FROCE---O(n^2)
+p -> count2[26]
+s -> 2 for loops try all substrigns and check which one amtches with count2 accordingly
 */

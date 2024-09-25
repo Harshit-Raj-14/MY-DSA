@@ -189,5 +189,102 @@ NOTE---
 In the second loop, we use for(int j=i+1;j<matrix[0].length;j++). 
 This adjustment ensures that we only traverse the upper right triangle of the matrix, preventing redundant swaps with the lower left triangle.
 
-Visau;isation - https://leetcode.com/problems/rotate-image/solutions/3440564/animation-understand-in-30-seconds/
+Visaulisation - https://leetcode.com/problems/rotate-image/solutions/3440564/animation-understand-in-30-seconds/
+*/
+
+
+/*******************************************************************************************************/
+PS- Merge two sorted arrays without extra space [LEETCODE - 88. Merge Sorted Array]
+
+/* CODE */
+class Solution {
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int i = m - 1;  //end of nums1
+        int j = n - 1;  //end of nums2
+        int k = m + n - 1;  //end of final nums1
+        while (j >= 0) {
+            if (i >= 0 && nums1[i] > nums2[j]) nums1[k--] = nums1[i--];
+            else nums1[k--] = nums2[j--];
+        }
+    }
+}
+
+/*
+LOGIC---
+Since we need to fill in same num1 array, we start filling from back and occupy the empty spaces.
+This will help us to not lose nums1 values as we fill both nums1 and nums2.
+*/
+
+
+
+/*******************************************************************************************************/
+PS- Missing And Repeating number
+Given an unsorted array arr of of positive integers. One number 'A' from set {1, 2,....,n} is missing and one number 'B' occurs twice in array. 
+Find numbers A and B.
+
+/* CODE */
+class Solve {
+    int[] findTwoElement(int arr[]) {
+        int xor=0;
+        for(int i=1;i<=arr.length;i++){
+            xor^=i^arr[i-1];
+        }
+        int idx=0;
+        for(int i=0;i<32;i++){
+            if(((xor>>i)&1)==1){
+                idx=i;
+                break;
+            }
+        }
+        int set = 0;
+        int unset = 0;
+        for(int i=1;i<=arr.length;i++){
+            //for array elements
+            if(((arr[i-1]>>idx)&1)==1) set^=arr[i-1];
+            else unset^=arr[i-1];
+            //for full range 1 to n
+            if(((i>>idx)&1)==1) set^=i;
+            else unset^=i;
+        }
+        int repeated=0;
+        int missing=0;
+        for(int i=0;i<arr.length;i++){
+            if(arr[i]==set){
+                repeated=set;
+                missing=unset;
+            }
+            if(arr[i]==unset){
+                repeated=unset;
+                missing=set;
+            }
+        }
+        return new int[] {repeated, missing};
+    }
+}
+
+/*
+LOGIC---
+a^a=0;
+
+fullset=(a,b,c,d,e) ^ arr=(a,a,c,d,e) = (a^b)
+a is repeating and b is missing
+
+Now this a^b will actually represent places, 
+where a and b will differ in bit presence if there is 1.
+We find that place where the first one occurs and its guaranteed to occur otherwise the xor would have been 0.
+the repeating and the missing number must be different and since they are different they must contain different bits. 
+
+Let's call this position as x, the righthandmost set bit.
+
+Based on this fact we can segment the entire 1->n elements full set into two parts.
+One group which has set bit at x. => 1 at x
+And other which does not has set bit at x. => 0 at x
+
+set group -> {a,c}
+unset group -> {b,d,e}
+
+We will do the above grouping for -> all array elements + all elements between 1 to N) into 2 different groups.
+
+Now both set and unset are either the missing or the repeated number itself.
+Iterate the array and check which was missing and which was repeated.
 */

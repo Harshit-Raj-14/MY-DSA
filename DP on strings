@@ -1,0 +1,248 @@
+PS- 139. Word Break
+Given a string s and a dictionary of strings wordDict, return true if s can be segmented into a space-separated 
+sequence of one or more dictionary words. Note that the same word in the dictionary may be reused multiple times in the segmentation.
+
+Input: s = "applepenapple", wordDict = ["apple","pen"]
+Output: true
+Explanation: Return true because "applepenapple" can be segmented as "apple pen apple".
+
+/* CODE */
+/* DP O(n^2) */
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict){
+        HashSet<String> dict = new HashSet<>(wordDict); //convert dict to hashset -> using HashSet for O(1) lookups
+        Boolean[] memo = new Boolean[s.length()]; // Memoization array
+        return solve(s, dict, 0, memo);
+    }
+
+    public static boolean solve(String s, HashSet<String> dict, int start, Boolean[] memo){
+        if(start==s.length()) return true;
+        if(memo[start]!=null) return memo[start];
+        for(int end=start+1;end<=s.length();end++){
+            String substring  =s.substring(start, end);
+            if(dict.contains(substring) && solve(s,dict,end, memo)) return memo[start]=true;
+        }
+        return memo[start]=false;
+    }
+}
+
+/*
+LOGIC---
+Is there a combination of words in wordDict that can be used to recreate the original string s. 
+
+Instead of seeing whether we can form word from dictionary words.
+Make substring of s and check whether these substrigns exist in diction or not.
+Convert dict to hahset for efficient lookups.
+
+Time complexity: O(n⋅m⋅k)
+There are n states of dp(i). Because of memoization, we only calculate each state once. 
+To calculate a state, we iterate over m words, and for each word perform some substring operations which costs O(k). 
+Therefore, calculating a state costs O(m⋅k), and we need to calculate O(n) states.
+
+Space complexity: O(n)
+*/
+
+
+/******************************************************************************************************/
+PS- 2707. Extra Characters in a String
+You are given a 0-indexed string s and a dictionary of words dictionary. 
+You have to break s into one or more non-overlapping substrings such that each substring is present in dictionary. 
+There may be some extra characters in s which are not present in any of the substrings.
+Return the minimum number of extra characters left over if you break up s optimally.
+
+Input: s = "leetscode", dictionary = ["leet","code","leetcode"]
+Output: 1
+
+/* code */
+/* MEMOISATION */
+class Solution {
+    public int minExtraChar(String s, String[] dict){
+        HashSet<String> set = new HashSet<>();
+        for(String el : dict) set.add(el);
+        int dp[] = new int[s.length()];
+        Arrays.fill(dp, -1);
+        return solve(s, 0, dp, set);
+    }
+
+    public static int solve(String s, int start, int dp[], HashSet<String> set){
+        if(start>=s.length()) return 0;
+        if(dp[start]!=-1) return dp[start];   
+        int ans=Integer.MAX_VALUE;
+        int not_take = 1 + solve(s, start+1, dp, set);
+        int take=Integer.MAX_VALUE;
+        for(int end=start+1;end<=s.length();end++){
+            String sub = s.substring(start, end);
+            if(set.contains(sub)){
+                take = Math.min(take, solve(s, end, dp, set)); // Only consider the minimum for 'take'
+            }
+            dp[start] = Math.min(take, not_take);
+        }
+        return dp[start];
+
+    }
+}
+
+
+/* RECURSION */
+class Solution {
+    public int minExtraChar(String s, String[] dict){
+        HashSet<String> set = new HashSet<>();
+        for(String el : dict) set.add(el);
+        return solve(s, 0, set);
+    }
+
+    public static int solve(String s, int start, HashSet<String> set){
+        if(start>=s.length()) return 0;   
+        int ans=Integer.MAX_VALUE;
+        int not_take = 1 + solve(s, start+1, set);
+        int take=Integer.MAX_VALUE;
+        for(int end=start+1;end<=s.length();end++){
+            String sub = s.substring(start, end);
+            if(set.contains(sub)){
+                take = solve(s,end,set);
+            }
+            ans=Math.min(ans, Math.min(take, not_take));
+        }
+        return ans;
+
+    }
+}
+
+/*
+LOGIC---
+Same logic as word break but this time just need to take elft character which will be equal to not_Take logic.
+
+Time complexity: O(n^3). 
+There can be N+1 unique states of the dp method. In each state of dp, we iterate over end, which is O(N) iterations. 
+In each of these iterations, we create a substring, which costs O(N). 
+Hence, the overall cost of the dp method is O(N3).
+
+Space complexity: O(N+M⋅K)
+
+*/
+
+
+
+
+/*****************************************************************************************************/
+PS- 97. Interleaving String
+Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.
+
+/* CODE */
+
+/* MEMOISATION O(mn) */
+class Solution {
+    public boolean isInterleave(String s1, String s2, String s3) {
+        if(s1.length()+s2.length()!=s3.length()) return false;
+        Boolean[][] dp = new Boolean[s1.length()+1][s2.length()+1];
+        return solve(s1,s2,s3,0,0, dp);
+    }
+
+    public static boolean solve(String s1, String s2, String s3, int i, int j, Boolean dp[][]){ //k=i+j -> pointer over s3
+        if(i+j==s3.length()) return true;
+        if (dp[i][j] != null) return dp[i][j];  //will work iwth Boolean and not boolean
+        boolean ans=false;
+        if(i<s1.length() && s1.charAt(i)==s3.charAt(i+j)){  //when char matches with s3 and s1 remains
+            ans= ans || solve(s1,s2,s3,i+1,j, dp); 
+        }
+        if(j<s2.length() && s2.charAt(j)==s3.charAt(i+j)){  //when char matches with s3 and s2 remains
+            ans= ans || solve(s1,s2,s3,i,j+1, dp);
+        }
+        return dp[i][j]=ans;
+    }
+}
+
+
+/* RECURSION TLE */
+class Solution {
+    public boolean isInterleave(String s1, String s2, String s3) {
+        if(s1.length()+s2.length()!=s3.length()) return false;
+        return solve(s1,s2,s3,0,0);
+    }
+
+    public static boolean solve(String s1, String s2, String s3, int i, int j){ //k=i+j -> pointer over s3
+        if(i+j==s3.length()) return true;
+        //if(i>=s1.length() || j>=s2.length()) return false; not required, do in below if becuase s1 can get over and s2 remains or vice versa
+        boolean ans=false;
+        if(i<s1.length() && s1.charAt(i)==s3.charAt(i+j)){  //when char matches with s3 and s1 remains
+            ans= ans || solve(s1,s2,s3,i+1,j); 
+        }
+        if(j<s2.length() && s2.charAt(j)==s3.charAt(i+j)){  //when char matches with s3 and s2 remains
+            ans= ans || solve(s1,s2,s3,i,j+1);
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+GOAL---
+Interwaeave s1 and s2 to make s3 while making turns for s1 ans s2 to be a part of answer needs to be alternate.
+TWO POINTER WILL FAIL. AND WHY DP?
+This test case then tells you why this question is asking for a dp solution.
+s1 = "aabc"
+s2 = "abad"
+s3= "aabadabc"
+
+Now in this, if you start moving from the back using the 2 pointer approach, it keeps on eleminating the character from the 1st string i.e s1. But when s1 gets exhausted, your s3 does not match with s2.
+
+IMPORTANT---Here you take a note that, when char at s1 and s2 are equal, we need to check if deleting the char from s1 is a correct move or deleting the char from s2 would be a correct move.
+
+INTUITION---That clearly means, we have 2 choices here, either to delete the char from s1 or s2.
+
+Now for a bigger testcase like this it is clearly evident that the que is asking for a Dyanmic Programming solution!!
+
+s1 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+s2 = "aaaaaaabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+s3 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+So, think of it as two chocies when interleaving which character to choose from s1 or s2.
+If s1 and s2 are equal to s3[i], we have a choice,
+otherwsie choose it from the string in which it is available.
+
+
+REDUCE 3D TO 2D DP---
+You might be tempted to use i, j and k to keep track of s1, s2 and s3 respectively in your recursive calls but it gave me TLE. (Please note that it is not wrong)
+The trick here was to remove k from your changing state and reduce dp from 3D to 2D.
+=> The thing here is, at every step k is nothing but i+j, so we dont need to keep track of k because we can get it from i and j.
+
+APPROACH---
+So the trick here is to how to implement this alternate selection of substrings. I am pretty much sure you have concluded that we need recursion to solve this, but how to ensure that when we append the string, it is the way it's mentioned.
+
+What you need to do it, instead of appending substrings, append character of strings. At each iteration, check if s1[i] == s3[i+j] and below that check s2[j] == s3[i+j].
+On satisfaction , call again the function with incremented i or j.
+This way, if you observe, you will have implemented the above condition of alternating substrings.
+
+*/
+
+/* DP LCS */
+class Solution {
+    public boolean isInterleave(String s1, String s2, String s3) {
+        int m = s1.length();
+        int n = s2.length();
+        int l = s3.length();
+        // If length of s3 is not equal to the sum of lengths of s1 and s2, return false
+        if (m + n != l) return false;
+        // Create a 2D boolean array to store the results
+        boolean[][] dp = new boolean[m + 1][n + 1];
+        // Initialize the DP table
+        dp[0][0] = true;
+        // Fill the first row
+        for (int i = 1; i <= m; i++) {
+            dp[i][0] = dp[i - 1][0] && s1.charAt(i - 1) == s3.charAt(i - 1);
+        }
+        // Fill the first column
+        for (int j = 1; j <= n; j++) {
+            dp[0][j] = dp[0][j - 1] && s2.charAt(j - 1) == s3.charAt(j - 1);
+        }
+        // Fill the rest of the DP table
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                dp[i][j] = (dp[i - 1][j] && s1.charAt(i - 1) == s3.charAt(i + j - 1)) || 
+                           (dp[i][j - 1] && s2.charAt(j - 1) == s3.charAt(i + j - 1));
+            }
+        }
+        
+        return dp[m][n];
+    }
+}

@@ -58,3 +58,69 @@ LOGIC---
 XOR of two numbers would have 1 where the bits were different.
 no of set bits in or = difference in bit at that place = no of flips required
 */
+
+
+
+/*****************************************************************************************************/
+PS- Add two numbers without using arithmetic operators
+
+/* CODE */
+class Solution {
+    public int addwithoutplus(int a, int b) {
+        // Iterate till there is no carry 
+        while (b!=0){ 
+            // carry contains common set bits of a and b, left shifted by 1
+            int carry = (a&b)<<1;   //calculate all places where carry will be added
+            // Update a with (a + b without carry)
+            a = a^b;    //add a and b without carry
+            // Update b with carry
+            b = carry; //update b with carry to be considered for re-addition
+        } 
+        return a;
+    }
+}
+
+/*
+ APPROACH---
+ This is a one pass process.
+ First identify places where carry will be added.
+ Now add a and b as if carry does not exist using case I XORING.
+ Now update b to act like carry which needs to be added to our sum to make it complete.
+ This will go on until b or rather say carry becomes 0.
+ */
+
+/*
+IMPORTANT OBSERVATIONS---
+a & b will have only those bits set which are set in both a and b.
+a ^ b will have only those bits set which are set in either a or b but not in both. 
+
+In actual binary addition
+Case I: 0+1 or 1+0 => gives 1 => set+unset = set^unset = same a^b
+We can say that,  a+b without carry = a^b.
+
+Case II: 1+1 => gives 10 => set+set => we need to account for carry
+Since the carry is shifted 1 place to the left
+carry = (a & b) << 1 => where set+set==1 => a&b==1 we shift it one place left making 10 config.
+
+*/
+
+
+/* ANOTHER WAY */
+class Solution {
+    public int addwithoutplus(int a, int b) {
+        int i = 0;
+        int sum = 0;
+        int carry = 0;
+        while (a!=0 || b!=0 || carry!=0) {
+            int bit1 = (a>>i) & 1;   // bit at i-th index of a
+            int bit2 = (b>>i) & 1;   // bit at i-th index of b
+            // Calculate the sum bit at i-th position
+            int bitSum = bit1 ^ bit2 ^ carry;
+            sum |= (bitSum << i);      // Set the i-th bit of sum
+            // Calculate carry for next bit
+            carry = (bit1 & bit2) | (bit1 & carry) | (bit2 & carry);
+            i++;   // Move to the next bit
+        }
+        return sum;
+    }
+}
