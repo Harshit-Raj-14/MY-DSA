@@ -16,7 +16,7 @@ class Solution {
         if(dp[row][i]!=-1) return dp[row][i];
         int takei = arr.get(row).get(i) + solve(arr, row+1, i, dp); //take the next i
         int takei1 = Integer.MAX_VALUE;
-        if(i+1< arr.get(row).size()) takei1 = arr.get(row).get(i+1) + solve(arr, row+1, i+1, dp);   //take the next i+1
+        if(i+1<arr.get(row).size()) takei1 = arr.get(row).get(i+1) + solve(arr, row+1, i+1, dp);   //take the next i+1
         return dp[row][i]=Math.min(takei, takei1);
     }
 }
@@ -45,3 +45,96 @@ Only contraint is that when you move to the row below you can then only choose i
 Funnily triangle is infact a matrix itself.
 type: triangle[0].length == 1 && triangle[i].length == triangle[i - 1].length + 1
 */
+
+
+/*******************************************************************************************************/
+PS- 62. Unique Paths
+There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). 
+The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
+Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+
+/* CODE */
+/* MEMOISATION DP */
+class Solution {
+    public int uniquePaths(int m, int n) {
+        int dp[][] = new int[m+1][n+1];
+        for(int[] row : dp) Arrays.fill(row, -1);
+        return solve(m, n, 0, 0, dp);
+    }
+
+    public int solve(int m, int n, int i, int j, int dp[][]){
+        if(i==m-1 && j==n-1) return 1;
+        if(i>m-1 || j>n-1) return 0;
+        if(dp[i][j]!=-1) return dp[i][j];
+        int right = solve(m, n, i+1, j, dp);
+        int down = solve(m, n, i, j+1, dp);
+        return dp[i][j]=right+down;
+    }
+}
+
+/*
+LOGIC---
+Simple recursion of either going right or down.
+*/
+
+
+/* RECURSION TLE */
+class Solution {
+    public int uniquePaths(int m, int n) {
+        return solve(m, n, 0, 0);
+    }
+
+    public int solve(int m, int n, int i, int j){
+        if(i==m-1 && j==n-1) return 1;
+        if(i>m-1 || j>n-1) return 0;
+        int right = solve(m, n, i+1, j);
+        int down = solve(m, n, i, j+1);
+        return right+down;
+    }
+}
+
+
+/********************************************************************************************************/
+PS- 64. Minimum Path Sum
+Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right, which minimizes the sum of all numbers along its path.
+Note: You can only move either down or right at any point in time.
+
+/* CODE */
+/* DP MEMOISATION */
+class Solution {
+    public int minPathSum(int[][] grid) {
+        int dp[][] = new int [grid.length+1][grid[0].length+1];
+        for(int row[]:dp) Arrays.fill(row, -1);
+        return solve(grid, 0, 0, dp);
+    }
+
+    public static int solve(int grid[][], int i, int j, int dp[][]){
+        if(i==grid.length-1 && j==grid[0].length-1) return grid[i][j];  //last box to reach to be added
+        if(i>=grid.length || j>=grid[0].length) return 1000000; // Out of bounds- make it too big to not be an answer
+        if(dp[i][j]!=-1) return dp[i][j];
+        int right= grid[i][j] + solve(grid, i , j+1, dp);
+        int down = grid[i][j] + solve(grid, i+1, j, dp);
+        return dp[i][j]=Math.min(right, down);
+    }
+}
+
+/*
+LOGIC---
+TC - O(m*n)
+SC -O(m*n)
+*/
+
+/* RECURSION TLE */
+class Solution {
+    public int minPathSum(int[][] grid) {
+        return solve(grid, 0, 0);
+    }
+
+    public static int solve(int grid[][], int i, int j){
+        if(i==grid.length-1 && j==grid[0].length-1) return grid[i][j];  //last box to reach to be added
+        if(i>=grid.length || j>=grid[0].length) return 1000000; // Out of bounds- make it too big to not be an answer
+        int right= grid[i][j] + solve(grid, i , j+1);
+        int down = grid[i][j] + solve(grid, i+1, j);
+        return Math.min(right, down);
+    }
+}

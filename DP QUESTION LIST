@@ -15,7 +15,6 @@ Well, this list will make your life easy (All you need to Master DP from A-Z)
  - Perfect Squares
 
 5. Longest Common Subsequence (LCS)
- - Longest Common Subsequence
  - Delete Operation for Two Strings
  - Shortest Common Supersequence
 
@@ -40,7 +39,6 @@ Well, this list will make your life easy (All you need to Master DP from A-Z)
  - Partition to K Equal Sum Subsets
 
 10. String Partition
- - Word Break
  - Palindrome Partitioning II
  - Concatenated Words
 
@@ -54,16 +52,12 @@ Well, this list will make your life easy (All you need to Master DP from A-Z)
  - Minimum Cost to Merge Stones
 
 13. Count Distinct Ways
- - Decode Ways
  - Count Number of Texts
 
 14. DP on Grids
- - Unique Paths
- - Minimum Path Sum
  - Longest Increasing Path in a Matrix
 
 15. DP on Trees
- - House Robber III
  - Binary Tree Maximum Path Sum
  - Binary Tree Cameras
 

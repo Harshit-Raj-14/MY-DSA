@@ -1,4 +1,8 @@
 PS- PALINDROME PARTITIONING
+Given a string s, partition s such that every substring of the partition is a palindrome. 
+Return all possible palindrome partitioning of s.
+Input: s = "aab"
+Output: [["a","a","b"],["aa","b"]]
 
 /* CODE */
 /* MEMOISATION */
@@ -52,9 +56,46 @@ aa|ba => aa is palindrome => aa|b|a => {aa,b,a}
 aab|a => aab is not a palidrome no need to explore further
 
 So we need to make a choice where to put palindrome
-TC- O(2^n * n)
-SC- O(2^n * n)
+TC- O(2^n * n) - For a string of length n, there are 2^(𝑛 − 1) potential ways to partition it (since each position can either be a cut or not). and we also check palindrome O(n)
+SC- O(2^n * n) - Number of partitions * their length
 */
+
+
+/* DP + BACKTRACKING THIS MIGHT BE WRONG */
+class Solution {
+    public List<List<String>> partition(String s) {
+        ArrayList<List<String>> ans = new ArrayList<>();
+        boolean[][] dp = new boolean[s.length()][s.length()]; // memoization for palindrome checks
+        solve(s, 0, new ArrayList<>(), ans, dp);
+        return ans;
+    }
+
+    public static void solve(String s, int start, ArrayList<String> list, ArrayList<List<String>> ans, boolean[][] dp) {
+        if (start == s.length()) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = start; i < s.length(); i++) {
+            if (isPalindrome(s, start, i, dp)) {  // check palindrome using indices
+                list.add(s.substring(start, i + 1));  // add the current substring
+                solve(s, i + 1, list, ans, dp);    // recurse for the rest
+                list.remove(list.size() - 1); // backtrack
+            }
+        }
+    }
+
+    public static boolean isPalindrome(String s, int start, int end, boolean[][] dp) {
+        if (dp[start][end]) return true;  // use memoized result
+        while (start < end) {
+            if (s.charAt(start) != s.charAt(end)) {
+                return dp[start][end] = false;
+            }
+            start++;
+            end--;
+        }
+        return dp[start][end] = true;  // store result
+    }
+}
 
 
 

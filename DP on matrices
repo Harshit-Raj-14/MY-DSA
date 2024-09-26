@@ -1,7 +1,7 @@
 PS- Maximise expression (GFG Weekly - 170)
 You are given a 2D matrix of size nxm containing integer values. Your task is to remove exactly one row and one column from the matrix, resulting in four submatrices: top-left, top- right, bottom-left, and bottom-right.
 Define the following: Top-left submatrix: The submatrix formed by the remaining rows and columns to the top and left of the removed row and column and so on.....
-Your objective is to maximize the following expression: sum (Top-left)xsum (Bottom- right)+sum (Bottom-left)xsum(Top-right)
+Your objective is to maximize the following expression: sum(Top-left) x sum(Bottom- right) + sum(Bottom-left) x sum(Top-right)
 Return the maximum possible value of this expression after removing exactly one row and one column.
 
 /* CODE */
@@ -9,9 +9,9 @@ class Solution {
     public static long getMax(int n, int m, int arr[][]) {
         //Step I: prepare area dp
         long dp[][] = new long[n][m];
-        dp[0][0] = arr[0][0];
-        for(int i=1;i<n;i++) dp[i][0]=dp[i-1][0] + arr[i][0];  //precalculating area for first row
-        for(int j=1;j<m;j++) dp[0][j]=dp[0][j-1] + arr[0][j];  //precalculating area for first column
+        dp[0][0] = arr[0][0];   //think of this as tip of matrix which has nothing
+        for(int i=1;i<n;i++) dp[i][0]=dp[i-1][0] + arr[i][0];  //precalculating area for first column
+        for(int j=1;j<m;j++) dp[0][j]=dp[0][j-1] + arr[0][j];  //precalculating area for first row
         //calculate now the remaining inside of the array
         for(int i=1;i<n;i++){
             for(int j=1;j<m;j++){
@@ -47,7 +47,7 @@ Observation :
 => deleting any boundary row or column will make any two submatrix 0 => making our expression 0
 
 
-This a DP on matrices problem => where we precompute sum of each rectangle
+This is a DP on matrices problem => where we precompute sum of each rectangle
 
 dp(i,j) -> represents sum of cell values in a rectangle from diagonal starting (0,0) to (i,j)
 So, dp[i][j] will be equivalent to:

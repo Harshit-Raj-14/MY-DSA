@@ -31,7 +31,7 @@ LOGIC---
 Is there a combination of words in wordDict that can be used to recreate the original string s. 
 
 Instead of seeing whether we can form word from dictionary words.
-Make substring of s and check whether these substrigns exist in diction or not.
+Make substring of s and check whether these substrings exist in dictionary or not.
 Convert dict to hahset for efficient lookups.
 
 Time complexity: O(n⋅m⋅k)
@@ -140,7 +140,7 @@ class Solution {
 
     public static boolean solve(String s1, String s2, String s3, int i, int j, Boolean dp[][]){ //k=i+j -> pointer over s3
         if(i+j==s3.length()) return true;
-        if (dp[i][j] != null) return dp[i][j];  //will work iwth Boolean and not boolean
+        if (dp[i][j] != null) return dp[i][j];  //will work with Boolean and not boolean
         boolean ans=false;
         if(i<s1.length() && s1.charAt(i)==s3.charAt(i+j)){  //when char matches with s3 and s1 remains
             ans= ans || solve(s1,s2,s3,i+1,j, dp); 

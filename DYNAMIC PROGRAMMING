@@ -214,7 +214,7 @@ class Solution {
         int ans=0;
         //don't take the roor, so let's decide on its two children
         int not_take = solve(curr.left, map) + solve(curr.right, map);   
-        //if taken the root, then next you will only be able to take its four grnadhcildren 
+        //if taken the root, then next you will only be able to take its four grandhcildren 
         int take = curr.val;
         if(curr.left!=null) take+=solve(curr.left.left, map) + solve(curr.left.right, map);
         if(curr.right!=null) take+=solve(curr.right.right, map) + solve(curr.right.left, map);
