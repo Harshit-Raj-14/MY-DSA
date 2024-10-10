@@ -92,7 +92,7 @@ PS- 198. House Robber
 Find the maximum money you can rob from non-adjacent houses without triggering the alarm.
 
 /* CODE */
-/* MEMOISATION */
+/* MEMOISATION O(n), O(n) */
 class Solution {
     public int rob(int[] nums) {
         int dp[] = new int[nums.length];
@@ -115,7 +115,7 @@ Note - dp[nums.length-1], this value may not hold the correct maximum amount tha
 
 */
 
-/* RECURSION TLE */
+/* RECURSION TLE O(2^n) */
 class Solution {
     public int rob(int[] nums){
         return solve(nums, 0);
@@ -356,7 +356,7 @@ There is unsorted integer array, return a maximum sum of non adjacent elements.
 /* 
 LOGIC----
 Same thing as house robber above. Do it with recursion, memoisation, tabulation and then space optimised tabulation.
-This solution cna handle both arr having +ve or -ve values.
+This solution can handle both arr having +ve or -ve values.
 
 Reason, we have to find maximum sum when if taken x don't take neighbouring element.
 */

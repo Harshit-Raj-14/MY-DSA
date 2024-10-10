@@ -140,3 +140,105 @@ Notes :
     Now if at any point prefix_sum==0 , ie subarry from (0) to (y) is zero
     => that's why we set first_occ[0]=-1; (coz starting se y point tk is zero array and length of that array will be = y - (-1). here y represents the index at point where prefixsum becomes zero.
 */
+
+
+/********************************************************************************************************/
+PS- Longest Non-Decreasing Subarray - I [GFG Weekly 174]
+Your task is to find the length of the longest subarray which is non-decreasing and the sum of the subarray is divisible by 'k'. 
+
+Input: n = 4 arr = [1, 2, 3, 8] k = 3
+Output: 3
+Explanation: The longest non-decreasing subarray is [1, 2, 3], whose sum is 6, which is divisible by 3.
+
+/* CODE */
+/* PREFIX SUM + HASHMAP SEEING THE SAME SUM STATE LOGIC O(n) */
+class Solution {
+    public static int longestSubarray(int n, int[] arr, int k) {
+        int ans=0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int sum=0;
+        int start = 0;  // To track the start of the valid subarray
+        for(int i=0;i<n;i++){
+            if(i==0 || arr[i]>=arr[i-1]){
+                sum+=arr[i];
+                sum %= k;
+                if(!map.containsKey(sum)) map.put(sum, i);  //storing only the first occurence
+            }
+            else{   //reset all values, since not sorted subarray now so restart
+                map.clear();
+                sum=arr[i];
+                sum %= k;
+                map.put(sum, i);
+                start = i;  // Reset the start of the subarray
+            }
+            //check whether current state is solution or not
+            int rem = sum % k;
+            if (rem==0) ans=Math.max(ans, i-start+1); //if sum is divisible by k
+            if (map.containsKey(rem)) ans=Math.max(ans, i-map.get(rem));
+            else map.put(rem, i);
+        }
+        return ans;
+    }
+}
+/*
+LOGIC---
+We need a sorted subarray with sum divisible by k.
+ALGORITHM---
+We create a prefix modulo sum and put the values in hahsmap to see whether we have encountered the same value or not.
+
+We will keep track of remainder that we have seen in our hashmap. For k, it will be from 0 to k-1.
+
+If we encounter the same sum modulo with k, again that means we can extend our previous subarray start to the current index, which will help us to get the longest required subarray. 
+Case I: sum%k==0
+That would mean ans = currindex - start of curr subarray + 1
+
+Case II: sum%k!=0
+That would mean ans = currindex - start of the previous subarray where sum%k existed
+If map contains sum%k, use it to find ans, if not that means its encoutnered first time, store this state.
+If at some idnex the sum%k is c then if that c appears again, then that means sum%k==0 is in the middle.
+
+We will only update when we either restart or encounter new values.
+*/
+
+
+/* BRUTE FORCE TLE O(n^2) */
+class Solution {
+    public static int longestSubarray(int n, int[] nums, int k) {
+        int ans=0;
+        for(int i=0;i<n;i++){
+            if(nums[i]%k==0) ans=Math.max(ans, 1);
+            int j=i+1;
+            int sum=nums[i];
+            while(j<n && nums[j]>=nums[j-1]){
+                sum+=nums[j];
+                if(sum%k==0){
+                    ans=Math.max(ans, j-i+1);
+                }
+                j++;
+            }
+        }
+        return ans;
+    }
+}
+
+
+/*********************************************************************************************************/
+PS- 325. Maximum Size Subarray Sum Equals k
+Given an array arr and an integer k. Find the length of the longest Sub-Array with the sum of the elements equal to k. 
+
+/* CODE */
+class Solution {
+    public static int lenOfLongSubarr(int arr[], int n, int k){
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int ans=0;
+        int sum=0;
+        for(int i=0;i<arr.length;i++){
+            sum+=arr[i];
+            if(!map.containsKey(sum)) map.put(sum, i); // Only add the sum to the map if it hasn't been seen before
+            if(sum==k) ans=Math.max(ans, i+1);  // Check if the sum is equal to k
+            if(map.containsKey(sum-k)) ans=Math.max(ans, i-map.get(sum-k));     // If the sum has been seen before, update the length
+            //if(!map.containsKey(sum)) map.put(sum, i);
+        }
+        return ans;
+    }
+}

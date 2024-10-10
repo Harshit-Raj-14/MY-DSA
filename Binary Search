@@ -78,7 +78,44 @@ In the end, the two bounding slopes meet /\ , and a peak is found.
 */
 
 
+/* SAME ELEGANT SOLUTION */
+class Solution {
+    public int findPeakElement(int[] nums){
+        int n=nums.length;
+        //edge cases
+        if(n==1) return 0;
+        if(nums[0]>nums[1]) return 0;
+        if(nums[n-1]>nums[n-2]) return n-1;
+        //binary search
+        int l=0;
+        int r=nums.length-1;
+        while(l<=r){
+            int mid=l + (r-l)/2;
+            if(mid-1>=0 && mid+1<nums.length && nums[mid]>nums[mid-1] && nums[mid]>nums[mid+1]) return mid;
+            else if(nums[mid]<nums[mid+1]) l=mid+1; //we are on left half so cut it short
+            else r=mid-1;   //we are on the right half so cut it short
+        }
+        return -1;
+    }
+}
 
+/*
+LOGIC---
+PEAK CONDITION: arr[i] > arr[i-1] and arr[i] > arr[i+1]
+we can clearly notice a striking distinction between the left and right halves of the peak element in the array. 
+=> The left half of the peak element has an increasing order. This means for every index i, arr[i-1] < arr[i].
+=> The right half of the peak element has a decreasing order. This means for every index i, arr[i+1] < arr[i].
+
+How to eliminate the halves accordingly:
+=> If we are in the left half of the peak element, we have to eliminate this left half (i.e low = mid+1). Because our peak element appears somewhere on the right side.
+=> If we are in the right half of the peak element, we have to eliminate this right half (i.e. high = mid-1). Because our peak element appears somewhere on the left side.
+
+EDGE CASES:
+Single element : elemetn itself is peak
+An array where the first element is the peak
+An array where the last element is the peak
+
+*/
 
 /*****************************************************************************************************/
 PS- 540. Single Element in a Sorted Array

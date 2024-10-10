@@ -2,7 +2,7 @@
 PS- 152. Maximum Product Subarray
 Given an integer array nums, find a subarray that has the largest product, and return the product.
 
-/* CODE 8/
+/* CODE */
 class Solution {
     public int maxProduct(int[] arr) {
         int pre=1;

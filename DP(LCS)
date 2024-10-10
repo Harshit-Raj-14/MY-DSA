@@ -12,7 +12,7 @@ class Solution {
         for(int i=1;i<=s2.length();i++){    //the first column and rows will be filled with 0 so leave them out
             for(int j=1;j<=s1.length();j++){
                 if(s2.charAt(i-1)==s1.charAt(j-1)){
-                    dp[i][j] = dp[i-1][j-1]+1;
+                    dp[i][j] = 1 + dp[i-1][j-1];
                 }
                 else dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
             }
@@ -311,4 +311,28 @@ Simply apply LCS
 first row and first column filled with 0
 
 SIMILAR PROBLEM - 718. Maximum Length of Repeated Subarray instead of string we are given arrays
+*/
+
+/****************************************************************************************************/
+PS- 516. Longest Palindromic Subsequence
+/*
+LOGIC---
+Longest Palindromic Subsequence -> LCS of s and reverse of s
+
+*/
+
+/*******************************************************************************************************/
+PS- Longest Palindromic Substring between s1 and s2 [GFG Weekly 174]
+
+/*
+LOGIC---
+MI : DP - OPTIMISED
+Find longest common string between s1 and s2. Lets call it s.
+Now reverse s.
+The common substring between s and reverse of s will be the longest common palindrome substring.
+
+MII: Expand around centre
+Find all palindromic substring in s1 using expand around center store them in set.
+Now check whether these substrings in set occurs in s2 or not.
+Get the longest length.
 */

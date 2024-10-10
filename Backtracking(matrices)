@@ -1,0 +1,40 @@
+PS- 2850. Minimum Moves to Spread Stones Over Grid
+You are given a 0-indexed 2D integer matrix grid of size 3x3, representing the number of stones in each cell. 
+The grid contains exactly 9 stones, and there can be multiple stones in a single cell.
+In one move, you can move a single stone from its current cell to any other cell if the two cells share a side. 
+Return the minimum number of moves required to place one stone in each cell.
+
+/* CODE */
+class Solution {
+    public int minimumMoves(int[][] grid) {
+        //BASE CASE
+        int count0=0;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                if(grid[i][j]==0) count0++;
+            }
+        }
+        if(count0==0) return 0;  //all grids have stones
+        //WORK
+        int minmoves=Integer.MAX_VALUE;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                if(grid[i][j]==0){  //find the grid with 0 items
+                    for(int ni=0;ni<3;ni++){    //now find the grid with more than i item to share with empty grid, you can take it from anywhere
+                        for(int nj=0;nj<3;nj++){
+                            if(grid[ni][nj]>1){
+                                grid[ni][nj]--; //make the 0 grid 1 by taking from the closest grid with more than 1
+                                grid[i][j]++;
+                                int d=Math.abs(ni-i) + Math.abs(nj-j);  //no of steps to move item from one cell to another to reach the empty shell since we have to move one cell to another and cannot directly jump
+                                minmoves=Math.min(minmoves, d+minimumMoves(grid));  //entering recursion to find next grid with 0 items
+                                grid[ni][nj]++; //getting back to start, to make another choice and leave this one
+                                grid[i][j]--;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return minmoves;
+    }
+}
