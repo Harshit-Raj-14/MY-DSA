@@ -1,0 +1,117 @@
+PS- 962. Maximum Width Ramp
+A ramp in an integer array nums is a pair (i, j) for which i < j and nums[i] <= nums[j]. 
+The width of such a ramp is j - i.
+Return the maximum width of a ramp in nums. If there is no ramp in nums, return 0.
+
+Input: nums = [6,0,8,2,1,5], Output: 4
+Explanation: The maximum width ramp is achieved at (i, j) = (1, 5): nums[1] = 0 and nums[5] = 5.
+
+/* CODE */
+/* SLIDING WINDOW O(n), O(n) */
+class Solution {
+    public int maxWidthRamp(int[] nums) {
+        int maxright[] = new int[nums.length];  //max value seen so far
+        int max=0;
+        for(int i=nums.length-1;i>=0;i--){
+            max = Math.max(max, nums[i]);
+            maxright[i] = max;
+        }
+        int i=0;
+        int j=0;
+        int ans=0;
+        while(j<maxright.length){
+            while(i<j && nums[i]>maxright[j]) i++;  //shrink window
+            ans=Math.max(ans, j-i);
+            j++;    //increase window traverse over maxright
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+From optimised brute force wealready know that if we already precalculate the maxright we can get the longest distance.
+Traverse over maxright to find the maximum window which can give our answer for current i.
+
+eg:
+nums = [6,0,8,2,1,5] => i
+maxr = [8,8,8,5,5,5] => j
+6 will yield correct answer till rightmost 8 in maxr. no point in checking beyond with maxr being 5.
+So, shrink window and check with next i that is 0. Now 5 also works so expand the next widnow.
+TC-O(n)
+Reason: j pointer travels only once on maxright.
+i pointer travels once on array. So O(n)+O(n)
+SC=O(n)
+*/
+
+
+/* OPTIMISED BRUTE FORCE O(n^2) */
+class Solution {
+    public int maxWidthRamp(int[] nums){
+        int n=nums.length;
+        int ans=0;
+        for(int i=0;i<n;i++){
+            boolean foundmax=false;
+            for(int j=n-1;j>=0 && !foundmax;j--){    //by moving form reverse back we avoid iterations
+                if(nums[i]<=nums[j]){
+                    foundmax=true;
+                    ans=Math.max(ans, j-i);
+                }
+            }
+        }
+        return ans;
+    }
+}
+
+
+/*******************************************************************************************************************/
+PS- Palindromic Substrings [GFG WEEKLY 176]
+Given a string s and an integer k, find the total number of substrings of length k in s such that the characters in 
+the substring can be rearranged to form a palindrome. 
+Input: s = "aabb" k = 2
+Output: 2
+Explanation: The substrings of length 2 are: "aa", "ab", "bb". Out of these, "aa" and "bb" can be rearranged to form a palindrome.
+
+/* CODE */
+class Solution {
+    public static int countPalindromicSubstrings(String s, int k) {
+        int ans = 0;
+        int count[] = new int[26];
+        int oddCount = 0; 
+        // Initial window of size `k`
+        for (int i = 0; i < k; i++) {
+            int idx = s.charAt(i) - 'a';
+            count[idx]++;
+            if (count[idx] % 2 == 1) oddCount++;
+            else oddCount--;
+        }
+        // Check if the first window is a palindrome
+        if (isPalindrome(oddCount, k)) ans++;
+        // Sliding window: move the window across the string
+        for (int i=k; i<s.length(); i++){
+            //Remove the character going out of the window
+            int idxOut = s.charAt(i-k)-'a'; 
+            count[idxOut]--;
+            if (count[idxOut]%2!=0) oddCount++;
+            else oddCount--;
+            // Add the new character coming into the window
+            int idxIn = s.charAt(i)-'a';
+            count[idxIn]++;
+            if (count[idxIn]%2!=0) oddCount++;
+            else oddCount--;
+            // Check if the current window is a palindrome
+            if (isPalindrome(oddCount, k)) ans++;
+        }
+        return ans;
+    }
+
+    // Palindrome check based on the number of odd characters
+    public static boolean isPalindrome(int oddCount, int k) {
+        if (k % 2 == 0){ // For even length, no character can have an odd count
+            return oddCount == 0;
+        } 
+        else{ // For odd length, at most one character can have an odd count
+            return oddCount == 1;
+        }
+    }
+}

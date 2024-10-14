@@ -186,3 +186,106 @@ Long.toString(n, 9) => converts the number n from base 10 (decimal) to a string 
 Long.parseLong(...) => converts the base-9 string back into a long integer.
 */
 ```
+
+
+/*********************************************************************************************************/
+PS- 1481. Least Number of Unique Integers after K Removals || Minimum number of distinct elements after removing m items
+Given an array of integers arr and an integer k. Find the least number of unique integers after removing exactly k elements.
+
+Input: arr = [5,5,4], k = 1
+Output: 1
+
+/* CODE */
+/* COUNTING BUCKET SORT O(n), O(1) */
+class Solution {
+    public int findLeastNumOfUniqueInts(int[] arr, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int x: arr) map.put(x, map.getOrDefault(x,0)+1);
+        int n=arr.length;
+        // Array to track the frequencies of frequencies; this way we sort frequencies without sorting
+        int countoffreq[] = new int[n+1]; //The maximum possible frequency of any element will be n (size is the max freq itself if all elements same)
+        for(int count : map.values()) countoffreq[count]++;
+        int unique = map.size();
+        for(int i=1;i<=n;i++){ //traversing possible frequencies
+            int elementstoremove = Math.min(k/i, countoffreq[i]); //there could be more freq than k
+            if(elementstoremove>0){
+                k -= i*elementstoremove; //subtract k by how many times frequency i occurs
+                unique-=elementstoremove;
+            }
+        }
+        return unique;   //traversed all frequencies and removed all elements
+    }
+}
+
+/*
+LOGIC---
+Use frequencies of elements to find how many elements can you eliminate.
+The trick is to make a freq count of the frequencies of elements.
+
+SInce array length is n => maxfreq can be n
+
+Good TC:
+arr =[2,1,1,3,3,3,4,4,4,4], k =3
+Output 2
+
+arr =[2,4,1,8,3,5,1,3], k =3
+Output: 3
+
+*/
+
+/***********************************************************************************************************/
+PS- 347. Top K Frequent Elements
+Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order.
+
+Input: nums = [1,1,1,2,2,3], k = 2
+Output: [1,2]
+
+/* CODE */
+/* BUCKET SORT O(n), O(n) */
+class Solution {
+    public int[] topKFrequent(int[] arr, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int i=0;i<arr.length;i++) map.put(arr[i], map.getOrDefault(arr[i],0)+1);
+        int n=arr.length;
+        // Array to track the frequencies of frequencies; this way we sort frequencies without sorting
+        ArrayList<Integer> buckets[] = new ArrayList[arr.length+1]; //an array of ArrayList<Integer> objects
+        for(Map.Entry<Integer, Integer> m : map.entrySet()) {
+            int value = m.getKey();
+            int count = m.getValue();
+            if(buckets[count] == null) buckets[count] = new ArrayList<>();
+            buckets[count].add(value);
+        }
+        int ans[] = new int[k];
+        int index = 0;
+        for(int i=n; i>=0; i--){    //iterate over frequencies
+            if(buckets[i] != null) {
+                for(int el : buckets[i]) {
+                    ans[index++] = el;
+                }
+            }
+            if(index == k) break; //Found the k most frequent elements
+        }
+        return ans;
+    }
+}
+
+
+/* USING MIN-HEAP O(nlogk), O(n+k) */
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        if (k == nums.length) return nums;
+        HashMap<Integer, Integer> map = new HashMap();
+        for (int n: nums) map.put(n, map.getOrDefault(n, 0) + 1);
+        // init pq 'the less frequent element first'
+        Queue<Integer> pq = new PriorityQueue<>((n1, n2) -> map.get(n1) - map.get(n2));
+        for (int n: map.keySet()){
+          pq.add(n);
+          if (pq.size()>k) pq.poll();    //O(logk)
+        }
+        int[] top = new int[k];
+        for(int i=k-1; i>=0; i--) {
+            top[i] = pq.poll();
+        }
+        return top;
+    }
+}

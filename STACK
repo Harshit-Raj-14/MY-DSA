@@ -108,7 +108,7 @@ So, we can say that total no of span = i+1 => total days till i (including itsel
 
 Case II: stack is not empty
 Since we have indexes stored in our stack. We compare prices[stack.peek()] with prices[i]
-If we learn that the topmost index in stack refers to  a price that is smaller than or equal to curr prices
+If we learn that the topmost index in stack refers to a price that is smaller than or equal to curr prices
 => we say it can form part of a consecutive series
 => so keep on popping it, till we reach index where it no longer form a consecutive series
 => in this case span will be elemnts after the top of stack till prices[i].

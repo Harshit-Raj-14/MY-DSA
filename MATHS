@@ -1,0 +1,39 @@
+PS- Count Odd Factors
+Given an integer N, count the numbers having an odd number of factors from 1 to N (inclusive).
+Input:N = 5; Output:2
+Explanation: From 1 - 5 only 2 numbers, 1 and 4 are having odd number of factors.
+
+/* CODE */
+class Solution{
+    static long count(int n){
+        return (int)Math.pow(n,0.5);
+    }
+}
+
+/*
+LOGIC---
+Clever Observations:
+Only those numbers, which are perfect squares have an odd number of factors.
+
+Reason:
+For example, 9 has odd number of factors, 1, 3 and 9. 
+16 also has odd number of factors, 1, 2, 4, 8, 16. 
+The reason for this is, for numbers other than perfect squares, all factors are in the form of pairs, 
+but for perfect squares, one factor is single and makes the total as odd.
+
+eg: 16 => (1,16), (2,8) (4) => odd factors
+
+APPROACH---
+Finding number of perfect squares between range [m,n] : here m=1
+The number of perfect squares between two given numbers, 
+is the same number as the number of numbers between the sqrt of the two.
+
+There is a little caveat. As both n and m are inclusive, if n is a perfect square, we will get an answer which is less than one the actual answer. 
+To understand this, consider range [4, 36]. Answer is 5 i.e., numbers 4, 9, 16, 25 and 36. 
+But if we do (36**0.5) – (4**0.5) we get 4. So to avoid this semantic error, we take n-1.
+
+no of perfect squares between m and n = (int)Math.pow(m,0.5) - (int)Math.pow(n-1,0.5);
+
+BRUTE FORCE - Find all factors.
+
+*/

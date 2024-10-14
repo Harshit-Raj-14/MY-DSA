@@ -24,7 +24,6 @@ Well, this list will make your life easy (All you need to Master DP from A-Z)
  - Russian Doll Envelopes
 
 7. Palindromic Subsequence
- - Longest Palindromic Subsequence
  - Palindromic Substrings
  - Minimum Insertion Steps to Make a String Palindrome
 
@@ -83,3 +82,13 @@ Well, this list will make your life easy (All you need to Master DP from A-Z)
 20. State Machine DP
  - Best Time to Buy and Sell Stock With Cooldown
  - Best Time to Buy and Sell Stock III
+
+
+
+
+https://leetcode.com/problems/subarray-sum-equals-k/description/
+https://leetcode.com/problems/subarrays-with-k-different-integers/description/
+https://leetcode.com/problems/count-number-of-nice-subarrays/description/
+https://leetcode.com/problems/binary-subarrays-with-sum/description/
+https://leetcode.com/problems/subarray-product-less-than-k/description/
+https://leetcode.com/problems/count-subarrays-where-max-element-appears-at-least-k-times/description/

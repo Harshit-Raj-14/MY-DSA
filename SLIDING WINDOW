@@ -1,3 +1,9 @@
+THEORY----
+Go further with j to get the maximum possible window size.
+Now shrink the window with i.
+Now again increase j from there.
+Keep doing it till reach end condition.
+
 PS- 713. Subarray Product Less Than K
 Given an array of integers nums and an integer k, return the number of contiguous subarrays 
 where the product of all the elements in the subarray is strictly less than k.
@@ -32,4 +38,313 @@ And the moment it crosses k, we can divide it by the previous and multiply with 
 But what we need is number of subarrays.
 So, we also need to have the start and end index of the window.
 So, we maintain two pointers for it.
+*/
+
+
+/*******************************************************************************************************/
+PS- 1358. Number of Substrings Containing All Three Characters
+Given a string s consisting only of characters a, b and c.
+Return the number of substrings containing at least one occurrence of all these characters a, b and c.
+
+/* CODE  */
+/* SLIDING WINDOW O(n) */
+class Solution {
+    public int numberOfSubstrings(String s) {
+        int count[] = new int[3];
+        int left = 0;
+        int ans = 0;
+        for (int right=0; right<s.length(); right++) {
+            count[s.charAt(right)-'a']++;
+            //found a valid window, Keep shrinking the window until it contains at least one of each a,b,c
+            while(count[0]>0 && count[1]>0 && count[2]>0){
+                ans += s.length()-right; // Count all valid substrings ending at 'right'
+                count[s.charAt(left)-'a']--;
+                left++;
+            }
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+When a valid window is found, ans += s.length() - right counts all the valid substrings that end at the current right position.
+
+The reason for this is that if the current window (starting from left and ending at right) is valid, then all substrings starting from any index between left and right (inclusive) and ending at right are also valid. 
+Therefore, there are s.length() - right such valid substrings for each left.
+
+eg: bbacba
+if acb is a valid.
+Then bbacb is also valid. So, start does not matter and will always be at 0.
+So, the start of valid substirng does not matter.
+So, ans += s.length() - (right-left) will be wrong
+Since left will always be left=0
+ans += s.length() - right is correct
+*/
+
+
+/***************************************************************************************************/
+PS- 1004. Max Consecutive Ones III
+Given a binary array nums and an integer k, 
+return the maximum number of consecutive 1's in the array if you can flip at most k 0's.
+
+/* CODE */
+class Solution {
+    public int longestOnes(int[] nums, int k) {
+        int l=0;
+        int zero=0;
+        int ans=0;
+        for(int r=0;r<nums.length;r++){
+            if(nums[r]==0) zero++;  //zeroes allowed
+            while(zero>k){  //exceed zero threshold shrink curr window
+                if(nums[l]==0) zero--;  //shrink window till you get rid of 0's
+                l++;    //move left pointer forward
+            }
+            ans=Math.max(ans, r-l+1);
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Basically, in a given window, we can never have more than k zeros.
+
+Expand the window till zero threshold becomes k.
+Now shrink window.
+Now again expand the window form there.
+TC-O(n)
+*/
+
+
+/*********************************************************************************************************/
+PS- 930. Binary Subarrays With Sum
+Given a binary array nums and an integer goal, return the number of non-empty subarrays with a sum goal.
+Input: nums = [1,0,1,0,1], goal = 2
+Output: 4
+
+/* CODE */
+/* HASHING STATES O(n), O(n) */
+class Solution{
+    public int numSubarraysWithSum(int[] nums, int goal){
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int curr=0;
+        int ans=0;
+        for(int i=0;i<nums.length;i++){
+            curr+=nums[i];
+            if(curr==goal) ans++;   //directly found a valid subarray
+            if(map.containsKey(curr-goal)){ //Check if any curr sum -goal exits
+                ans+=map.get(curr-goal);
+            }
+            map.put(curr, map.getOrDefault(curr,0)+1);
+        }
+        return ans;
+    }
+}
+/*
+LOGIC---
+Case I: if the current sum precisely matches the target value. If it does, we have found a subarray whose elements add up to the goal.
+
+Case II: current sum exceeds the target value.
+How to extract favorable subarray from case II?
+Since curr is now greater than goal
+curr-x=gaol
+x = curr-goal. Now if this exist in map then the gap between them can still be a valid subarray.
+So, no of valids ubarray will be equal to the curr-goal frequencies stored in map.
+*/
+
+/* SLIDING WINDOW O(n), O(1) */
+class Solution {
+    public int numSubarraysWithSum(int[] nums, int goal) {
+        int l=0;
+        int curr=0;
+        int c0=0;
+        int ans=0;
+        for(int r=0;r<nums.length;r++){
+            curr+=nums[r];
+            while(l<r && (nums[l]==0 || curr>goal)){
+                if(nums[l]==0) c0++;    //can still shrink window if nums[r] is 0
+                else c0=0;  //reset when encoutner 1
+                curr-=nums[l];
+                l++;
+            }
+            if(curr==goal) ans+=1+c0;    //include zeros that could have still been skipped while keeping goal
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Shrink condition:curr>goal
+There is actually one more shrink condition nums[r]==0
+When nums[r]==0 we need to be careful that we cna still shrink the ewindow and bring curr to k.
+This will actually yield a new subarray infact.
+
+So, incldue this in window shrinking logic.
+
+*/
+
+/****************************************************************************************************/
+PS- 560. Subarray Sum Equals K
+Given an array of integers nums and an integer k, return the total number of subarrays whose sum equals to k.
+
+/* CODE */
+/* HASHING STATES O(n), O(n) */
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        int count=0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int curr=0;
+        for(int i=0;i<nums.length;i++){
+            curr+=nums[i];
+            if(curr==k) count++;
+            if(map.containsKey(curr-k)) count+=map.get(curr-k);
+            map.put(curr, map.getOrDefault(curr,0)+1);
+        }
+        return count;
+    }
+}
+
+/*
+LOGIC---
+Same as 930. Binary Subarrays With Sum
+TRUTHS & FACTS
+1.) If the prefix sum at two points(indexes) are same that means the sum lying between those two indexes is zero.
+2.) If the prefix sum at two indexes(i and j) is at a differnece of k. psum[j]-psum[i]=k; That means the sum of elements lying between the two indexes is k.
+
+Based on the above truth and facts we make a hashmap which store the curr up to all indexes along with their numbe rof times the same sum occurs. map(sum, no of occurences).
+Further, for every sum encountered, we also determine the number of times the sum sum−k has occurred already, since it will determine the number of times a subarray with sum k has occurred up to the current index.
+*/
+
+/* SLIDING WINDOW FAILS */
+The answer is because of the presence of negative elements in the array
+For example: array [1,2,-3,1,2,-3] with k = 0
+here subarray A:[1,2,-3] and subarray B: [1,2,-3] are subarray with sum = 0.
+Now Sliding Window will take into the account A and B parts separately, and it will miss the subarray, which happens to be A + B, which is the whole array. 
+This problem can be reproduced in larger settings and any other k values. 
+The idea is that sliding window is constrained that the left window cannot move to the left, 
+since normally sliding window solutions move the window all the way to the right.
+
+If we force ourselves to use the sliding window technique, when we are at the 4th element of the array, 
+which is the start of subarray B, we would need to check every element on the left side to make sure the above situation does not happen. 
+And therefore we would have to keep extending the left window leftward until the start of the array. If we have written the program this way, Yes we are using sliding window, and it should also give us the correct result. However, it is easily recognizable that what we are doing now is essentially the brute force approach, because we are checking every left element for every item that can be a right window. And in a "noraml" sliding window algorithm, we never do this, so we cannot use sliding window for this problem.
+
+Negative elements made sliding window unusable, consider [1,2,-3,1,2,-3] with k = 0
+sliding windw would identify two [1,2,-3] but miss the whole array which also sum to 0
+
+
+/****************************************************************************************************/
+PS- 1248. Count Number of Nice Subarrays
+Given an array of integers nums and an integer k. A continuous subarray is called nice if there are k odd numbers on it.
+
+/* CODE */
+/* HASHING STATES O(n), O(n) */
+class Solution {
+    public int numberOfSubarrays(int[] nums, int k) {
+        for(int i=0;i<nums.length;i++){
+            if(nums[i]%2==0) nums[i]=0;
+            else nums[i]=1;
+        }
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int curr=0;
+        int ans=0;
+        for(int i=0;i<nums.length;i++){
+            curr+=nums[i];
+            if(curr==k) ans++;   //directly found a valid subarray
+            if(map.containsKey(curr-k)){ //Check if any curr sum-k exits
+                ans+=map.get(curr-k);
+            }
+            map.put(curr, map.getOrDefault(curr,0)+1);
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+After replacing each even by zero and every odd by one 
+This problem ahs reduced to PS- 930. Binary Subarrays With Sum
+
+Reason: Making odd 1's. If the sum is now k. it means there are k odd numbers in subarray.
+*/
+
+/* SLIDING WINDOW */
+class Solution {
+    public int numberOfSubarrays(int[] nums, int k) {
+        for(int i=0;i<nums.length;i++){
+            if(nums[i]%2==0) nums[i]=0;
+            else nums[i]=1;
+        }
+        int l=0;
+        int curr=0;
+        int c0=0;
+        int ans=0;
+        for(int r=0;r<nums.length;r++){
+            curr+=nums[r];
+            while(l<r && (nums[l]==0 || curr>k)){
+                if(nums[l]==0) c0++;    //can still shrink window if nums[r] is 0
+                else c0=0;  //reset when encoutner 1
+                curr-=nums[l];
+                l++;
+            }
+            if(curr==k) ans+=1+c0;    //include zeros that could have still been skipped while keeping k
+        }
+        return ans;
+    }
+}
+/*
+LOGIC---
+Same sliding window apply after converting to 0 and 1
+PS- 930. Binary Subarrays With Sum 
+*/
+
+
+
+/*****************************************************************************************************************/
+PS- 438. Find All Anagrams in a String
+Given two strings s and p, return an array of all the start indices of p anagrams in s. 
+
+Input: s = "cbaebabacd", p = "abc"
+Output: [0,6]
+
+/* CODE */
+/* SLIDING WINDOW */
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        ArrayList<Integer> list = new ArrayList<>();
+        if(s.length()<p.length()) return list;  //no anagrams
+        int count[] = new int[26];
+        for(int i=0;i<p.length();i++) count[p.charAt(i)-'a']++;
+        int window[] = new int[26]; //window count
+        //first window count
+        for(int i=0;i<p.length();i++) window[s.charAt(i)-'a']++;
+        //check intial window
+        if(isAnagram(window, count)) list.add(0);
+        for(int r=p.length();r<s.length();r++){
+            window[s.charAt(r)-'a']++;  //new character in
+            window[s.charAt(r-p.length())-'a']--;   //first character out
+            if(isAnagram(window, count)) list.add(r-p.length()+1); //Add the start index of the current window
+        }
+        return list;
+    }
+
+    public static boolean isAnagram(int window[], int count[]){
+        for(int i=0;i<count.length;i++){
+            if(count[i]!=window[i]) return false;
+        }
+        return true;
+    }
+}
+
+/*
+LOGIC---
+Create two arrays (or hash maps) to store the frequency of each letter in p and in the current substring of s that we're considering.
+Iterate through s, and for each iteration, consider the substring of s that starts from the current index and has a length equal to the length of p.
+Compare the frequency arrays (or hash maps) of the current substring in s and p. If they are the same, it means that the current substring is an anagram of p.
+If they are the same, add the start index of the current substring to the output list.
+Move the "sliding window" one step to the right by removing the first character of the current substring and adding the next character to the end.
+Repeat steps 3-5 until we reach the end of s.
+By using a sliding window, we only need to update the frequency arrays (or hash maps) when moving the window one step to the right, 
+instead of computing the arrays (or hash maps) from scratch for every substring of s. This makes the solution more efficient.
 */

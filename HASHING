@@ -26,6 +26,18 @@ class Solution {
 }
 
 /*
+LOGIC---
+You could have easily sorted the array and found the max length cosnecutive series.
+
+But the real question to do it in O(n) is to ask how to know from where the consecutive sequence starts.
+
+Throw every number in hahset.
+Now,
+Iterate through array, if nums[i]-1 exist in hashset. its not start of a consecutive sequence.
+But if nums[i]-1 is not in hashset, nums[i] is a start of a consecutive sequence.
+
+Now hold this start value and find lengths till nums[i]+i (i starts from 1) exists in hahsset.
+
 Why hashset?
 The equal elements were causing us a problem.
 Hashset quickly allow us to access element so it will help us to tell whetehr there is a consecutive elent or not.

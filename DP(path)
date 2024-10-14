@@ -1,8 +1,11 @@
-PS- 
-
+PS- 120. Triangle
+Given a triangle array, return the minimum path sum from top to bottom.
+For each step, you may move to an adjacent number of the row below. More formally, 
+if you are on index i on the current row, you may move to either index i or index i + 1 on the next row.
+Input: triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]
+Output: 11
 
 /* CODE */
-
 /* MEMOISATION */
 class Solution {
     public int minimumTotal(List<List<Integer>> arr){
@@ -136,5 +139,28 @@ class Solution {
         int right= grid[i][j] + solve(grid, i , j+1);
         int down = grid[i][j] + solve(grid, i+1, j);
         return Math.min(right, down);
+    }
+}
+
+
+/*****************************************************************************************************************/
+PS- Maximum sum leaf to root path [GFG]
+Given a Binary Tree, find the maximum sum path from a leaf to root.
+
+/* CODE */
+
+/* RECURSION O(n) */
+class Solution{
+    public static int maxPathSum(Node root){
+        if(root==null) return 0;
+        return solve(root);
+    }
+    
+    public static int solve(Node root){
+        if(root==null) return -10000000;    //we want to reach leaf node and not some null
+        if(root.left==null && root.right==null) return root.data;  //reached leaf node
+        int left = root.data + solve(root.left);
+        int right = root.data + solve(root.right);
+        return Math.max(left, right);
     }
 }

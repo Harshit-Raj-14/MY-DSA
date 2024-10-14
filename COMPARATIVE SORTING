@@ -86,55 +86,6 @@ public class CharacterFrequency {
     }
 }
 
-
-/*****************************************************************************************************/
-PS- 56. Merge Intervals
-Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, 
-and return an array of the non-overlapping intervals that cover all the intervals in the input.
-
-/* CODE */
-class Solution {
-    public int[][] merge(int[][] intervals) {
-        Arrays.sort(intervals, (a,b) -> Integer.compare(a[0], b[0]));       //Arrays.sort(intervals, (a,b) -> a[0] - b[0]);
-        int merged[][] = new int[intervals.length][2];
-        int i=0;
-        merged[i]=intervals[0]; //first row of merged is set to first row of intervals
-        for(int j=1;j<intervals.length;j++){
-            if(merged[i][1]>=intervals[j][0]){  //y1>=x2
-                merged[i][1]=Math.max(merged[i][1], intervals[j][1]);   //make y1->y2
-            }
-            else{
-                i++;
-                merged[i]=intervals[j];
-            }
-        }
-        return Arrays.copyOf(merged, i+1); //creates a new merged that contains the first i+1 elements of the merged
-    }
-}
-
-/*
-LOGIC---
-If we sort the intervals by their start value, then each set of intervals that can be merged will appear as a contiguous "run" in the sorted list.
-If they do, we merge them; if not, we simply move on to the next interval.
-
-We have intervals given:
-(x1,y1),(x2,y2) => sorted by x1
-Inteval overlap: y1>=x2 => overlap => merge intervals : (x1,y2)
-otherwise start to check next interval
-
-Approach---
-    Sort the Intervals: We begin by sorting the intervals based on their start time.
-    Initialize Merged List: Create a new list to store the merged intervals.
-    Iterate and Merge: Start with the first interval, then for each subsequent interval:
-        -If it overlaps with the last interval in the merged list, merge them by updating the end time.
-        -If it doesn't overlap, add it to the merged list as a new interval.
-    Return the Result: Finally, we return the list of merged intervals.
-
-Time complexity : O(nlogn)
-Space complexity : O(logN) or O(n)
-If we can sort intervals in place, we do not need more than constant additional space, although the sorting itself takes O(logn) space. Otherwise, we must allocate linear space to store a copy of intervals and sort that.
-*/
-
 /*********************************************************************************************************/
 PS- 3273. Minimum Amount of Damage Dealt to Bob
 You are given an integer power and two integer arrays damage and health, both having length n.

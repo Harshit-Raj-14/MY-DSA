@@ -157,6 +157,168 @@ Note memoisation or tabulation will make SC-O(n^2*2^n) and no change in TC.
 Despite the efficiency gains from memoization, the time complexity is still dominated by the recursive nature of the algorithm. So, don't use them.
 */
 
+/*********************************************************************************************************/
+PS- JOSEPHUS PROBLEM
+Given the total number of persons N and a number k which indicates that k-1 persons are skipped and the kth person is killed in a circle counting the man holding the gun himself. The task is to choose the person in the initial circle that survives.
+Input: N = 5 and k = 2
+Output: 3
+Explanation: Firstly, the person at position 2 is killed, then the person at position 4 is killed, then the person at position 1 is killed. Finally, the person at position 5 is killed. So the person at position 3 survives. 
+
+/* CODE */
+/* ITERATIVE SOLUTION O(n), O(1) */
+class Solution{
+   public int josephus(int n, int k){
+        int i=1;
+        int ans=0;
+        while(i<=n){
+            ans=(ans+k)%i;
+            i++;
+        }
+        return ans+1;
+    }
+}
+
+/* RECURSIVE SOLUTION O(n), O(n) */
+class Solution{
+   public int josephus(int n, int k){
+        if(n==1) return 1;
+        else return (josephus(n-1,k) + k-1)% n+1;
+    }
+}
+
+/*
+LOGIC---
+Becuase we are trying to repeat something again an again -> recursion we cna use
+
+*/
+
+/* BRUTE FORCE O(n^2) */
+Josephus( list , start , k){
+   if (list.size = 1) return list[0];
+   start = (start + k) % list.size
+   list.remove(start)
+   return Josephus( list, start, k)
+}
+
+/**********************************************************************************************************/
+PS- Josephus Problem when k is 2 || Lucky alive person in a circle
+You kill the next person and hand over gun to next person. Find the survivor.
+
+Why a special case?
+If you write down all answers startign from n=1.
+You iwll realsie the last person starts from 1 then it becoems 3 then becomes 5, then becomes 7 and so on.
+So, there's a jump of 2 each time.
+But it between it keeps on resetting back to 1.
+
+n survivor
+1 1
+2 1
+3 3
+4 1
+5 3
+6 5
+6 7
+8 1
+9 3
+10 5
+11 7
+12 9
+
+INTERESTING OBSERVATION:
+for every number of power of two answer always resets back to 1.
+So, when n is power of 2 the survivor is 1.
+
+Reason : in first round you killed all even's.
+Now sword is back at one. And again all evens are killed. Sword back to 1.
+
+Now how to determine for n values between the pure power of 2?
+Any number = 2^a + something
+Every number can be written in powers of 2/
+eg: 77 = 64 + 8 + 4 + 1
+77 = 2^6 + 2^3 + 2^2 +2^0
+To fit in abaove rep : n = 2^a + l
+So, 77 = 2^6 + 13
+
+Now in a 2^a the survivor is the first person.
+So, after l steps whoever turn it is is the final survivor.
+So, its like saying let l steps happen and then the 2^a game happens.
+
+So, after l stpes the gun will be with person 2l+1.
+So, the winner will be at seat 2l+1.
+
+/* CODE */
+/* SOLUTION O(logn) */
+class Solution{
+    static int find(int n){
+        if((n&(n-1))==0) return 1;
+        else{
+            int rightmostset=0;
+            int temp=n;
+            while(temp!=0){
+                temp=temp>>1;
+                rightmostset++;
+            }
+            int l=n-(int)Math.pow(2,rightmostset-1);
+            return 2*l+1;
+        }
+    }
+}
+
+/*
+LOGIC---
+For power of 2 answer will be 1.
+Find n=2^a + l
+Then answer will be 2l+1
+We can determine a by getting the rightmost set bit.
+*/
 
 
+/*******************************************************************************************************************/
+PS- 60. Permutation Sequence
+Given n and k, return the kth permutation sequence.
+Input: n = 3, k = 3
+Output: "213"
 
+/* CODE */
+
+
+/* BRUTE FORCE - GENERATE ALL PERMUTATIONS + SORT */
+class Solution{
+    static String getPermutation(int n, int k){
+        String s = "";
+        ArrayList<String> list = new ArrayList <>();
+        for (int i=1; i<=n; i++) {
+            s += i;
+        }
+        solve(s.toCharArray(), 0, list);
+        Collections.sort(list);
+        return list.get(k-1);
+    }
+    
+    static void solve(char s[], int idx, ArrayList <String> list) {
+        if (idx == s.length){
+            String str = new String(s);
+            list.add(str);
+            return;
+        }
+        for (int i=idx; i<s.length; i++){
+            swap(s, i, idx);
+            solve(s, idx + 1, list);
+            swap(s, i, idx);    //backtrack
+        }
+    }
+    
+    static void swap(char s[], int i, int j) {
+        char ch = s[i];
+        s[i] = s[j];
+        s[j] = ch;
+    }
+}
+
+/*
+LOGIC---
+Time complexity: O(N! * N) +O(N! Log N!)
+Reason:  The recursion takes O(N!)  time because we generate every possible permutation and another O(N)  time is required to make a deep copy and store every sequence in the data structure. Also, O(N! Log N!)  time required to sort the data structure
+
+Space complexity: O(N) 
+*/

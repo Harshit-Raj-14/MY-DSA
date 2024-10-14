@@ -141,6 +141,34 @@ Notes :
     => that's why we set first_occ[0]=-1; (coz starting se y point tk is zero array and length of that array will be = y - (-1). here y represents the index at point where prefixsum becomes zero.
 */
 
+/********************************************************************************************************/
+PS- 525. Contiguous Array || Largest subarray with equal number of 0s and 1s
+Given a binary array nums, return the maximum length of a contiguous subarray with an equal number of 0 and 1.
+Input: arr[] = {0, 0, 1, 1, 0}
+Output: 4
+
+/* CODE */
+class Solution {
+    public int findMaxLength(int[] nums) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int sum=0;
+        int ans=0;
+        for(int i=0;i<nums.length;i++){
+            if(nums[i]==0) sum--;   //treat 0 as -1
+            else sum++;
+            if(sum==0) ans=Math.max(ans, i+1);  //the entire subarray is good
+            if(map.containsKey(sum)) ans=Math.max(ans, i-map.get(sum)); //the middle part is good
+            else map.put(sum, i);
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+If you take a closer look at this problem, this is mainly an extension of Longest Subarray with 0 sum. 
+If we consider every 0 as -1, then this problem become same as the longest subarray with 0 sum problem.
+*/
 
 /********************************************************************************************************/
 PS- Longest Non-Decreasing Subarray - I [GFG Weekly 174]
