@@ -148,6 +148,73 @@ So the answer is 433125
 C++ STLE - next_permutation(nums.begin(), nums.end());
 */
 
+/*********************************************************************************************************/
+PS - 121. Best Time to Buy and Sell Stock
+You are given an array prices where prices[i] is the price of a given stock on the ith day.
+You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
+Return the maximum profit you can achieve from this transaction.
+
+/* CODE */
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int ans=0;
+        int currmin=prices[0];  //cur buy price
+        for(int i=1;i<prices.length;i++){
+            ans=Math.max(ans, prices[i]-currmin);   //can we make profit with curr buy price
+            currmin=Math.min(currmin, prices[i]);   //we would only like to shift to a new buy price when it is less than my prev buy_price
+        }
+        return ans;
+    }
+}
+```
+Note - similar problem - 2016. Maximum Difference Between Increasing Elements
+
+
+/******************************************************************************************************/
+PS- 48. Rotate Image
+You are given an n x n 2D matrix representing an image, rotate the image by 90 degrees (clockwise). 
+Do it in place.
+
+/* CODE */
+class Solution {
+    public void rotate(int[][] matrix){
+        //Step I : reverse all columns
+        for(int j=0;j<matrix[0].length;j++){    //travel each column
+            for(int i=0;i<matrix.length/2;i++){ //reverse each column
+                swap(matrix, i, j, matrix.length-1-i, j);
+            }
+        }
+        //Step II: take transpose of matrix
+        for(int i=0;i<matrix.length;i++){
+            for(int j=i+1;j<matrix[0].length;j++){
+                swap(matrix, i, j, j, i);
+            }
+        }
+    }
+
+    public void swap(int[][] matrix,int i,int j,int k,int l){
+        int temp = matrix[i][j];
+        matrix[i][j] = matrix[k][l];
+        matrix[k][l] = temp;
+    }
+}
+
+/*
+LOGIC---
+Reverse Each column
+Take transpose that's it (transpose => row becomes column, column becoems row => (i,j) <=> (j,i)
+
+Doing the above two steps in reverse works as well
+
+NOTE---
+In the second loop, we use for(int j=i+1;j<matrix[0].length;j++). 
+This adjustment ensures that we only traverse the upper right triangle of the matrix, preventing redundant swaps with the lower left triangle.
+
+Visaulisation - https://leetcode.com/problems/rotate-image/solutions/3440564/animation-understand-in-30-seconds/
+*/
+
+
 /*******************************************************************************************************/
 PS- 56. Merge Intervals
 Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals.
@@ -196,50 +263,6 @@ Approach---
 Time complexity : O(nlogn)
 Space complexity : O(logN) or O(n)
 If we can sort intervals in place, we do not need more than constant additional space, although the sorting itself takes O(logn) space. Otherwise, we must allocate linear space to store a copy of intervals and sort that.
-*/
-
-
-/******************************************************************************************************/
-PS- 48. Rotate Image
-You are given an n x n 2D matrix representing an image, rotate the image by 90 degrees (clockwise). 
-Do it in place.
-
-/* CODE */
-class Solution {
-    public void rotate(int[][] matrix){
-        //Step I : reverse all columns
-        for(int j=0;j<matrix[0].length;j++){    //travel each column
-            for(int i=0;i<matrix.length/2;i++){ //reverse each column
-                swap(matrix, i, j, matrix.length-1-i, j);
-            }
-        }
-        //Step II: take transpose of matrix
-        for(int i=0;i<matrix.length;i++){
-            for(int j=i+1;j<matrix[0].length;j++){
-                swap(matrix, i, j, j, i);
-            }
-        }
-    }
-
-    public void swap(int[][] matrix,int i,int j,int k,int l){
-        int temp = matrix[i][j];
-        matrix[i][j] = matrix[k][l];
-        matrix[k][l] = temp;
-    }
-}
-
-/*
-LOGIC---
-Reverse Each column
-Take transpose that's it (transpose => row becomes column, column becoems row => (i,j) <=> (j,i)
-
-Doing the above two steps in reverse works as well
-
-NOTE---
-In the second loop, we use for(int j=i+1;j<matrix[0].length;j++). 
-This adjustment ensures that we only traverse the upper right triangle of the matrix, preventing redundant swaps with the lower left triangle.
-
-Visaulisation - https://leetcode.com/problems/rotate-image/solutions/3440564/animation-understand-in-30-seconds/
 */
 
 
@@ -392,3 +415,541 @@ We will do the above grouping for -> all array elements + all elements between 1
 Now both set and unset are either the missing or the repeated number itself.
 Iterate the array and check which was missing and which was repeated.
 */
+
+/****************************************************************************************************************/
+PS- 74. Search a 2D Matrix
+Each row is sorted in non-decreasing order. The first integer of each row is greater than the last integer of the previous row.
+Given an integer target, return true if target is in matrix or false otherwise.
+
+/* CODE */
+/* FLATTENING 2D ARRAY TO 1D + BINARY SEARCH O(log(m*n)) */
+class Solution {
+    public boolean searchMatrix(int[][] mat, int t){
+        int n=mat.length;
+        int m=mat[0].length;
+        int l=0;
+        int r=m*n-1;    //last element index if it were 1D
+        while(l<=r){
+            int mid=l+(r-l)/2;
+            if(mat[mid/m][mid%m]==t) return true;
+            else if(mat[mid/m][mid%m]>t) r=mid-1;
+            else l=mid+1;
+        }
+        return false;
+    }
+}
+
+/*
+LOGIC---
+Since the matrix is sorted, if we flatten the given 2D matrix to a 1D array, the 1D array will also be sorted. 
+By utilizing binary search on this sorted 1D array to locate the 'target' element, we can further decrease the time complexity.
+
+But if we really try to flatten the 2D matrix, it will take O(N x M) time complexity and extra space to store the 1D array. In that case, it will not be the optimal solution anymore.
+
+How to apply binary search on the 1D array without actually flattening the 2D matrix?
+We will use the following formula:
+If index = i, and no. of columns in the matrix = m, 
+the index i corresponds to the cell with row = i / m and col = i % m. 
+More formally, the cell is (i / m, i % m)(0-based indexing).
+
+eg: index 5 on 1D wil lcorresspond to (1,1) on 2D
+row=5/4=1
+col=5%4
+
+So, l=0
+r=m*n-1 => total numbe rof elements-1 => last index if it were 1D
+Now apply binary search to above range
+mat[mid/m][mid%m] to represent row and column index
+*/
+
+/* LINEAR + BINARY O(r + logc) */
+class Solution {
+    public boolean searchMatrix(int[][] mat, int t) {
+        int n=mat.length;
+        int m=mat[0].length;
+        for(int i=0;i<n;i++){
+            if(mat[i][0]<=t && mat[i][m-1]>=t) return binarySearch(mat, i, t);
+        }
+        return false;
+    }
+
+    public static boolean binarySearch(int mat[][], int i, int t){ //travel in one row where target can be
+        int l=0;
+        int r=mat[0].length;
+        while(l<=r){
+            int mid=l+(r-l)/2;
+            if(mat[i][mid]==t) return true;
+            else if(mat[i][mid]>t) r=mid-1;
+            else l=mid+1;
+        }
+        return false;
+    }
+}
+
+/*
+LOGIC---
+Traverse first rwo wise and using the first and last element ans start and end range, check whether t can lie in that range.
+Once its confirmed use binary search on that row where t is expected to be.
+
+Time Complexity: O(N + logM), where N = given row number, M = given column number.
+Reason: We are traversing all rows and it takes O(N) time complexity. 
+But for all rows, we are not applying binary search rather we are only applying it once for a particular row.
+*/
+
+
+/**************************************************************************************************************/
+PS- 50. Pow(x, n)
+
+/* CODE */
+class Solution {
+    public double myPow(double x, int n){
+        if(n==0) return 1;
+        if(n==1) return x;
+        if(n==-1) return 1/x;   // if(n<0) return 1/myPow(x, n);
+        if(n%2==0) return myPow(x, n/2) * myPow(x, n/2);    //can store it in one variable then do y*y, saves TLE
+        else return x*myPow(x, n-1);
+    }
+}
+
+/*
+LOGIC---
+n can be even or odd
+
+when n is even => x^n = x^(n/2) * x^(n/2)
+Similarly for n is odd => x^n = x^(n-1/2) * x^(n-1/2) *x => since n-1 iwll be now even
+
+In case if n is 0 return 1
+If n is negative, solve for positive value of n and then invert 1/x 
+*/
+
+/*****************************************************************************************************************/
+PS- 169. Majority Element
+Given an array nums of size n, return the majority element.
+The majority element is the element that appears more than ⌊n / 2⌋ times. 
+
+/* CODE */
+/* Boyer Moore Majority VOTING ALGORITHM O(n), O(1) */
+class Solution {
+    public int majorityElement(int[] nums) {
+        int major=nums[0];
+        int vote=1;  //vote is count of element -> make it 1 for current candidate 
+        for(int i=1;i<nums.length;i++){
+            if(vote==0){    //vote for current candidate becomes 0 time to change candidate, to curr
+                major=nums[i];
+                vote++;
+            }
+            else if(nums[i]==major) vote++;
+            else vote--;
+        }
+        return major;
+    }
+}
+
+/* SORTING */
+public int majorityElement1(int[] nums){
+    Arrays.sort(nums);
+    return nums[nums.length/2];
+}
+//When an element appears more than n/2 times in the array, the middle one must be the "majority" number when array is sorted.
+
+/* HASHING COUNT FREQUENCY O(n), O(n) */
+
+/********************************************************************************************************/
+PS- 229. Majority Element II
+Given an integer array of size n, find all elements that appear more than ⌊ n/3 ⌋ times.
+
+/* CODE */
+/* Moore's Voting Algorithm O(n) */
+class Solution {
+  public List < Integer > majorityElement(int[] nums) {
+    // In the begining, both Trump and Biden don't get a vote
+    int firstMajor = Integer.MAX_VALUE, firstSum = 0;
+    int secondMajor = Integer.MIN_VALUE, secondSum = 0;
+    for (int i = 0; i < nums.length; i++) {
+      // case 1: I want to vote for Biden or Trump
+      if (nums[i] == firstMajor) firstSum++;
+      else if (nums[i] == secondMajor) secondSum++;
+      // case 2: I want to run for the president
+      else if (firstSum == 0) {
+        firstMajor = nums[i];
+        firstSum = 1;
+      } else if (secondSum == 0) {
+        secondMajor = nums[i];
+        secondSum = 1;
+      }
+      // case 3: fuck sleepy Joe and crazy Trump, let James be the president
+      else {
+        firstSum--;
+        secondSum--;
+      }
+    }
+    // After election, we need to count the vote again.
+    ArrayList < Integer > ans = new ArrayList < Integer > ();
+    firstSum = 0;
+    secondSum = 0;
+    for (int i = 0; i < nums.length; i++) {
+      if (nums[i] == firstMajor)
+        firstSum++;
+      else if (nums[i] == secondMajor)
+        secondSum++;
+    }
+    if (firstSum > nums.length / 3) ans.add(firstMajor);
+    if (secondSum > nums.length / 3) ans.add(secondMajor);
+    return ans;
+  }
+}
+
+/**************************************************************************************************************/
+PS- 62. Unique Paths
+Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+The robot can only move either down or right at any point in time.
+/* CODE */
+/* MEMOISATION DP O(n*m) */
+class Solution {
+    public int uniquePaths(int m, int n) {
+        int dp[][] = new int[m+1][n+1];
+        for(int[] row : dp) Arrays.fill(row, -1);
+        return solve(m, n, 0, 0, dp);
+    }
+
+    public int solve(int m, int n, int i, int j, int dp[][]){
+        if(i==m-1 && j==n-1) return 1;
+        if(i>m-1 || j>n-1) return 0;
+        if(dp[i][j]!=-1) return dp[i][j];
+        int right = solve(m, n, i+1, j, dp);
+        int down = solve(m, n, i, j+1, dp);
+        return dp[i][j]=right+down;
+    }
+}
+
+/*************************************************************************************************************/
+PS- 493. Reverse Pairs
+Given an integer array nums, return the number of reverse pairs in the array.
+A reverse pair is a pair (i, j) where: 0 <= i < j < nums.length and nums[i] > 2 * nums[j].
+Input: nums = [1,3,2,3,1]
+Output: 2
+Explanation: The reverse pairs are:
+(1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1
+(3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1
+
+/* MERGE SORT O(nlogn), O(n) */
+class Solution {
+    public int reversePairs(int[] nums) {
+        return reversePairsSub(nums, 0, nums.length - 1);
+    }
+    
+    public static int reversePairsSub(int[] nums, int l, int r) {
+        if (l >= r) return 0;
+        int mid = l + (r - l)/2;
+        int ans = reversePairsSub(nums, l, mid) + reversePairsSub(nums, mid+1, r); //divide into two halves
+        int i = l, j = mid + 1;
+        int k = 0;
+        int p = mid + 1;
+        int[] merge = new int[r-l+1];
+        while (i<=mid){
+            // two-pointer searching process on the two divided arrays, otherwise all rest part is merge sort
+            while (p<=r && nums[i] > 2*(long)nums[p]) p++;
+            ans += p-(mid + 1);
+            //sorting the divided array parts and merging them by comparison - basic merge sort
+            while (j<=r && nums[i]>=nums[j]) merge[k++] = nums[j++];
+            merge[k++] = nums[i++];
+        }
+        while (j<=r) merge[k++] = nums[j++];    //remaining right hand subarray
+        System.arraycopy(merge, 0, nums, l, merge.length); 
+        return ans;
+    }
+}
+
+
+/*
+LOGIC---
+Function "reversePairsSub" will return the total number of important reverse pairs within subarray nums[l, r]. 
+The two-pointer searching process is represented by the nested while loop involving variable p, while the rest is the standard merging algorithm.
+
+We apply divide and conquer to divide the array to redcue to its least form which cna be considered the smallest sorted from.
+This sort all the subarrays whenw e start merging them.
+
+With both subarrays sorted, the number of important reverse pairs can be found in linear time by employing the so-called two-pointer technique.
+One pointing to elements in the left subarray while the other to those in the right subarray and both pointers will go only in one direction due to the ordering of the elements.
+
+WHY MERGE SORT?
+Since we need to partition the array into halves anyway, it is most natural to adapt it into a Merge-sort. Another point in favor of Merge-sort is that the searching process above can be embedded seamlessly into its merging stage.
+
+APPROACH---
+STEP I: Dividing array/subarrays into two subparts
+The total number of reverse pairs in the current subarray is the sum of reverse pairs from both halves and the reverse pairs that span across the two halves.
+
+STEP II: Two-Pointer Technique (Count Reverse Pairs):
+After dividing the array, we need to count the reverse pairs that span the left and right halves. This is done using the two-pointer technique:
+=> Pointer i iterates through the left half (l to mid).
+=> Pointer p scans the right half (mid + 1 to r), 
+looking for the first element where nums[i] > 2 * nums[p]. 
+For every valid p, the count of reverse pairs increases by (p - (mid + 1)).
+
+STEP III: Sorting and Merging (Merge Sort):
+After counting reverse pairs, the next step is to sort the two halves and merge them. 
+Once all elements are merged, they are copied back to the original array using System.arraycopy(merge, 0, nums, l, merge.length).
+
+=> System.arraycopy(sourceArray, sourceStartIndex, destinationArray, destinationStartIndex, length);
+
+WHy make the array sorted?
+So, that two pointers work effectively for counting reverse pairs.
+Reason: see striver's dry run
+When you two point over two sorted list. if till i is the current reverse pairs, then next number can be checked from i+1 witout again checking from 0 to i.
+*/
+
+/*******************************************************************************************************************/
+PS- 1. Two Sum
+
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int i=0;i<nums.length;i++) map.put(nums[i], i);
+        for(int i=0;i<nums.length;i++){
+            if(map.containsKey(target-nums[i]) && map.get(target-nums[i])!=i){
+                return new int[]{i, map.get(target-nums[i])};
+            }
+        }
+        return new int[]{};
+    }
+}
+
+/******************************************************************************************************************/
+PS- 15. 3Sum
+
+/* CODE */
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+        for (int i = 0; i < nums.length - 2; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            int left = i + 1;
+            int right = nums.length - 1;
+            while (left < right) {
+                int threeSum = nums[i] + nums[left] + nums[right];
+                if (threeSum > 0) right--;
+                else if (threeSum < 0) left++;
+                else {
+                    res.add(Arrays.asList(nums[i], nums[left], nums[right]));
+                    left++;
+                    while (left < right && nums[left] == nums[left - 1]) left++;
+                }
+            }
+        }
+        return res;
+    }
+}
+
+/******************************************************************************************************************/
+PS- 18. 4Sum
+
+/* CODE */
+/* TWO POINTER O(n^3) */
+class Solution {
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        List<List<Integer>> ans = new ArrayList<>();
+        Arrays.sort(nums);
+        for(int i=0;i<nums.length;i++){
+            if(i>0 && nums[i]==nums[i-1]) continue; //skip duplicates
+            for(int j=i+1;j<nums.length;j++){
+                if(j>i+1 && nums[j]==nums[j-1]) continue; //skip duplicates
+                //TWO POINTER
+                int l=j+1;
+                int r=nums.length-1;
+                while(l<r){
+                    long sum = (long)nums[i] + (long)nums[j] + (long)nums[l] + (long)nums[r];   //stupid testcase
+                    if(sum==target){
+                        List<Integer> temp = new ArrayList<>();
+                        temp.add(nums[i]);
+                        temp.add(nums[j]);
+                        temp.add(nums[l]);
+                        temp.add(nums[r]);
+                        ans.add(temp);
+                        l++;
+                        r--;
+                        // skip the duplicates:
+                        while (l<r && nums[l]==nums[l-1]) l++;
+                        while (l<r && nums[r]==nums[r+1]) r--;
+                    }
+                    else if (sum < target) l++;
+                    else r--;
+                }
+            }
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Iterate for two outer loops and for the last two inner loops relace it with a two pointer iteration.
+making it O(n^3)
+don't forget to skip duplicates for each quadruplet
+
+Notice something as we increase it to k sum
+Apply direct loops for k-2 parameters, and for the last two apply two pointer
+
+So, in 3 sum apply one outer loop and for inside 2 parameters apply two pointer
+*/
+
+/*************************************************************************************************************/
+PS- 128. Longest Consecutive Sequence
+Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.
+
+Input: nums = [100,4,200,1,3,2]
+Output: 4
+Explanation: The longest consecutive elements sequence is [1, 2, 3, 4]. Therefore its length is 4.
+
+/* CODE */
+
+/* USING HASHSET O(n), O(n) */
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        HashSet<Integer> set = new HashSet<>();
+        for(int i=0;i<nums.length;i++) set.add(nums[i]);
+        int ans=0;
+        for(int i=0;i<nums.length;i++){
+            int curr=nums[i];
+            if(!set.contains(curr-1)){
+                int count=1;
+                while(set.contains(curr+count)) count++;
+                ans = Math.max(ans, count);
+            }
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+You could have easily sorted the array and found the max length cosnecutive series.
+
+But the real question to do it in O(n) is to ask how to know from where the consecutive sequence starts.
+
+Throw every number in hahset.
+Now,
+Iterate through array, if nums[i]-1 exist in hashset. its not start of a consecutive sequence.
+But if nums[i]-1 is not in hashset, nums[i] is a start of a consecutive sequence.
+
+Now hold this start value and find lengths till nums[i]+i (i starts from 1) exists in hahsset.
+
+Why hashset?
+The equal elements were causing us a problem.
+Hashset quickly allow us to access element so it will help us to tell whetehr there is a consecutive elent or not.
+
+Once put everything in hahset.
+We start iterating from first element and think to check whether next consecutive exist or not in hahsset. But that sounds just like bruteforce. Checking from every element.
+
+Trick: Instead of looking for next consecutive we try looking whether our curr is the start of a consecutive series or not. So, we look backward till we find the start.
+
+And from there we start looking in front.
+
+So, when we encounter a mid elemnt of a consecutive series, we don't reiterate till we say its start of a consecutive series.
+*/
+
+
+/* USING SORTING O(nlogn) */
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        int n = nums.length;
+        if(n==0) return 0;
+        Arrays.sort(nums);
+        int cnt = 1;
+        int max = 0;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] == nums[i-1]) continue;   //don't forget this step to skip consecutive term
+            if (nums[i] == nums[i-1] + 1) cnt++;
+            else{
+                max = Math.max(max, cnt);
+                cnt = 1;
+            }
+        }
+        return Math.max(max, cnt);
+    }
+}
+
+/*
+LOGIC---
+Why skip consecutive terms?
+Input: nums =[1,2,0,1]
+got Output: 2
+Expected output: 3
+*/
+
+/******************************************************************************************************************/
+PS- Largest subarray with 0 sum
+Given an array having both positive and negative integers. The task is to compute the length of the largest subarray with sum 0.
+
+/* CODE */
+/* HASHING STATES */
+class GfG{
+    int maxLen(int arr[], int n){
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int curr=0;
+        int ans=0;
+        for(int i=0;i<arr.length;i++){
+            curr+=arr[i];
+            if(curr==0) ans=Math.max(ans, i+1); //full subarray till i is valid
+            if(map.containsKey(curr)){ //if curr sum reappears, part in between is 0
+                ans=Math.max(ans, i-map.get(curr));
+            }
+            else map.put(curr, i);  //store first occurence of curr, to get maximum length
+        }
+        return ans;
+    }
+}
+
+/******************************************************************************************************************/
+PS- 560. Subarray Sum Equals K
+Given an array of integers nums and an integer k, return the total number of subarrays whose sum equals to k.
+
+/* CODE */
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        int count=0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int curr=0;
+        for(int i=0;i<nums.length;i++){
+            curr+=nums[i];
+            if(curr==k) count++;
+            if(map.containsKey(curr-k)) count+=map.get(curr-k);
+            map.put(curr, map.getOrDefault(curr,0)+1);
+        }
+        return count;
+    }
+}
+
+/*
+LOGIC---
+Same as 930. Binary Subarrays With Sum
+TRUTHS & FACTS
+1.) If the prefix sum at two points(indexes) are same that means the sum lying between those two indexes is zero.
+2.) If the prefix sum at two indexes(i and j) is at a differnece of k. psum[j]-psum[i]=k; That means the sum of elements lying between the two indexes is k.
+
+Based on the above truth and facts we make a hashmap which store the curr up to all indexes along with their numbe rof times the same sum occurs. map(sum, no of occurences).
+Further, for every sum encountered, we also determine the number of times the sum sum−k has occurred already, since it will determine the number of times a subarray with sum k has occurred up to the current index.
+*/
+
+/*****************************************************************************************************************/
+PS- 3. Longest Substring Without Repeating Characters
+Given a string s, find the length of the longest substring without repeating characters.
+
+/* CODE */
+/* SLIDING WINDOW + HASHSET O(n), O(n) */
+class Solution {
+    public int lengthOfLongestSubstring(String s){
+        HashSet<Character> set=new HashSet<>();
+        int ans=0;
+        int l=0;    // two pointers to make a window of unrepeating characters
+        for (int r=0; r<s.length(); r++) {
+            while(set.contains(s.charAt(r))){  //Shrink the window until the duplicate character is removed
+                set.remove(s.charAt(l));
+                l++;
+            }
+            set.add(s.charAt(r));
+            ans=Math.max(ans, r-l+1);  // calculate length of the current window
+        }
+        return ans;
+    }
+}

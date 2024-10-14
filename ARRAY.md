@@ -1,24 +1,3 @@
-PS - 121. Best Time to Buy and Sell Stock
-You are given an array prices where prices[i] is the price of a given stock on the ith day.
-You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
-Return the maximum profit you can achieve from this transaction.
-
-/* CODE */
-```
-class Solution {
-    public int maxProfit(int[] prices) {
-        int ans=0;
-        int currmin=prices[0];  //cur buy price
-        for(int i=1;i<prices.length;i++){
-            ans=Math.max(ans, prices[i]-currmin);   //can we make profit with curr buy price
-            currmin=Math.min(currmin, prices[i]);   //we would only like to shift to a new buy price when it is less than my prev buy_price
-        }
-        return ans;
-    }
-}
-```
-Note - similar problem - 2016. Maximum Difference Between Increasing Elements
-
 
 /**********************************************************************************************************/
 PS- Equal(Hackerrank)

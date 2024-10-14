@@ -280,6 +280,97 @@ Input: n = 3, k = 3
 Output: "213"
 
 /* CODE */
+/* OPTIMAL SOLUTION O(n), O(n) */
+class Solution {
+    public String getPermutation(int n, int k){
+        //Step I: create an array of factorial lookup
+        int factorial[] = new int[n+1]; //need factorial values till n
+        factorial[0]=1;
+        for(int i=1;i<=n;i++) factorial[i] = factorial[i-1]*i;
+        //Step II: create a list of numbers to get indices
+        List<Integer> numbers = new ArrayList<>();
+        for(int i=1; i<=n; i++){
+            numbers.add(i);
+        }
+        k--;    //make k 0 indexed
+        StringBuilder sb = new StringBuilder();
+        for(int i=n-1;i>=0;i--){    //number of palces left to fill on the right
+            int index = k/factorial[i]; //choosing the bucket 
+            sb.append(Integer.toString(numbers.get(index)));
+            numbers.remove(index);
+            k -= index*factorial[i];
+        }
+        return sb.toString();
+    }
+}
+
+/*
+APPROACH---
+WHY int index = k / factorial[i] ?
+factorial[i] gives the number of permutations that can be formed with the remaining i elements. 
+By dividing k by this value, the code calculates which "bucket" or group of permutations the kth permutation falls into.
+For example, if factorial[i] = 6 (i.e., 6 permutations can be made for the next 3 positions), and k = 14, then dividing 14 by 6 gives 2. 
+This tells you that the desired permutation is in the 3rd "bucket" (since counting starts from 0).
+
+DRY RUN---
+Initial Values:numbers = {1, 2, 3, 4}, k = 14 - 1 = 13 (since k is zero-indexed in this code logic)
+factorial = {1, 1, 2, 6} (for n = 4)
+
+Now, let's step through the iterations.
+Iteration 1 (i = 3):
+index = k / factorial[3] = 13 / 6 = 2
+We're selecting the 3rd element (0-indexed) from the numbers list.
+sb.append(numbers.get(2)) = sb.append(3)
+sb becomes "3".
+numbers.remove(2), so numbers becomes {1, 2, 4}.
+k -= index * factorial[3] = 13 - 2 * 6 = 1
+New k = 1.
+
+
+LOGIC---
+think dictionary.
+The idea is to keep selecting a digit and eliminating it from further selection based on value of K.
+For example:
+Given, N = 4, K = 9
+There are 6 numbers starting with 1: 1234, 1243, 1324, 1342, 1423, 1432
+There are 6 numbers starting with 2: 2134, 2143, 2314, 2341, 2413, 2431
+Similarly, there are 6 numbers starting with 3 and 6 numbers starting with 4. We willbe calling these distributions as buckets, so here we have in start 4(n) buckets.
+
+This is because when we have chosen one place out of 4 places(as N=4), there are 3 places remaining to be filled and those 3 places can be filled in 6 ways or (N-1)! ways.
+
+So, we have to keep identifying which digit to choose.
+
+Initially, we have to choose a digit from {1,2,3,4}.
+Since K = 9, meaning it belongs to second set of six numbers and hence, would begin with 2.
+
+Now, first place is chosen as 2 and output string becomes “2”.
+This means we have eliminated 6 choices starting with 1 (1234, 1243, 1324, 1342, 1423, 1432).
+
+Now, K would be updated as K = 9-6 = 3.
+We now have to identify remaining 3 places with the digits {1,3,4} and with K = 3.
+
+There are 2 numbers starting with 1: 134, 143
+There are 2 numbers starting with 3: 314, 341
+There are 2 numbers starting with 4: 413, 431
+
+This is because when we have chosen one place out of 3 available places, there are 2 places remaining to be filled and those 2 places can be filled in 2 ways.
+
+Since, K = 3, meaning it belongs to second set of two numbers and hence, answer would be appended with “3” and output string becomes “23”.
+This means we have eliminated 2 choices starting with 1 (134, 143).
+
+Now, K would be updated as K = 3-2 = 1.
+
+We now have to identify remaining 2 places with the digits {1,4} with K = 1.
+
+There is 1 number starting with 1: 14
+There is 1 number starting with 4: 41
+
+This is because when we have chosen one place out of 2 available places, there is only 1 place remaining to be filled and that 1 place can be only be filled in 1 ways.
+
+Since, K = 1, meaning it belongs to first set of one number and hence, answer would be appended with “14” and output string becomes “2314”.
+
+Therefore, final answer becomes “2314”
+*/
 
 
 /* BRUTE FORCE - GENERATE ALL PERMUTATIONS + SORT */
