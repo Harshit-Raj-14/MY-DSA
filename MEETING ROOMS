@@ -1,0 +1,41 @@
+PS- N meetings in one room
+You are given timings of n meetings in the form of (start[i], end[i]).
+Return the maximum number of meetings that can be accommodated in a single meeting room, 
+when only one meeting can be held in the meeting room at a particular time. 
+
+/* CODE */
+class Solution {
+    public int maxMeetings(int start[], int end[]) {
+        int intervals[][] = new int[start.length][2];
+        for (int i=0; i<start.length; i++) {
+            intervals[i][0] = start[i];
+            intervals[i][1] = end[i];
+        }
+        // Sort based on the second element (end time)
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));
+        int limit = intervals[0][1]; // The end time of the first meeting
+        int ans = 1; // Count the first meeting
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] > limit) { // If the next meeting starts after the last one ends
+                limit = intervals[i][1];   // Update limit to the end time of the current meeting
+                ans++;
+            }
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Say if you have two meetings, one which gets over early and another which gets over late. 
+Which one should we choose?  
+If our meeting lasts longer the room stays occupied and we lose our time. 
+On the other hand, if we choose a meeting that finishes early we can accommodate more meetings. 
+Hence we should choose meetings that end early and utilize the remaining time for more meetings.
+
+The idea is to sort the meetings based on their end times. 
+We can then greedily select meetings that end early, allowing us to accommodate more meetings overall.
+
+Now make a limit for end time, if the next start time is after limit, we cna take it otherwise see next time.
+This works greedily becuase we sorted our intervals, meaning smaller time meetings appear first.
+*/

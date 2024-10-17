@@ -37,3 +37,81 @@ no of perfect squares between m and n = (int)Math.pow(m,0.5) - (int)Math.pow(n-1
 BRUTE FORCE - Find all factors.
 
 */
+
+/***************************************************************************************************************/
+PS- 172. Factorial Trailing Zeroes
+Given an integer n, return the number of trailing zeroes in n!.
+
+/* CODE O(logn on base5) */
+class Solution {
+    public int trailingZeroes(int n) {
+        int count=0;
+        while(n>0){
+            n/=5;
+            count+=n;
+        }
+        return count;
+    }
+}
+
+/* 
+LOGIC---
+The ZERO comes from 10.
+The 10 comes from 2 x 5
+And we need to account for all the products of 5 and 2. likes 4×5 = 20 …
+So, if we take all the numbers with 5 as a factor, we’ll have way more than enough even numbers to pair with them to get factors of 10.
+
+Using factorial formula
+We know that [n/5]+[n/5^2]+....
+Will give us the number of zeroes.
+Since 10=5x2
+Between any range freq of 2 > freq of 5
+So, number of 10' or trailing zeroes will be equal to occurences of multiple of 5 in that number
+*/
+
+/* O(logn on base5) */
+class Solution {
+    public int trailingZeroes(int n) {
+        int ans = 0;
+    for(int i=5; n/i>0; i*=5){
+        ans += (n/i);
+    }
+    return ans;
+    }
+}
+
+/* 
+LOGIC---
+The ZERO comes from 10.
+The 10 comes from 2 x 5
+And we need to account for all the products of 5 and 2. likes 4×5 = 20 …
+So, if we take all the numbers with 5 as a factor, we’ll have way more than enough even numbers to pair with them to get factors of 10.
+
+How many multiples of 5 are there in the numbers from 1 to 100?
+because 100 ÷ 5 = 20, so, there are twenty multiples of 5 between 1 and 100.
+but wait, actually 25 is 5×5, so each multiple of 25 has an extra factor of 5, e.g. 25 × 4 = 100，which introduces extra of zero.
+So, we need know how many multiples of 25 are between 1 and 100? Since 100 ÷ 25 = 4, there are four multiples of 25 between 1 and 100.
+Finally, we get 20 + 4 = 24 trailing zeroes in 100!
+
+The above example tell us, we need care about 5, 5×5, 5×5×5, 5×5×5×5 ….
+
+EXAMPLE---
+By given number 4617.
+5¹ : 4617 ÷ 5 = 923.4, so we get 923 factors of 5
+5² : 4617 ÷ 25 = 184.68, so we get 184 additional factors of 5
+5³ : 4617 ÷ 125 = 36.936, so we get 36 additional factors of 5
+5⁴ : 4617 ÷ 625 = 7.3872, so we get 7 additional factors of 5
+5⁵ : 4617 ÷ 3125 = 1.47744, so we get 1 more factor of 5
+5⁶ : 4617 ÷ 15625 = 0.295488, which is less than 1, so stop here.
+Then 4617! has 923 + 184 + 36 + 7 + 1 = 1151 trailing zeroes.
+
+
+THE REAL THEORY---
+n = 1x2x3x4x5x6x7x8x9x10x11......x25x.....
+Note, every 5 th palce is going to contribute a 5. => 5, 10
+But now there are other numbers that can contribute more than one 5. => 25, 125......
+So, when we divide n with 5 first we get all numbers which have 5 as a factor. but only 5^1 comes. => already counted 5^1 one time
+Now we divide n with 25 we get all numbers which have 25 as a factor. so we get 5^2 comes. => this one counts the second 5
+Do this til lwe no longer get 5 factors.
+
+*/

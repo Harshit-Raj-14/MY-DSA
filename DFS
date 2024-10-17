@@ -1,3 +1,169 @@
+PS- 200. Number of Islands
+/* CODE */
+class Solution {
+    public int numIslands(char[][] grid){
+        int ans=0;
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]=='1'){
+                    solve(grid, i, j);  //make one entire island marked as x
+                    ans++;
+                }
+            }
+        }
+        return ans;
+    }
+
+    public static void solve(char grid[][], int i, int j){
+        if(i<0 || j<0 || i>=grid.length || j>=grid[0].length) return; //reached out of bond , island ends
+        if(grid[i][j]=='0') return;   //found water, island ends
+        if(grid[i][j]=='x') return;    //already visited
+        grid[i][j]='x'; //marking as visited
+        solve(grid, i+1, j);    //explore down
+        solve(grid, i-1, j);    //explore up
+        solve(grid, i, j+1);    //explore right
+        solve(grid, i, j-1);    //explore left
+    }
+}
+
+/*
+LOGIC---
+We start form any grid with 1.
+The explore all four directions.
+if found water(0), means island ends ther for that point we return
+if out of bond, means island ends there return.
+if another island, we explore further in four directions
+each grid visited will be marked as x.
+
+In fact the sole purpose of solve function is to mark visited grids as x.
+So, one '1' encountered leads to exploration of a bigger island and then marked as x, so we did nto visit the same island again.
+
+TC- O(mxn) => each grid is visited only once
+*/
+
+/* BFS */
+class Solution {
+  public int numIslands(char[][] grid) {
+    int ans = 0;
+    for (int i = 0; i < grid.length; ++i)
+      for (int j = 0; j < grid[0].length; ++j)
+        if (grid[i][j] == '1'){
+          bfs(grid, i, j);
+          ans++;
+        }
+    return ans;
+  }
+
+  private static final int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+  private void bfs(char[][] grid, int r, int c) {
+    Queue<Pair<Integer, Integer>> q = new ArrayDeque<>(List.of(new Pair<>(r, c)));
+    grid[r][c] = '2'; // Mark '2' as visited.
+    while (!q.isEmpty()) {
+      int i = q.peek().getKey();
+      int j = q.poll().getValue();
+      for (int[] dir : dirs) {
+        int x = i + dir[0];
+        int y = j + dir[1];
+        if (x < 0 || x == grid.length || y < 0 || y == grid[0].length) continue;
+        if (grid[x][y] != '1') continue;
+        q.offer(new Pair<>(x, y));
+        grid[x][y] = '2'; // Mark '2' as visited.
+      }
+    }
+  }
+}
+/***************************************************************************************************************/
+PS- 463. Island Perimeter
+
+/* CODE O(n^2) */
+class Solution {
+    public int islandPerimeter(int[][] grid) {
+        int ans=0;
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]==1) ans+=dfs(grid, i, j);
+            }
+        }
+        return ans;
+    }
+
+    public static int dfs(int grid[][], int i, int j){
+        if (i<0 || i>=grid.length || j<0 || j>=grid[0].length) return 1; //the sqaure is on edge of grid
+        if(grid[i][j]==0) return 1; //square side surrounded by water
+        if(grid[i][j]==-1) return 0;    //already visited
+        grid[i][j]=-1;  //marking cell as visited now
+        //explore neighbours(up, down, left, right) => if edge add 1, or if water add 1
+        return (dfs(grid,i+1,j) + dfs(grid,i-1,j) + dfs(grid,i,j-1) + dfs(grid,i,j+1));
+    }
+}
+
+/*
+LOGIC---
+This method utilizes Depth-First Search (DFS) to traverse and count the perimeter of the island. 
+We define a helper function dfs(r, c) that recursively explores all adjacent cells of a given cell (r, c).
+
+If a cell is out of the grid bounds or is water (0), it contributes 1 to the perimeter.
+
+If a cell is land (1), we mark it as visited by changing its value to -1 to avoid recounting, 
+then recursively explore its four neighboring cells (up, down, left, right).
+
+The base case for the recursion is when the cell is out of bounds or is water, 
+which contributes 1 to the perimeter.
+
+By iterating through each cell of the grid and invoking the dfs function on unvisited land cells, 
+we can compute the total perimeter of the island.
+
+TC- O(n^2) => we traverse each grid once only as we mark them visited and do not visit them again.
+*/
+
+/******************************************************************************************************************/
+PS- 1254. Number of Closed Islands
+
+/* CODE */
+class Solution {
+    public int closedIsland(int[][] grid){
+        int ans=0;
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]==0 && solve(grid, i, j)) ans++;   //island surrounded by water on all sides
+            }
+        }
+        return ans;
+    }
+
+    public static boolean solve(int grid[][], int i, int j){
+        if(i<0 || j<0 || i>=grid.length || j>=grid[0].length) return false;    //reached boundary, not closed
+        if(grid[i][j]==1) return true;  //surrounded with water
+        if(grid[i][j]==-1) return true; //already visited
+        grid[i][j]=-1;  //mark as visited
+        boolean up = solve(grid, i-1, j);
+        boolean down = solve(grid, i+1, j);
+        boolean left = solve(grid, i, j-1);
+        boolean right = solve(grid, i, j+1);
+        return up && down && left && right; //if even one of them is false(land on boundary), it is not closed
+    }
+}
+
+/*
+LOGIC---
+0 -> land
+1 -> water
+close island -> island surrounded on 4 sides with water
+
+Observation:
+Lands(0) on or reaching edges will never be a closed island.
+
+All other Lands inside grid will now be clsoed becuase they have water on all four sides.
+
+No of closed islands = total no of islands - island reaching boundary
+No of closed islands = total connected 0 components - connected 0 components on edges
+
+APPROACH---
+Use a normal algorithm (bfs/dfs) to find the number of islands and mark them, but only add 1 to the answer if no nodes in that island are on the border
+
+*/
+/*****************************************************************************************************************/
 PS- 386. Lexicographical Numbers
 Given an integer n, return all the numbers in the range [1, n] sorted in lexicographical order.
 
@@ -178,3 +344,4 @@ class Solution {
     return ans;
     }
 }
+

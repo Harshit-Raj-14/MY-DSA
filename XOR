@@ -1,0 +1,112 @@
+PS- Sum of XOR of all pairs
+Given an array , find the sum of xor of all pairs of numbers in the array arr. 
+Select all possible pairs of i and j from 0 to N-1 (i<j) and determine sum of all (arri xor arrj).
+Input : arr[] = {7, 3, 5}
+Output : 12
+Explanation: All possible pairs and there Xor Value: ( 3 ^ 5 = 6 ) + (7 ^ 3 = 4) + ( 7 ^ 5 = 2 ) =  6 + 4 + 2 = 12
+
+/* CODE */
+/* OPTIMAL SOLUTION Finding indivudal bit sum of all pairs and accumulating them */
+class Solution{
+    public long sumXOR (int arr[], int n){
+        long ans=0;
+        for(int i=0;i<32;i++){  //iterate to find bit value coming for each element at ith bit
+            long c0=0;   //number of elements with 0 bit at ith place
+            long c1=0;
+            for(int j=0;j<n;j++){
+                if(((arr[j]>>i)&1)==0) c0++;   //checking bit poisiton at ith bit place
+                else c1++;
+            }
+            // calculating individual bit sum  
+            long curr = c1 * c0 * (1 << i);  //c0*c1*pow(2,i)
+            ans+=curr;
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+The idea in this is consider all bits which are 1 and 0 and store their count in two variables. 
+Next multiply those counts along with the power of 2 raised to that bit position. 
+Do this for all the bit positions of the numbers. Their sum would be our answer.
+
+REASON---
+Look at the rightmost bit of all the numbers in the array. 
+Suppose that numbers have x rightmost 0-bit, and y numbers have 1 as their rightmost bit. 
+
+The XOR operation between two numbers produces a 1 if the bits differ (0 XOR 1 = 1 or 1 XOR 0 = 1). 
+It produces a 0 if the bits are the same (0 XOR 0 = 0 or 1 XOR 1 = 0).
+
+Then out of the pairs, x*y of them will have 1 in the rightmost bit of the XOR. 
+
+Why x*y pairs will have 1 rightmost bit when xor'd?
+The first 0-bit number can pair with y 1-bit numbers, contributing y ones to the XOR's rightmost bit.
+The second 0-bit number can also pair with y 1-bit numbers, again contributing y ones.
+Repeating this for all x numbers in the 0-bit group, 
+the total number of 1s contributed to the XOR's rightmost bit is x*y.
+
+These bits will therefore contribute x*y towards the total of all the XORs.
+
+Now how to calculate individual bit sum at that bit posiiton to get final sum?  
+individual bit sum = count1bit * count0bit * pow(2,i);
+individual bit sum = x* y *2^i
+Read it as,
+individual bit sum = number of set bit produced from all pairs * (value of one set bit at bit position i==2^i)
+will be the indivudal bit sum of all pairs
+
+EXAMPLE---
+Explanation :  arr[] = { 7, 3, 5 }
+7 = 1 1 1
+3 = 0 1 1
+5 = 1 0 1
+For bit position 0 : 
+    Bits with zero = 0
+    Bits with one = 3
+    Answer = 0 * 3 * 2 ^ 0 = 0
+
+Similarly, for bit position 1 :
+    Bits with zero = 1
+    Bits with one = 2
+    Answer = 1 * 2 * 2 ^ 1 = 4
+
+Similarly, for bit position 2 :
+    Bits with zero = 1
+    Bits with one = 2
+    Answer = 1 * 2 * 2 ^ 2 = 8
+Final answer = 0 + 4 + 8 = 12 
+
+*/
+
+/*************************************************************************************************************/
+PS- XOR of Sum of every possible pair of an array
+Find XOR of Sum of All Pairs in an Array
+Input: arr[] = {1, 5, 6}
+Output: 4
+Explanation: { 1+1, 1+5, 1+6, 5+1, 5+5, 5+6, 6+1, 6+5, 6+6} => { 2, 6, 7, 6, 10, 11, 7, 11, 12}
+So, XOR of sum of pairs = 2 ^ 6 ^ 7 ^ 6 ^ 10 ^ 11 ^ 7 ^ 6 ^ 11 ^ 12 = 4
+
+/* CODE */
+/* OPTMIAL SOLUTION O(n) */
+class Solution{
+    public long sumXOR (int arr[], int n){
+        long ans=0;
+        for(int i=0;i<arr.length;i++){ 
+            ans^=(2*arr[i]);
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+eg: {a,b,c,d}
+sum pairs for a = a+a, a+b, a+c, a+d
+sum pairs for b = b+a, b+b, b+c, b+d
+sum pairs for c = c+a, c+b, c+c, c+d
+sum pairs for d = d+a, d+b, d+c, d+d
+Now we need to xor all pairs. and we already know a^a=0
+See the pair sums properly they are occuring twice, except for
+2a,2b,2c,2d
+xor of sum of every pair = 2a^2b^2c^2d
+*/

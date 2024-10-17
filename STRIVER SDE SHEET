@@ -932,6 +932,46 @@ Further, for every sum encountered, we also determine the number of times the su
 */
 
 /*****************************************************************************************************************/
+PS- Subarrays with XOR k
+Find the total number of subarrays having bitwise XOR of all elements equal to k.
+
+/* CODE */
+import java.util.*;
+public class Solution {
+    public static int subarraysWithSumK(int []arr, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int curr=0;
+        int ans=0;
+        for(int i=0;i<arr.length;i++){
+            curr^=arr[i];  // prefix XOR till index i
+            if(curr==k) ans++; 
+            int x = curr ^ k;   //counter xor part
+            if(map.containsKey(x)) ans+=map.get(x);   //adding frequencies of previous occurences
+            map.put(curr, map.getOrDefault(curr,0)+1);  //update map with frequencies
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+We increase count when we encounter curr xor===k.
+
+And if we rencounter a curr xor.
+We can still say the xor part between curr and curr^k will be k.
+
+Reason: 
+If part a to b is xor^k.
+part a to e is xor.
+Then part c to e should be k only.
+Reason:
+=>XOR(a->b) ^ XOR(c->e) = XOR(a->e)
+=>(xor^k) ^ (k) = xor
+
+So, we will look for occurences of currxor^k in our map.
+*/
+
+/*****************************************************************************************************************/
 PS- 3. Longest Substring Without Repeating Characters
 Given a string s, find the length of the longest substring without repeating characters.
 

@@ -123,7 +123,6 @@ class Solution {
         if(coins[i]<=amt){
             take=1+solve(coins,amt-coins[i],i, dp);
         }
-
         return dp[i][amt] = Math.min(take, not_take);
     }
 }
@@ -150,6 +149,16 @@ class Solution {
     }
 }
 
+
+/*
+LOGIC---
+Why greed y fails?
+One may think the problem can be solved using a greedy approach, but greedy fails in certain cases. 
+Consider an example where amount = 12 and the available coins are [3, 5]. Greedily, we would choose the 5-coin first to minimize the number of coins, 
+but after selecting two 5-coins, the remaining amount would be 2, for which there is no coin available. 
+This approach would return -1, but the correct answer is 4, as we can achieve the amount 12 by using four 3-coins. 
+Therefore, to find the optimal solution, we need to consider all possible combinations, and this is where (DP) comes to the rescue.
+ */
 
 
 /*******************************************************************************************************/

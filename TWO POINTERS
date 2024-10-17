@@ -1,3 +1,65 @@
+PS- 42. Trapping Rain Water
+Given n non-negative integers representing an elevation map, compute how much water it can trap after raining.
+/* CODE */
+/* TWO POINTER O(n), O(1) */
+class Solution {
+    public int trap(int[] height){
+        int l=0;
+        int r=height.length-1;
+        int maxL=height[l];
+        int maxR=height[r];
+        int ans=0;
+        while(l<r){
+            if (maxL<maxR) {
+                ans+= maxL-height[l];
+                l++;
+                maxL=Math.max(maxL, height[l]); //update maxl with next height
+            } 
+            else{
+                ans+=maxR-height[r];
+                r--;
+                maxR=Math.max(maxR, height[r]); //update maxr with next height
+            }
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Water only stores in a space if it is contaiend by length on left and right.
+Now in preprocessing method we took min(lmax, rmax) for determining how much water can be trapped.
+But in fact just knowing the maxl and maxr from both ends will also suffice our solution.
+
+By knowing whether maxl<maxr or maxl>maxr can tell us which length of tower will actually help us to trap the valid water.
+l=0, r=n-1
+maxl=h[0], maxr=h[n-1]
+if(maxl<maxr) l++, trap=maxl-h[i], update maxl with next h[++l]
+if(maxl>=maxr) r--, trap=maxr-h[i], update maxr with next h[--r]
+
+Note : it works becuase its the lesser value that traps the valid water. so work on that
+*/
+
+/* PREPROCESSING LENGTHS O(n), O(n) */
+class Solution {
+    public int trap(int[] height){
+        int n=height.length;
+        int ans=0;
+        int l[] = new int[n]; // l[i] := max(height[0..i])
+        int r[] = new int[n]; // r[i] := max(height[i..n))
+        l[0]=height[0];
+        r[n-1]=height[n-1];
+        //finding highest towers from left and right
+        for (int i=1; i < n; i++) l[i]=Math.max(l[i-1], height[i]);
+        for (int i=n-2; i>=0; i--) r[i]=Math.max(r[i+1], height[i]);
+        for (int i=0; i < n; i++){
+            ans += Math.min(l[i], r[i]) - height[i];  //water that can be trapped at that point
+        }
+        return ans;
+    }
+}
+
+/*********************************************************************************************************************/
 PS- Max sum path in two arrays (GFG) (AMAZON)
 Given two sorted arrays of distinct integers arr1 and arr2. 
 Each array may have some elements in common with the other array. 

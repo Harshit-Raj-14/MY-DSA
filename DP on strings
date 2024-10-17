@@ -246,3 +246,249 @@ class Solution {
         return dp[m][n];
     }
 }
+
+/*****************************************************************************************************************/
+PS- 44. Wildcard Matching
+Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*' where:
+'?' Matches any single character.
+'*' Matches any sequence of characters (including the empty sequence).
+Input: s = "aa", p = "*"
+Output: true
+
+/* CODE */
+/* MEMOIZATION O(m*n) */
+class Solution {
+    public boolean isMatch(String s, String p){
+        Boolean dp[][] = new Boolean[s.length()+1][p.length()+1];
+        return solve(s, p, s.length()-1, p.length()-1, dp);
+    }
+
+    public static boolean solve(String s, String p, int i, int j, Boolean dp[][]){
+        if(i<0 && j<0) return true;
+        if(i>=0 && j<0) return false;   //pattern is over, string is left
+        if(i<0){    //string is over
+            while(j>=0){    //check if remaning pattern is only star
+                if(p.charAt(j)!='*') return false;  
+                j--;
+            }
+            return true;
+        }
+        if(dp[i][j]!=null) return dp[i][j];
+        //one point match
+        if(s.charAt(i)==p.charAt(j) || p.charAt(j)=='?') return dp[i][j]=solve(s,p,i-1,j-1, dp);
+        if(p.charAt(j)=='*'){   //star match => * will stay(coin change infinte dp)
+            boolean take = solve(s,p,i-1,j, dp);
+            boolean not_take = solve(s,p,i,j-1, dp);    //something like consuming empty string with *
+            return dp[i][j]=take || not_take;
+        }
+        return dp[i][j]=false;
+    }
+}
+
+/* RECURSION TLE O(2^(m + n)) */
+class Solution {
+    public boolean isMatch(String s, String p) {
+        return solve(s, p, s.length()-1, p.length()-1);
+    }
+
+    public static boolean solve(String s, String p, int i, int j){
+        if(i<0 && j<0) return true;
+        if(i>=0 && j<0) return false;   //pattern is over, string is left
+        if(i<0){    //string is over
+            while(j>=0){    //check if remaning pattern is only star
+                if(p.charAt(j)!='*') return false;  
+                j--;
+            }
+            return true;
+        }
+        //one point match
+        if(s.charAt(i)==p.charAt(j) || p.charAt(j)=='?') return solve(s,p,i-1,j-1);
+        if(p.charAt(j)=='*'){   //star match => * will stay(coin change infinte dp)
+            boolean take = solve(s,p,i-1,j);
+            boolean not_take = solve(s,p,i,j-1);    //something like consuming empty string with *
+            return take || not_take;
+        }
+        return false;
+    }
+}
+
+/*
+LOGIC---
+? -> you can skip one character at that place
+* -> you can skip a sequence of that character at place
+
+Real purpose - can we generate s using pattern
+
+One point match => s[i]==p[j] (same character) || p[j]='?'
+Match => matches with any sequence => considering the current character to be part of * => take/not take => recursion
+
+* => can match with anything => consuming from empty string upto infinte character
+*/
+
+/* LCS COPIED LEETCODE */
+public class Solution {
+    public boolean isMatch(String s, String p) {
+        int slen = s.length(), plen = p.length();
+        boolean[][] dp = new boolean[slen + 1][plen + 1];
+        dp[slen][plen] = true;
+        for (int j = plen - 1; j >= 0; j--) {
+            dp[slen][j] = p.charAt(j) == '*' && dp[slen][j + 1];
+        }
+        for (int i = slen - 1; i >= 0; i--) {
+            for (int j = plen - 1; j >= 0; j--) {
+                if (p.charAt(j) != '*') {
+                    dp[i][j] = dp[i + 1][j + 1] && (s.charAt(i) == p.charAt(j) || p.charAt(j) == '?');
+                } else {
+                    dp[i][j] = dp[i][j + 1] || dp[i + 1][j];    //match zero element || match at least one element
+                }
+            }
+        }
+        return dp[0][0];
+    }
+}
+
+/* GREEDY */
+public class Solution {
+    public boolean isMatch(String s, String p) {
+        int i = 0, j = 0, match = 0, star = -1;
+        while (i < s.length()) {
+            if (j < p.length() && (p.charAt(j) == '?' || p.charAt(j) == s.charAt(i))) {
+                i++;
+                j++;
+                continue;
+            }
+            if (j < p.length() && p.charAt(j) == '*') {
+                match = i;
+                star = j++;
+                continue;
+            }
+            if (star >= 0) {
+                i = ++match;
+                j = star + 1;
+                continue;
+            }
+            return false;
+        }
+        while (j < p.length()) {
+            if (p.charAt(j++) != '*') return false;
+        }
+        return true;
+    }
+}
+
+/******************************************************************************************************************/
+PS- 10. Regular Expression Matching
+Given an input string s and a pattern p, implement regular expression matching with support for '.' and '*' where:
+'.' Matches any single character.
+'*' Matches zero or more of the preceding element.
+
+/* CODE */
+/* MEMOISATION O(mn) */
+class Solution {
+    public boolean isMatch(String s, String p){
+        Boolean dp[][] = new Boolean[s.length()+1][p.length()+1];
+        return solve(s, p, 0, 0, dp);
+    }
+
+    public static boolean solve(String s, String p, int i, int j, Boolean dp[][]){
+        if(i==s.length() && j==p.length()) return true;
+        if(j==p.length()) return false; //pattern is over, string s is left
+        if(dp[i][j]!=null) return dp[i][j];
+        //first check using *
+        if(j+1<p.length() && p.charAt(j+1)=='*'){   //for using star we need to look what was the rpevious ele
+            boolean not_take = solve(s, p, i, j+2, dp); //not use * so empty, so move to next char after *
+            boolean take=false;
+            if(i<s.length() && (s.charAt(i)==p.charAt(j) || p.charAt(j)=='.')){//match the preceding ele 0 or more times
+                take = solve(s, p, i+1, j, dp); //move a step beyond . or * => used star only once
+            }
+            return dp[i][j]=take || not_take;
+        }
+        //using pointer dot or same char
+        if(i<s.length() && (s.charAt(i)==p.charAt(j) || p.charAt(j)=='.')) return dp[i][j]=solve(s, p, i+1, j+1, dp);
+        return dp[i][j]=false;
+    }
+}
+
+
+/* RECURSION TLE */
+class Solution {
+    public boolean isMatch(String s, String p) {
+        return solve(s, p, 0, 0);
+    }
+
+    public static boolean solve(String s, String p, int i, int j){
+        if(i==s.length() && j==p.length()) return true;
+        if(j==p.length()) return false; //pattern is over, string s is left
+        //first check using *
+        if(j+1<p.length() && p.charAt(j+1)=='*'){   //for using star we need to look what was the rpevious ele
+            boolean not_take = solve(s, p, i, j+2); //not use * so empty, so move to next char after *
+            boolean take=false;
+            if(i<s.length() && (s.charAt(i)==p.charAt(j) || p.charAt(j)=='.')){//match the preceding ele 0 or more times
+                take = solve(s, p, i+1, j); //move a step beyond . or * => used star only once
+            }
+            return take || not_take;
+        }
+        //using pointer dot or same char
+        if(i<s.length() && (s.charAt(i)==p.charAt(j) || p.charAt(j)=='.')) return solve(s, p, i+1, j+1);
+        return false;
+    }
+}
+
+/*
+LOGIC---
+* -> means  x* => x will occur from 0 to infinte times => 0 times not_take otherwsie take(infinte coin change dp)
+. -> means . => will match one character to s just like ? in wild card
+
+Hence you can see wrt, wildcard matching * works differently
+
+eg: s ="aab", p ="c*a*b"
+wildcard-matching = false
+pattern matching = true
+
+* -> matches zero or more of the preceding element.
+So, in "ca*b", "c" is followed by a * thus number of c can be in range of [0,infinite). Similarly for "a" too. But the string must end with b.
+
+
+s = "ab"
+p = .*
+
+.* is equivalent to "", ".", "..", "..." so on. And then each "." can be replaced with a different character.
+That's why for this test case output is: true
+*/
+
+
+/* ONE LINER SOLUTION */
+class Solution {
+    public boolean isMatch(String s, String p) {
+        return s.matches(p);
+    }
+}
+
+/* TABULATION */
+class Solution {
+    public boolean isMatch(String s, String p) {
+        if (s == null || p == null) return false;
+        boolean[][] dp = new boolean[s.length()+1][p.length()+1];
+        dp[0][0] = true;
+        for (int i = 0; i < p.length(); i++) {
+            if (p.charAt(i) == '*' && dp[0][i-1]) {
+                dp[0][i+1] = true;
+            }
+        }
+        for (int i = 0 ; i < s.length(); i++) {
+            for (int j = 0; j < p.length(); j++) {
+                if (p.charAt(j) == '.') dp[i+1][j+1] = dp[i][j];
+                if (p.charAt(j) == s.charAt(i)) dp[i+1][j+1] = dp[i][j];
+                if (p.charAt(j) == '*') {
+                    if (p.charAt(j-1) != s.charAt(i) && p.charAt(j-1) != '.') {
+                        dp[i+1][j+1] = dp[i+1][j-1];
+                    } 
+                    else {
+                        dp[i+1][j+1] = (dp[i+1][j] || dp[i][j+1] || dp[i+1][j-1]);
+                    }
+                }
+            }
+        }
+        return dp[s.length()][p.length()];
+    }
+}
