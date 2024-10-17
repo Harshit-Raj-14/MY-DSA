@@ -163,6 +163,34 @@ APPROACH---
 Use a normal algorithm (bfs/dfs) to find the number of islands and mark them, but only add 1 to the answer if no nodes in that island are on the border
 
 */
+
+/*****************************************************************************************************************/
+PS- 695. Max Area of Island
+
+/* CODE */
+class Solution{
+    public int maxAreaOfIsland(int[][] grid) {
+        int maxArea=0;
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]==1) maxArea = Math.max(maxArea, solve(grid, i, j));
+            }
+        }
+        return maxArea;
+    }
+    public int solve(int grid[][], int i, int j){
+        if(i<0 || j<0 || i>=grid.length ||j>=grid[0].length) return 0;
+        if(grid[i][j]==0 || grid[i][j]==-1) return 0;
+        grid[i][j]=-1;  //mark as visited
+        int up = solve(grid, i-1, j);
+        int down = solve(grid, i+1, j);
+        int left = solve(grid, i, j-1);
+        int right = solve(grid, i, j+1);
+        return 1+ up+down+left+right;   //adding the current cell
+    }
+}
+
+
 /*****************************************************************************************************************/
 PS- 386. Lexicographical Numbers
 Given an integer n, return all the numbers in the range [1, n] sorted in lexicographical order.

@@ -1,5 +1,11 @@
+Partition Pattern :
+Whenever we need to find the answer to a large problem such that the problem can be broken into subproblems and the
+final answer varies due to the order in which the subproblems are solved, we can think in terms of partition DP.
+
+/**************************************************************************************************************/
 PS- 1547. Minimum Cost to Cut a Stick
-Return the minimum total cost of the cuts on rod, if you can reorder the cuts array the way you want. after each cut the cost of length is added to cuts.
+Return the minimum total cost of the cuts on rod, if you can reorder the cuts array the way you want. 
+After each cut the cost of length is added to cuts.
 
 /* CODE */
 /* MEMOISATION O(m^3) --- m = size of cuts */
@@ -73,11 +79,13 @@ And make cut at a3.
 It will divide stick in two parts.
 Now {a1, a2} will operate on left part of stick. and {a4,a5} will operate on right part of stick.
 We want such configuration to make things simple. And a3 will go away.
-So, first of all array of cuts should be sorted for this to happen for left and right calculation to be correct. For a1 and a2 to fall on left stick and a4 and a5 to fall on right part of stick subproblems.
+So, first of all array of cuts should be sorted for this to happen for left and right calculation to be correct. 
+For a1 and a2 to fall on left stick and a4 and a5 to fall on right part of stick subproblems.
 
-Add 0 and n to our cuts list. Why? for correct size cost calculation. think of it like intiating the process wil cuts at 0 or nth position which will give the full rod itself.
+Add 0 and n to our cuts list. Why? for correct size cost calculation. 
+Think of it like intiating the process with cuts at 0 or nth position which will give the full rod itself.
 
-So, cuts = {0, a1,a2,a3,a4,a5,n} => sorted
+So, cuts = {0, a1,a2,a3,a4,a5, n} => sorted
 Now apply cut at a3 position.
 Cuts : {0,a1,a2} {a4,a5,n}
 Rods : [0.1.2.....a2...a3] [a3....a4....a5....n] => this will be the left and right of rods now
@@ -91,7 +99,9 @@ For first cut = arr[cuts.size()-2 + 1] - arr[1-1] + solve(1,idx-1) + solve(idx+1
 
 --------------------------------------------------------------------------------------------------
 PARTITION DP:
-Whenever we make a cut, we are changing the length of the stick which in turn decides the cost. Therefore the order in which we make the cuts changes the total cost. whenever the order of solving the problem comes into play, we can think in terms of Partition DP.
+Whenever we make a cut, we are changing the length of the stick which in turn decides the cost. 
+Therefore the order in which we make the cuts changes the total cost. whenever the order of solving the problem comes into play, 
+we can think in terms of Partition DP.
 
 Algo of partition dp: 
     Start with the entire block/array and mark it with i,j.
@@ -127,3 +137,149 @@ Explanation: There are 4 matrices of dimension 40x20, 20x30, 30x10, 10x30.
 Say the matrices are named as A, B, C, D. Out of all possible combinations, the most efficient way is (A*(B*C))*D. 
 The number of operations are - 20*30*10 + 40*20*10 + 40*10*30 = 26000.
 
+
+/* CODE */
+/* MEMOIZATION  O(n^3), O(n^2) */
+class Solution{
+    static int matrixMultiplication(int n, int arr[]){
+        int dp[][]= new int[n][n];
+        for(int row[]:dp) Arrays.fill(row,-1);
+        return solve(arr, 1, n-1, dp);
+    }
+    
+    public static int solve(int arr[], int l, int r, int dp[][]){
+        if (l>=r) return 0;  // No cost for a single matrix
+        if(dp[l][r]!=-1) return dp[l][r];
+        int ans=Integer.MAX_VALUE;
+        for(int i=l;i<r;i++){
+            int mult = arr[l-1]*arr[i]*arr[r] + solve(arr, l,i, dp) + solve(arr, i+1, r, dp);
+            ans = Math.min(ans, mult);
+        }
+        return dp[l][r]=ans;
+    }
+}
+
+
+/* RECURSION TLE O(2^n) */
+class Solution{
+    static int matrixMultiplication(int n, int arr[]){
+        return solve(arr, 1, n-1);
+    }
+    
+    public static int solve(int arr[], int l, int r){
+        if (l>=r) return 0;  // No cost for a single matrix
+        int ans=Integer.MAX_VALUE;
+        for(int i=l;i<r;i++){
+            int mult = arr[l-1]*arr[i]*arr[r] + solve(arr, l,i) + solve(arr, i+1, r);
+            ans = Math.min(ans, mult);
+        }
+        return ans;
+    }
+}
+
+/*
+CODE---
+For a matrix[mxn]x[pxq] => for matrix multiplication : n==p
+No of multiplications = m*n*q
+New matrix will be of size: [mxq]
+
+ABCD => A(BCD), (AB)(CD), (ABC)(D)
+A(BCD) => A(((B)(CD)), A((BC)(D))
+
+So, we need to apply partititon dp, becuase answer changes if we change the palce where we partiition, 
+basically the sequence.
+
+If range fo multiplication is from l to r:
+min(l) = 0
+max(r) = n-1
+
+Then at i
+no of mult = arr[i-1]*arr[i]*arr[i-1]
+left partition = solve(arr, l, i)
+right partition = solve(arr, i+1, r)
+
+Note : now becuase in mult we have arr[i-1]. 
+we would want the array traversal start from index 1 => l=1
+
+Number of multiplications on a range:
+For a matrix chain A1, A2, ..., An, the dimensions are stored as arr[0], arr[1], ..., arr[n]. 
+The formula should multiply the dimensions arr[l-1] * arr[i] * arr[r], 
+as these represent the dimensions of the matrices involved in the multiplication.
+*/ 
+
+
+/*************************************************************************************************************/
+PS- 312. Burst Balloons
+If you burst the ith balloon, you will get nums[i - 1] * nums[i] * nums[i + 1] coins. 
+If i - 1 or i + 1 goes out of bounds of the array, then treat it as if there is a balloon with a 1 painted on it.
+Return the maximum coins you can collect by bursting the balloons wisely.
+
+Input: nums = [3,1,5,8]
+Output: 167
+Explanation:
+nums = [3,1,5,8] --> [3,5,8] --> [3,8] --> [8] --> []
+coins =  3*1*5    +   3*5*8   +  1*3*8  + 1*8*1 = 167
+
+/* CODE */
+/* MEMOIZATION O(n^3), O(n^2) */
+class Solution {
+    public int maxCoins(int[] nums){
+        int arr[] = new int[nums.length + 2];
+        arr[0] = 1;
+        arr[arr.length-1] = 1;
+        for (int i=0; i<nums.length; i++){
+            arr[i+1] = nums[i];
+        }
+        int dp[][] = new int[arr.length][arr.length];
+        for(int row[]: dp) Arrays.fill(row, -1);
+        return solve(arr, 1, arr.length-2, dp);
+    }
+
+    public static int solve(int arr[], int l, int r, int dp[][]){
+        if(l>r) return 0;   //no balloons left
+        if(dp[l][r]!=-1) return dp[l][r];
+        int ans=Integer.MIN_VALUE;
+        for(int i=l;i<=r;i++){
+            int points = arr[l-1]*arr[i]*arr[r+1] + solve(arr, l, i-1, dp) + solve(arr, i+1, r, dp);
+            ans=Math.max(ans, points);
+        }
+        return dp[l][r]=ans;
+    }
+}
+
+/* RECURSION TLE */
+class Solution {
+    public int maxCoins(int[] nums){
+        int arr[] = new int[nums.length + 2];
+        arr[0] = 1;
+        arr[arr.length-1] = 1;
+        for (int i=0; i<nums.length; i++) {
+            arr[i+1] = nums[i];
+        }
+        return solve(arr, 1, arr.length-2);
+    }
+
+    public static int solve(int arr[], int l, int r){
+        if(l>r) return 0;   //no balloons left
+        int ans=Integer.MIN_VALUE;
+        for(int i=l;i<=r;i++){
+            int points = arr[l-1]*arr[i]*arr[r+1] + solve(arr, l, i-1) + solve(arr, i+1, r);
+            ans=Math.max(ans, points);
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Same as minimum cut on sticks
+
+Why not arr[i-1]*arr[i]*arr[i+1] but, arr[l-1]*arr[i]*arr[r+1]?
+The array is being divided recursively into smaller subarrays, and at each step, you are bursting one balloon in that range. 
+The effective left and right boundaries are l-1 and r+1, which refer to the balloons that would be next to balloon i after all the other balloons between l and r are burst.
+=> i-1 and i+1 are misleading: In a recursive approach, i-1 and i+1 may no longer be the adjacent balloons because balloons between l and i-1 or i+1 and r could have already been burst.
+=> arr[l-1] * arr[i] * arr[r+1] ensures that you are considering the correct left and right boundaries in the context of the remaining balloons after bursting some of them.
+
+If your array is [3, 1, 5, 8], and you're bursting the 2nd balloon (value 5), the current boundaries might be different after recursive calls, and the actual neighbors are the ones outside the current subproblem (e.g., arr[l-1] and arr[r+1]).
+
+*/
