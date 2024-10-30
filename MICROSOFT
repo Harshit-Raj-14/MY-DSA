@@ -1,0 +1,6 @@
+PS-
+Given a 2D matrix, where digits are present as values. 
+If 1 occurs anywhere in the matrix and its neighbour(up, down, left , right) is 2 then change the neighbour (i.e. 2) to 1 as well and repeat the process. 
+Return the updated matrix.
+
+/* CODE */
