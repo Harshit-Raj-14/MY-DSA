@@ -1,10 +1,11 @@
 Problem
-Let’s assume we have given an array of some size with some initial values (possibly all zeros). 
+Let's assume we have given an array of some size with some initial values (possibly all zeros). 
 Now we have given a bunch of range update query like (l, r, x) — add x to all the element between l and r (both inclusive). 
-After handling all the queries we have to return the array. Also, there should be very less (better to have zero) number of get query for an element or whole array.
+After handling all the queries we have to return the array. 
+Also, there should be very less (better to have zero) number of get query for an element or whole array.
 
 Difference Array
-So let’s use Difference Array (DA). We have to allocate another array (lets call it DA) which will handle the queries and whose size is one greater than that of given array 
+So let's use Difference Array (DA). We have to allocate another array (lets call it DA) which will handle the queries and whose size is one greater than that of given array 
 (Size of (DA array) = Size of (given array) + 1).
 
 Update Query

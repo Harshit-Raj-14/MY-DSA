@@ -101,6 +101,69 @@ Space complexity : O(logN) or O(n)
 If we can sort intervals in place, we do not need more than constant additional space, although the sorting itself takes O(logn) space. Otherwise, we must allocate linear space to store a copy of intervals and sort that.
 */
 
+/********************************************************************************************************/
+PS- 435. Non-overlapping Intervals
+Given intervals[i] = [starti, endi], return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
+Note that intervals which only touch at a point are non-overlapping. For example, [1, 2] and [2, 3] are non-overlapping.
+
+Input: intervals = [[1,2],[2,3],[3,4],[1,3]]
+Output: 1
+Explanation: [1,3] can be removed and the rest of the intervals are non-overlapping.
+
+/* CODE */
+class Solution {
+    public int eraseOverlapIntervals(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        int prev_end=intervals[0][1];
+        int ans=0;
+        for(int i=1;i<intervals.length;i++){
+            int curr_start=intervals[i][0];
+            int curr_end=intervals[i][1];
+            if(curr_start>=prev_end){    //no overlap
+                prev_end=curr_end;   //update the end point
+            }
+            else{   //overlapping
+                ans++;  //remove interval
+                prev_end=Math.min(prev_end, curr_end);  //remove the one which ends later
+            }
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+In sorted order of starting time, removing the interval which ends later and keep the one which ends first is always beneficial.
+
+Interval 1 : ______________
+Interval 2 : ________
+Interval 3 :            ___________
+So, we would prefer to remove 3 becuase its end time is too big and will be an inconvenience.
+
+APPROACH---
+=> Sort the given intervals based on starting points
+=> While considering the intervals in the ascending order of starting points we make use of a pointer prev pointer to keep track of the interval just included in the final list.
+
+Case 1
+    You don't need to remove any intervals
+    Continue by simply assigning the prev pointer to the later interval
+    The count of intervals removed remains unchanged
+
+Case 2
+    Remove the interval with the later end point
+    The prev pointer is updated to current interval
+    count of intervals removed is incremented by 1
+
+Case 3
+    Remove the interval with the later end point
+    The prev pointer remains unchanged
+    count of intervals removed is incremented by 1
+
+Rule of Thumb
+    Always choose the interval that ends first
+
+*/
+
 /************************************************************************************************************/
 PS- D. Robert Hood and Mrs Hood (Codeforces Round 974 (Div. 3))
 All days are numbered from 1 to n. Visitors stay for d continuous days, all of those d days must be between day 1 and n inclusive.
@@ -162,8 +225,8 @@ sliding window
 
 /*****************************************************************************************************/
 PS- 2406. Divide Intervals Into Minimum Number of Groups
-ou are given a 2D integer array intervals[i] = [lefti, righti].
-You have to divide the intervals into groups such that each interval is in exactly one group, 
+You are given a 2D integer array intervals[i] = [lefti, righti].
+Divide the intervals into groups such that each interval is in exactly one group, 
 and no two intervals that are in the same group intersect each other.
 Return the minimum number of groups you need to make.
 
@@ -180,7 +243,7 @@ class Solution {
     public int minGroups(int[][] intervals) {
         int rangeStart = Integer.MAX_VALUE;
         int rangeEnd = Integer.MIN_VALUE;
-        for (int[] interval : intervals) {
+        for (int interval[] : intervals) {
             rangeStart = Math.min(rangeStart, interval[0]);
             rangeEnd = Math.max(rangeEnd, interval[1]);
         }
@@ -202,14 +265,15 @@ class Solution {
 /*
 LOGIC---
 same as  Meeting Rooms II
-Our goal is to divide the intervals into multiple groups such that each interval belongs to exactly one group and no intervals within the same group overlap. We need to minimize the number of groups created.
+Our goal is to divide the intervals into multiple groups such that each interval belongs to exactly one group 
+and no intervals within the same group overlap. We need to minimize the number of groups created.
 
 Consider making a difference array.
 At start do +1
 and (end time+1) do -1
 
 Now if you take sum the value gives overlapped rooms/intervals at that point. And we can can find a maxoverlap while iterating.
-This max_overlap will infact be the number of groups created int toal since they can't be put together.
+This max_overlap will infact be the number of groups created in total since they can't be put together.
 
 No of non-overlap groups = total number of overlapping intervals
 */
