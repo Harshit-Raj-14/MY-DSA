@@ -1,0 +1,100 @@
+PS- Top View of Binary Tree
+eg: 
+     1
+  /     \
+ 2       3
+/  \    /  \
+4   5  6    7
+Top view will be: 4 2 1 3 7 Return nodes from leftmost node to rightmost node.
+
+/* CODE */
+/* USING MAP */
+class Solution {
+    static ArrayList<Integer> topView(Node root) {
+        ArrayList<Integer> list = new ArrayList<>();
+        if(root==null) return list;
+        TreeMap<Integer, Integer> map = new TreeMap<>(); // level position, node value
+        Queue<Pair<Node, Integer>> q = new LinkedList<>();    //node, level
+        q.offer(new Pair<>(root, 0));
+        while(!q.isEmpty()){
+            Pair<Node, Integer> curr = q.poll();
+            Node node = curr.getKey();
+            int level = curr.getValue();
+            if(!map.containsKey(level)) map.put(level, node.data);
+            if(node.left!=null) q.offer(new Pair<>(node.left, level-1));
+            if(node.right!=null) q.offer(new Pair<>(node.right, level+1));
+        }
+        for(int top : map.values()) {
+            list.add(top);
+        }
+        return list;
+    }
+}
+
+class Pair<K, V> {
+    K key;
+    V value;
+
+    public Pair(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public K getKey() {
+        return key;
+    }
+
+    public V getValue() {
+        return value;
+    }
+}
+
+/*
+LOGIC---
+Think of straight lines falling from top on tree and the nodes which are first hit by line forms the top view.
+
+Now the number of lines falling  == width of binary tree
+1 2  3  4  5
+| |  |  |  |
+     1
+  /     \
+ 2       3
+/  \    /  \
+4   5  6    7
+   /
+  8
+
+In the above example : width = 5 = no of lines falling from above
+Top view : 4 2 1 3 7
+
+In fact if you were to map the nodes as per the line order:
+line index -> nodes it crosses
+1 -> 4
+2 -> 2, 8
+3 -> 1, 5 ,6
+4 -> 3
+5 -> 7
+
+Notice, in the above distribution the top view is in fact the first number from each list
+Solution : the first node of the vertical order traversal will be our answer.
+
+APPROACH---
+Its only becuase we can travel level wise (BFS) we can put the first occurecce on each level on their line no.
+
+In fact the width can be transformed into :
+(1,2,3,4,5) => (-2,-1,0,1,2)
+where 0 is the position of tree node. this way we wont have to find the width, and can just move to solving the problem
+
+-2 -> 4
+-1 -> 2, 6
+0 -> 1, 5 ,6
+1 -> 3
+2 -> 7
+
+
+This is in fact called vertical ordering traversal in a tree.
+
+Note : so in down view we and would actually need the last instance of map, 
+so we will just keep on updating the map,
+*/
+

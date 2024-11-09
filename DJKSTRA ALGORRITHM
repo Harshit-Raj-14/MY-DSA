@@ -1,1 +1,112 @@
 https://practice.geeksforgeeks.org/contest/gfg-weekly-169-rated-contest/problems - JUMPING GAME PLEASE DO
+
+## DIJKSTRA'S ALGORITHM 
+Dijkstra's algorithm is a greedy algorithm
+Shortest Path in Weighted Graph
+DFS
+
+/* CODE */
+public class DijkstraShortestPath {
+    public static int[] dijkstraShortestPath(WeightedGraph graph, int source) {
+      int[] distance = new int[graph.getVertices().length];    //to store all distances
+      Arrays.fill(distance, Integer.MAX_VALUE); // set all to infinity
+      PriorityQueue<GraphEdge> pq = new PriorityQueue<>((e1, e2) -> Integer.compare(e1.getWeight(), e2.getWeight()));  //min heap   
+      //PriorityQueue<GraphEdge> pq = new PriorityQueue<>(Comparator.comparingInt(GraphEdge::getWeight));
+      distance[source] = 0;
+      pq.add(new GraphEdge(source, source, 0));  //dummy graph edge of 0 source to source
+      while (!pq.isEmpty()) {
+        GraphEdge currentEdge = pq.poll();
+        int destination = currentEdge.getDestination();
+        for (GraphEdge edge : graph.getVertices()[destination]) {
+          int newDistance = distance[destination] + edge.getWeight();
+          if (newDistance < distance[edge.getDestination()]) {
+            distance[edge.getDestination()] = newDistance;
+            pq.add(new GraphEdge(edge.getSource(), edge.getDestination(), newDistance));
+          }
+        }
+      }
+      return distance;
+    }
+}
+
+TC - O(ElogV)
+SC - O(V)
+
+Note:
+A ->...-> B -> C ->....-> D
+To find the shortest path between A and D, it will always include the shortest path between BC
+
+
+/***************************************************************************************************/
+PS- 3341. Find Minimum Time to Reach Last Room I
+You are given a 2D array moveTime of size n x m, where moveTime[i][j] represents the minimum time in seconds when you can start moving to that room. 
+You start from the room (0, 0) at time t = 0 and can move to an adjacent room. Moving between adjacent rooms takes exactly one second.
+Return the minimum time to reach the room (n - 1, m - 1).
+
+/* CODE */
+class Solution {
+    public int minTimeToReach(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+        int dist[][] = new int[n][m];   //dist[i][j] -> value spent to reach i,j in dijkstra's algo
+        for(int row[] : dist){
+            Arrays.fill(row, Integer.MAX_VALUE);    //not reached anyhwre so fill with max
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        pq.offer(new int[]{0,0,0}); //(time, x, y)
+        dist[0][0]=0;
+        while(!pq.isEmpty()){
+            int curr[] = pq.poll();
+            int t = curr[0]; //curr time to reach that particular cell i,j
+            int i = curr[1];
+            int j = curr[2];
+            dfs(i-1, j, t, grid, dist, pq); 
+            dfs(i+1, j, t, grid, dist, pq); 
+            dfs(i, j-1, t, grid, dist, pq); 
+            dfs(i, j+1, t, grid, dist, pq); 
+        }
+        return dist[n - 1][m - 1];
+    }
+
+    public static void dfs(int i, int j, int t, int grid[][], int dist[][], PriorityQueue<int[]> pq){
+        if(i<0 || i>=grid.length || j<0 || j>=grid[0].length) return;
+        int newt = Math.max(t+1, grid[i][j]+1);  //updating dist values
+        if(newt < dist[i][j]){
+            dist[i][j] = newt;   //updating dijkstra's distance grid values
+            pq.offer(new int[]{newt, i, j});
+        }
+    }
+}
+
+/*
+graph problem : dfs in all direction, you can only move to a state only when it is valid
+
+So, we just need to iterate graph and becuase we need minimum time to reach destination
+Dijkstra's Algortihm => shortest path problem
+
+UNDERSTANDING
+A B  0 4
+C D  4 4
+If value at A and B is 0 and 4.
+So, you can only move from A to B when time passed is greater than equal to 4.
+So, once t=4 happens, we can move from A to B.
+And movign from A to B again costs 1s as given.
+So, t=4+1=5 passed. travelling from A to B.
+
+Now from B we can go directly to D becuase t=5>4 at D.
+And travelling from B to D costs 1s.
+So, t = 5+1 = 6 ans
+
+So, t = Math.max(tnow + 1, valueofcell + 1);
+Why not a DP question?
+Its says adjacent rooms, means up, down, left, right => dfs/bfs
+
+And becuase form one node you can go back to a certain point again, its a circular path => it no longer remains a dp
+In cyclic graph DP does not work
+
+maybe if it would have been only right, down and it cannot go back to a specific point again then choice dp
+Dp works in DAG(girected acyclic graph) 
+
+TC - O((n×m)log(n×m))
+SC - O(n×m)
+*/

@@ -102,3 +102,160 @@ Thats it.
 */
 
 
+
+
+/******************************************************************************************************/
+PS- C - XOR to All [AtCoder Regular Contest 135]
+You are given an array of non-negative integers. You can do the operation below any number of times (possibly zero).
+Choose an integer x from the array.
+Replace all elements in array with arr[i]⊕x for every i.
+Find the maximum possible value of ∑arr[i] from i=0 to i=n, after your operations.
+
+/* CODE */
+/* OPTIMAL SOLUTION O(30*n) */
+import java.util.*;
+public class Main{
+    public static void main(String args[]){
+        Scanner sc = new Scanner(System.in);
+        int n=sc.nextInt();
+        long arr[] = new long[n];
+        long ans=0; //maxsum
+        for(int i=0;i<arr.length;i++){
+            arr[i]=sc.nextLong();
+            ans+=arr[i];
+        }
+        int setbit[] = new int[30];
+        //int zeros[] = new int[30];  //because zeros[i] = n-setbit[i] 
+        //Step I: Decomposing bits : making a count frequency of set bits and zeros at each bit index
+        for(int i=0;i<30;i++){
+            for(int j=0;j<n;j++){
+                setbit[i] += (arr[j]>>i)&1;
+            }
+        }
+        //Step II: trying all x and see which will give us maximum sum
+        for(long x : arr){
+            long sum=0;    //currsum
+            for(int i=0;i<30;i++){
+                long xbit = (x>>i)&1;
+                long setbits = setbit[i]; 
+                long zeros = n-setbit[i];
+                if(xbit==1) sum += zeros*(1<<i);    //since x is set, the zeros contribute to sum by becoming 1
+                else sum += setbits*(1<<i);         //vice versa
+            }
+            ans=Math.max(ans, sum);
+        }
+        System.out.println(ans);
+        sc.close();
+    }
+}
+    
+/*
+LOGIC---
+SPECIAL OBSERVATION LEARNING---
+=> sum(a^x)  : O(n^2) ---> O(30*n)
+=> If any set reached by multiple moves then that set also reached by single step
+
+LOGIC---
+{a1,a2}
+Choose x=a1 => {0, a2^a1}
+Now you can either choose x=0 or x=a2^a1
+So, x=a2^a1 => we get {a2^a1, 0}
+
+In fact if in first array{a1,a2} if you would have directly taken x=a2 => we would have got {a1^a2, 0}
+which was same as previous array.
+Hence we can say that even if we apply subseqeunt operations, and choose new x from new array, it would work as same choosing x from the original array itself.
+
+eg : 
+{a1,a2,a3}
+
+x=a1 => {0, a2^a1, a3^a1}
+x=a2 => {a1^a2, 0, a3^a2}
+x=a3 => {a1^a3, a2^a3, 0}
+
+do x=a1^a1 after x=a1 => {a1^a2, 0, a3^a2} which is same as doing x=a2
+Hence it proved.
+Conclusion : Even after one operation, if we try to take a new element from the new array to apply operation again,
+it would yield the same result as taking some another element from the original array itself.
+
+With this info you can now do the brute force in O(n^2).
+
+Now OPTIMIZE----
+Note : whenever you have to do some ∑(arr[i] ^ x)
+TRICK : Decompose each bits and process them independently
+
+eg: {1,3,5} and we choose x=5
+
+arr[] = {1 3 5}
+bit[1] = 1 1 1 => 3 setbits, 0 zeros
+bit[2] = 0 1 0 => 1 setbit, 2 zeros
+bit[3] = 0 0 1 => 1 setbit, 2 zeros
+We know by xoring's we always flip the bits when they are unequal.
+To get maximum sum we would want to create as many 1's we want.
+
+So, if there are x setbits and y zeros.
+If x>y => then we would want to take a zero at that position so we can get maximum 1's by doing (from x)0^1(from arr)
+vice versa when x<y
+
+Now we can apply the same logic of doing the above to our question because now x can only be picked from our array.
+We can have two count frequency table of setbit count and zeros count from bit posiiton 0 to 30. [Given : 0<=arr[i]<=2^30]
+
+setbit freq[]
+zeros freq[]
+Now using the above two arrays, we check against all possible x from arr[i] and see what gives us maximum sum.
+
+Finding the setbit freq and zeros freq => O(30n)
+and iterating for calculating sum for each x => O(30n)
+TC - O(30n)
+
+-> If we have to do summation of an array elements xored with a value.
+It's better to do precomputations for storing the number of setbits and zero of the elements. 
+=> O(N^2) can't be handled by constraints, so we get our answers by precomputing 
+no.of 1's and 0's at each  i(0<=i<=30) and rest queries can be answered in O(30) time 
+so for each element O(N*30).
+
+*/
+    
+
+
+/* BRUTE FORCE O(n^2) */
+import java.util.*;
+public class Main{
+    public static void main(String args[]){
+        Scanner sc = new Scanner(System.in);
+        int n=sc.nextInt();
+        int arr[] = new int[n];
+        for(int i=0;i<arr.length;i++){
+            arr[i]=sc.nextInt();
+        }
+        long maxsum=sumArr(arr); //in case all elements are equal there is no need to ocnduct the operation
+        for(int j=0;j<arr.length;j++){
+            int x=arr[j];
+            int temp[] = new int[arr.length];
+            for(int i=0;i<arr.length;i++){
+                temp[i]=arr[i]^x;
+            }
+            long currsum=sumArr(temp);
+            maxsum=Math.max(maxsum, currsum);
+        }
+        System.out.println(maxsum);
+        sc.close();
+    }
+
+    public static long sumArr(int arr[]){
+        long sum=0;
+        for(int i=0;i<arr.length;i++){
+            sum+=arr[i];
+        }
+        return sum;
+    }
+}
+
+/*
+LOGIC---
+We try all possible x from array one by one.
+The only sitation when applying 0 operations is when all elements are equal. xoring with itself will give 0.
+So, applying no operation in that case will give maximum sum.
+
+eg: n=5, arr[]=10 10 10 10 10
+o/p : 50
+*/

@@ -1,5 +1,3 @@
-
-/**********************************************************************************************************/
 PS- Equal(Hackerrank)
 You have an array of chocolates present with employees. 
 You are allowed to make an operation in which you give chocolate to all employees except for one.

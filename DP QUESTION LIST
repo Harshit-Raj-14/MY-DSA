@@ -1,4 +1,10 @@
-Well, this list will make your life easy (All you need to Master DP from A-Z)
+GRAPH-
+Shortest path -> o,1 bfs, dijkstra, floyd warshall, bellman, 
+topological
+mst
+union find
+GRAPH MODELLING (VVI) (supernode, multisource, shortcurcuit) [1600-1900 CF - shortest path tag]
+
 
 
 2. Kadane's Algorithm
@@ -82,6 +88,7 @@ Well, this list will make your life easy (All you need to Master DP from A-Z)
 20. State Machine DP
  - Best Time to Buy and Sell Stock With Cooldown
  - Best Time to Buy and Sell Stock III
+
 
 
 

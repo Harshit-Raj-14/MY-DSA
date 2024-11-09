@@ -480,3 +480,31 @@ ans=s=ccbccacc
 
 Also ,to get the max char each time we will use heap
 */
+
+/******************************************************************************************************/
+PS- 796. Rotate String
+Given two strings s and goal, return true if and only if s can become goal after some number of shifts on s.
+
+/* CODE */
+class Solution {
+    public boolean rotateString(String s, String goal) {
+        if(s.length()!=goal.length()) return false;
+        s+=s;
+        if(s.indexOf(goal)!=-1) return true;
+        else return false;
+    }
+}
+
+/*
+LOGIC---
+Goal - If we have two string a and b and we have to check whether b is rotation of a or not
+    
+APPROACH---
+=> If length of both the string are not equal then it is not possible that they are rotation of each other.
+=> We just concatentate string a with itself.
+Reason : s+s will contain all the possible rotations of s as substrings of length s. VVI
+Now just check whether b string present inside a or not. If present then it is true
+else false
+
+TC - O(n), SC- O(n)
+*/
