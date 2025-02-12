@@ -1,0 +1,286 @@
+Coding:-
+
+Reverse a linklist.
+Everytime in loop just make head.next points to prevHead, and then move all these three pointers to one next step.
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        ListNode prev= null;
+        ListNode curr = head;
+        ListNode next = head;
+        while(curr!=null){
+            curr.next=prev;
+            next=next.next;
+            prev=curr;
+            curr=next;
+        }
+        return prev;
+    }
+}
+
+
+single threaded cpu:- https://leetcode.com/problems/single-threaded-cpu/
+/* CODE 8/
+// TC = O(nlogn)
+// SC = O(n)
+
+class Solution {
+    public int[] getOrder(int[][] tasks) {
+        int n = tasks.length;
+        Task [] arr = new Task[n];
+        for(int i = 0 ;i<n;i++){
+            arr[i] = new Task(i, tasks[i][0],tasks[i][1]);
+        }
+
+        Arrays.sort(arr, (a,b)->{
+            return Integer.compare(a.enqueueTime,b.enqueueTime);
+        });
+
+        PriorityQueue<Task> p = new PriorityQueue<>((a,b)->{
+            if(a.processingTime == b.processingTime){
+                return Integer.compare(a.idx,b.idx);
+            }
+            return Integer.compare(a.processingTime,b.processingTime);
+        });
+        
+        int[] ans = new int[n];
+        int ansIdx = 0;
+        int taskIdx = 0;
+        int curTime= 0;
+
+        while(ansIdx < n){
+            while(taskIdx < n && arr[taskIdx].enqueueTime <= curTime){
+                p.offer(arr[taskIdx++]);
+            }
+            if(p.isEmpty()){
+                curTime = arr[taskIdx].enqueueTime;
+            }else{
+                curTime += p.peek().processingTime;
+                ans[ansIdx++] = p.poll().idx;
+            }
+        }
+        return ans;       
+    }
+    
+    class Task {
+        int idx;
+        int enqueueTime;
+        int processingTime;
+
+        Task(int idx , int en , int pro){
+            this.idx = idx;
+            this.enqueueTime = en;
+            this.processingTime = pro;
+        }
+    }
+}
+
+
+
+In the First Round
+    A Variation of Trim a Binary Search Tree #669
+    Minimum Height Trees #310
+
+Second Round
+    House Robber #198
+
+
+https://leetcode.com/discuss/interview-question/2218061/Amazon-SDE-1-Interview-experience-or-Onsite-or-Strict-Palindrome
+
+https://leetcode.com/discuss/interview-question/1750046/Amazon-or-SDE-or-Interview-or-Maximum-number-of-subarrays-having-equal-sum
+
+https://leetcode.com/discuss/interview-question/1983498/Amazon-Interview-Experience-oror-SDE-1-oror-March-2022
+
+https://leetcode.com/discuss/interview-question/1925797/Amazon-oror-SDE-1-oror-Virtual-Onsite-Interview
+
+https://leetcode.com/discuss/interview-question/1494909/Amazon-Phone-Interview-or-SDE-1
+
+
+Round3. DSA:
+Q1. https://leetcode.com/discuss/interview-question/483660/Google-or-Phone-or-Currency-Conversion/430325
+Q2. N-array tree of 0s and 1s. remove all 0s from the tree.
+
+https://leetcode.com/discuss/interview-question/483660/Google-or-Phone-or-Currency-Conversion/430325
+
+public class CurrencyConvertor {
+
+    static class Pair {
+        String currency;
+        double rate;
+
+        Pair(String currency, double rate) {
+            this.currency = currency;
+            this.rate = rate;
+        }
+    }
+
+    public static double findConversionRate(List rates, String fromCurrency, String toCurrency) {
+        Map> graph = new HashMap<>();
+
+        for (String[] rate : rates) {
+            String from = rate[0];
+            String to = rate[1];
+            Double conversionRate = Double.parseDouble(rate[2]);
+            graph.computeIfAbsent(from, k -> new ArrayList<>()).add(new Pair(to, conversionRate));
+            graph.computeIfAbsent(to, k -> new ArrayList<>()).add(new Pair(from, 1 / conversionRate));
+        }
+
+        Set visited = new HashSet<>();
+        Queue queue = new LinkedList();
+        queue.add(new Pair(fromCurrency, 1.0));
+
+
+        while (!queue.isEmpty()) {
+            Pair current = queue.poll();
+            String currentCurrency = current.currency;
+            double currentRate = current.rate;
+
+            if (currentCurrency.equals(toCurrency)) {
+                return currentRate;
+            }
+
+            visited.add(currentCurrency);
+
+            if (graph.containsKey(currentCurrency)) {
+                for (Pair neighbor : graph.get(currentCurrency)) {
+                    if (!visited.contains(neighbor.currency)) {
+                        queue.add(new Pair(neighbor.currency, neighbor.rate * currentRate));
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+
+
+    public static void main(String[] args) {
+        List rates = Arrays.asList(
+                new String[]{"USD", "JPY", "110"},
+                new String[]{"USD", "AUD", "1.45"},
+                new String[]{"JPY", "GBP", "0.0070"}
+        );
+
+        String fromCurrency = "GBP";
+        String toCurrency = "AUD";
+        double result = findConversionRate(rates, fromCurrency, toCurrency);
+        System.out.println(result);  // Output should be 1.89
+    }
+}
+
+
+
+STOCK SPAN
+class Solution {
+    public static int[] calculateSpan(int prices[], int n) {
+        int ans[] = new int[n];
+        Stack<Integer> stack = new Stack<>();
+        for(int i=0;i<n;i++){
+            while(stack.size()!=0 && prices[stack.peek()]<=prices[i]){
+                stack.pop();
+            }
+            if(stack.isEmpty()) ans[i]=i+1;
+            else ans[i]=i-stack.peek();
+            stack.push(i);
+        }
+        return ans;
+    }
+}
+
+/*
+LOGIC---
+Span(days) is defiend as the consecutive smaller or equal elements directly to the left of curr element.
+
+We store the indexes of prices in stack.(unique values)
+
+Case I: stack is empty => meaning there are no elements to the left side of curr, that are greater than it.
+=>So it is the largest price till now.
+So, we can say that total no of span = i+1 => total days till i (including itself, 0 indexed, so adding 1)
+
+Case II: stack is not empty
+Since we have indexes stored in our stack. We compare prices[stack.peek()] with prices[i]
+If we learn that the topmost index in stack refers to  a price that is smaller than or equal to curr prices
+=> we say it can form part of a consecutive series
+=> so keep on popping it, till we reach index where it no longer form a consecutive series
+=> in this case span = i-stack.peek()
+*/
+
+
+
+MHT ( MINIMUM HEIGHT TREE)
+public List<Integer> findMinHeightTrees(int n, int[][] edges) {
+        int[] degree = new int[n];
+        HashMap<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(i, new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            map.get(edge[0]).add(edge[1]);
+            map.get(edge[1]).add(edge[0]);
+            degree[edge[0]]++;
+            degree[edge[1]]++;
+        }
+        List<Integer> leaves = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (degree[i] <= 1) {
+                leaves.add(i);
+                degree[i] = 0;
+            }
+        }
+        
+        int c = leaves.size();
+        
+        while (c < n) {
+            List<Integer> newLeaves = new ArrayList<>();
+            for (int leaf : leaves) {
+                for (int neighbor : map.get(leaf)) {
+                    degree[neighbor]--;
+                    if (degree[neighbor] == 1) {
+                        newLeaves.add(neighbor);
+                    }
+                }
+                degree[leaf] = 0;
+            }
+            c += newLeaves.size();
+            leaves = newLeaves;
+        }
+        
+        return leaves;
+    }
+	
+
+    TRIM BST
+    class Solution {
+    public TreeNode trimBST(TreeNode root, int L, int R) {
+        if (root == null) return null;
+        
+        if (root.val < L) return trimBST(root.right, L, R);
+        if (root.val > R) return trimBST(root.left, L, R);
+        
+        root.left = trimBST(root.left, L, R);
+        root.right = trimBST(root.right, L, R);
+        
+        return root;
+    }
+}
+
+
+his round was all about technical problem-solving and designing: 
+
+▪️Q1: Sliding Window Maximum (LeetCode Hard) 🧠 
+🔹Approach: Brute force → Priority Queue → Optimized with Deque 🏃‍♂️ 
+
+▪️Q2: Designing a structure for fast insertion, deletion, and random access 📊
+🔹Approach: Implemented using HashMap + Array for O(1) operations (insert, delete, getRandom) 
+
+🔹Discussion of time complexity ⏱️ and space complexity at the end of each question. 
+
+ 
+🧩 Interview Round 2: Technical Round 2 
+
+This round was all about technical problem-solving combined with questions on leadership principles: 
+
+▪️Q1: Delete Nodes and Return Forest (LeetCode Medium) 
+🔹Approach: Aimed for O(n) time complexity using recursion 🔁 
+
+▪️Q2: Minimum Halls Required for Class Scheduling 📅 (Variation)
+🔹Approach: Solved using the prefix sum technique (event-based representation) for minimum hall requirements 🏫 

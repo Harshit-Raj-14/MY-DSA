@@ -157,7 +157,7 @@ Note memoisation or tabulation will make SC-O(n^2*2^n) and no change in TC.
 Despite the efficiency gains from memoization, the time complexity is still dominated by the recursive nature of the algorithm. So, don't use them.
 */
 
-/*********************************************************************************************************/
+/*******************************************************************************/
 PS- JOSEPHUS PROBLEM
 Given the total number of persons N and a number k which indicates that k-1 persons are skipped and the kth person is killed in a circle counting the man holding the gun himself. The task is to choose the person in the initial circle that survives.
 Input: N = 5 and k = 2
@@ -205,8 +205,8 @@ PS- Josephus Problem when k is 2 || Lucky alive person in a circle
 You kill the next person and hand over gun to next person. Find the survivor.
 
 Why a special case?
-If you write down all answers startign from n=1.
-You iwll realsie the last person starts from 1 then it becoems 3 then becomes 5, then becomes 7 and so on.
+If you write down all answers starting from n=1.
+You will realize the last person starts from 1 then it becomes 3 then becomes 5, then becomes 7 and so on.
 So, there's a jump of 2 each time.
 But it between it keeps on resetting back to 1.
 
@@ -233,17 +233,17 @@ Now sword is back at one. And again all evens are killed. Sword back to 1.
 
 Now how to determine for n values between the pure power of 2?
 Any number = 2^a + something
-Every number can be written in powers of 2/
+Every number can be written in powers of 2
 eg: 77 = 64 + 8 + 4 + 1
 77 = 2^6 + 2^3 + 2^2 +2^0
-To fit in abaove rep : n = 2^a + l
+To fit in above rep : n = 2^a + l
 So, 77 = 2^6 + 13
 
 Now in a 2^a the survivor is the first person.
-So, after l steps whoever turn it is is the final survivor.
+So, after l steps whoever turn it is, is the final survivor.
 So, its like saying let l steps happen and then the 2^a game happens.
 
-So, after l stpes the gun will be with person 2l+1.
+So, after l steps the gun will be with person 2l+1.
 So, the winner will be at seat 2l+1.
 
 /* CODE */

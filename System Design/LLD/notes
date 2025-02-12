@@ -1,0 +1,23 @@
+# Naming Convention
+When naming elements in a Low-Level Design (LLD), the standard convention is to use PascalCase for class names, camelCase for member variables and methods, and often include descriptive prefixes to indicate the element type (like "get", "set", "is") while maintaining clarity and reflecting the functionality of each component; always aiming for descriptive and meaningful names.
+
+
+Key points to remember:
+Class names: Use PascalCase (e.g., "User", "ShoppingCart", "Product").
+    
+Methods and variables: Use camelCase (e.g., "calculateTotal", "productName", "userId").
+    
+Descriptive prefixes:
+        "get" for accessor methods (e.g., "getUserName")
+        "set" for mutator methods (e.g., "setUserAddress")
+        "is" for boolean checks (e.g., "isUserLoggedIn") 
+
+
+
+STARTING BLOG - https://medium.com/@nikhil.cse16/getting-started-with-low-level-design-lld-essential-concepts-af39cf2475c5
+
+
+https://www.youtube.com/watch?v=zRz1GPSH50I&list=PLJN9ydlFnJsiEgyjO3D3yBhtiENymhF8G
+
+
+https://www.lldcoding.com/

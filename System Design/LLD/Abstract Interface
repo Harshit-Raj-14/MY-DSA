@@ -1,0 +1,244 @@
+Concrete class extending an abstract class and implementing an interface
+
+// Abstract class - Defines common properties & behaviors
+abstract class Animal {
+    String name;
+
+    Animal(String name) {
+        this.name = name;
+    }
+
+    abstract void makeSound(); // Abstract method
+
+    void sleep() { // Concrete method
+        System.out.println(name + " is sleeping.");
+    }
+}
+
+// Interface - Defines a contract for actions
+interface Swimmable {
+    void swim();
+}
+
+// Dog extends Animal (inherits behavior) and implements Swimmable (adds ability)
+class Dog extends Animal implements Swimmable {
+    Dog(String name) {
+        super(name);
+    }
+
+    @Override
+    void makeSound() {
+        System.out.println(name + " barks.");
+    }
+
+    @Override
+    public void swim() {
+        System.out.println(name + " is swimming.");
+    }
+}
+
+// Main Class
+public class OOPExample {
+    public static void main(String[] args) {
+        Dog dog = new Dog("Buddy");
+        dog.makeSound();
+        dog.sleep();
+        dog.swim();
+    }
+}
+
+
+
+# Vehicle System
+    Abstract Class Vehicle: Defines a template for all vehicles.
+    Interface FuelConsumption: Defines a contract for fuel efficiency.
+    Concrete Class Car: Implements both.
+
+Code Implementation
+
+// Abstract class with common properties and methods
+abstract class Vehicle {
+    String brand;
+    int speed;
+
+    // Constructor
+    Vehicle(String brand, int speed) {
+        this.brand = brand;
+        this.speed = speed;
+    }
+
+    // Abstract method (to be implemented by subclasses)
+    abstract void start();
+
+    // Concrete method
+    void stop() {
+        System.out.println(brand + " has stopped.");
+    }
+}
+
+// Interface defining fuel efficiency behavior
+interface FuelConsumption {
+    double calculateFuelEfficiency(); // Abstract method
+}
+
+// Concrete class extending an abstract class and implementing an interface
+class Car extends Vehicle implements FuelConsumption {
+    int fuelCapacity; // in liters
+
+    // Constructor
+    Car(String brand, int speed, int fuelCapacity) {
+        super(brand, speed);
+        this.fuelCapacity = fuelCapacity;
+    }
+
+    // Implement abstract method from Vehicle
+    @Override
+    void start() {
+        System.out.println(brand + " car is starting at speed: " + speed + " km/h");
+    }
+
+    // Implement method from FuelConsumption interface
+    @Override
+    public double calculateFuelEfficiency() {
+        return speed * 0.2; // Example calculation
+    }
+}
+
+// Main class to demonstrate the implementation
+public class OOPExample {
+    public static void main(String[] args) {
+        Car myCar = new Car("Toyota", 100, 50);
+
+        myCar.start();
+        System.out.println("Fuel efficiency: " + myCar.calculateFuelEfficiency() + " km/l");
+        myCar.stop();
+    }
+}
+
+Explanation
+
+    Vehicle (Abstract Class)
+        Has common properties (brand, speed).
+        Contains an abstract method start() that must be implemented in subclasses.
+        Has a concrete method stop() that prints a message.
+
+    FuelConsumption (Interface)
+        Defines a contract with calculateFuelEfficiency().
+        Does not have instance variables or implemented methods (except default methods in Java 8+).
+
+    Car (Concrete Class)
+        Extends Vehicle → Must implement start().
+        Implements FuelConsumption → Must implement calculateFuelEfficiency().
+        Defines a constructor and uses super() to call Vehicle constructor.
+
+    Main Class (OOPExample)
+        Creates an instance of Car.
+        Calls the implemented methods to demonstrate abstraction and interface usage.
+
+Output
+
+Toyota car is starting at speed: 100 km/h
+Fuel efficiency: 20.0 km/l
+Toyota has stopped.
+
+
+
+# Hospital Management System
+Concepts Covered:
+
+    Interface HospitalStaff: Defines common behaviors for all hospital staff.
+    Multiple Implementations: Doctor and Nurse classes implement the interface.
+    Polymorphism: The interface is used as a reference type.
+
+Code Implementation
+
+// Interface defining the behavior of hospital staff
+interface HospitalStaff {
+    void checkIn();   // Common method for all staff
+    void performDuties(); // Role-specific duties
+}
+
+// Doctor class implementing HospitalStaff interface
+class Doctor implements HospitalStaff {
+    private String name;
+    private String specialization;
+
+    // Constructor
+    public Doctor(String name, String specialization) {
+        this.name = name;
+        this.specialization = specialization;
+    }
+
+    // Implementing interface methods
+    @Override
+    public void checkIn() {
+        System.out.println("Dr. " + name + " has checked into the hospital.");
+    }
+
+    @Override
+    public void performDuties() {
+        System.out.println("Dr. " + name + " is treating patients in " + specialization + " department.");
+    }
+}
+
+// Nurse class implementing HospitalStaff interface
+class Nurse implements HospitalStaff {
+    private String name;
+    private int experience;
+
+    // Constructor
+    public Nurse(String name, int experience) {
+        this.name = name;
+        this.experience = experience;
+    }
+
+    // Implementing interface methods
+    @Override
+    public void checkIn() {
+        System.out.println("Nurse " + name + " has checked into the hospital.");
+    }
+
+    @Override
+    public void performDuties() {
+        System.out.println("Nurse " + name + " is administering medication with " + experience + " years of experience.");
+    }
+}
+
+// Main class to test the hospital system
+public class HospitalSystem {
+    public static void main(String[] args) {
+        // Using the interface as a reference
+        HospitalStaff doctor = new Doctor("Rajesh", "Cardiology");
+        HospitalStaff nurse = new Nurse("Priya", 5);
+
+        // Calling methods
+        doctor.checkIn();
+        doctor.performDuties();
+        System.out.println();
+        nurse.checkIn();
+        nurse.performDuties();
+    }
+}
+
+Explanation
+
+    Interface HospitalStaff
+        Defines common methods checkIn() and performDuties(), ensuring all hospital staff implement them.
+
+    Class Doctor
+        Implements HospitalStaff and defines doctor-specific behavior in performDuties().
+
+    Class Nurse
+        Implements HospitalStaff and defines nurse-specific duties.
+
+    Polymorphism in main
+        Uses the HospitalStaff interface to refer to both Doctor and Nurse objects.
+        Demonstrates flexibility in handling different staff types.
+
+Output
+
+Dr. Rajesh has checked into the hospital.
+Dr. Rajesh is treating patients in Cardiology department.
+
+Nurse Priya has checked into the hospital.
+Nurse Priya is administering medication with 5 years of experience.

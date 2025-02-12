@@ -4,7 +4,8 @@ You are given the positions of n boys and n girls on a 2D grid.
 The positions are represented by 2D arrays of size n*2:
 • boys where boys [i] [0] and boys [i] [1] represent the x and y coordinates of the ith boy.
 • girls where girls[j] [0] and girls [j] [1] represent the x and y coordinates jth girl. of the j
-A girl can meet a boy and form a pair if and only if both the x and y coordinates of the boy are smaller than those of the girl. Each boy can meet at most one girl and vice versa. Return the minimum number of boys who would be unable to pair after all possible meetings.
+A girl can meet a boy and form a pair if and only if both the x and y coordinates of the boy are smaller than those of the girl. 
+Each boy can meet at most one girl and vice versa. Return the minimum number of boys who would be unable to pair after all possible meetings.
 
 Constraint: 1<n<=16; 0<=boys[i][j],girls[i][j]<10^6
 Input: n = 2, boys = [[1,1], [3,3]], girls = [[2,2],[4,4]]
@@ -261,7 +262,7 @@ class Solution {
     public boolean canIWin(int n, int t) {
         //check if it's even possible for our players to reach target
         if(t<=0 || n>=t) return true;    //first player always wins
-        int totalsum=n*(n+1)/2; //from 1 to n all numbers chosen by both plyer each turn
+        int totalsum=n*(n+1)/2; //from 1 to n all numbers chosen by both player each turn
         if(totalsum<t) return false;
         int mask=0;
         return solve(n, t, mask);

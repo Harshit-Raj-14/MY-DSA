@@ -1,3 +1,104 @@
+KMP -> Best way to find whether String pattern is a substring in string s
+
+BRUTE FORCE -> TWO POINTER -> O(m*n) => reset pointers in both pattern and string if not matching
+
+EFFICIENT APPROACH -> KMP -> In case of no match we just reset pointer on pattern
+LOGIC -> Is the beginning part of the pattern appearing anywhere else in the pattern or not => this way we avoid redundant comparisons
+Preffix part = Suffix part in the pattern
+
+
+LPS => Longest Prefix Sum Array of Pattern
+The value in LPS array tells you to which index you need to backtrack(reset) on pattern in case of a mismatch
+Doing this we wont need to backtrack on main string s => feeling is that the reset you were previously doing on string as well, felt redundant if you went far and only the last element did not match. 
+So rather than retracing back whole, why not directly jump to the point hwere still some part matches.
+
+
+
+
+
+/*******************************************************************************************************/
+PS- 1910. Remove All Occurrences of a Substring
+Given two strings s and part, perform the following operation on s until all occurrences of the substring part are removed:
+Find the leftmost occurrence of the substring part and remove it from s.
+Return s after removing all occurrences of part.
+
+Example: Input: s = "daabcbaabcbc", part = "abc"
+Output: "dab"
+
+/* CODE */
+/* KMP */
+
+/* STACK O(mn), O(n) */
+class Solution {
+    public String removeOccurrences(String s, String part) {
+        Stack<Character> stack = new Stack<>();
+        for(char c : s.toCharArray()) {
+            stack.push(c);
+            if(stack.size() >= part.length() && stack.peek() == part.charAt(part.length()-1)){  //check part is in s or not
+                StringBuilder temp = new StringBuilder();
+                for(int i = 0; i < part.length(); i++){
+                    temp.append(stack.pop());
+                }
+                temp.reverse();
+                if(!temp.toString().equals(part)){  //if part is not equal to s put them back in stack
+                    for(char ch : temp.toString().toCharArray()) {
+                        stack.push(ch);
+                    }
+                }
+            }
+        }
+        StringBuilder ans = new StringBuilder();
+        while(!stack.isEmpty()) {
+            ans.append(stack.pop());
+        }
+        return ans.reverse().toString();
+    }
+}
+
+
+/*
+LOGIC---
+Why Stack?
+When you remove p string. you also need to again see the previous char in s. Menaing access something previous on top. => stack makes this efficient
+
+APPROACH---
+Check whether p string occurs in s when s is in stack by comapring last character is on top of stack.
+It means that if you've got [xyabc] in the stack then only remove c , b, a from the stack and then continue processing the string
+
+ALGORITHM---
+Push character of s in stack.
+stack.length>=p.length && stac.peek()==p.charAt(n-1) => take out elements from stack and check whether equal to part
+
+if equal move forward
+otherwise push back in stack
+
+Once iterated through string -> output it (reversse the stack)
+
+*/
+
+
+/* BRUTE FORCE */
+class Solution {
+    public String removeOccurrences(String s, String part){
+        StringBuilder sb = new StringBuilder(s);
+        while(sb.indexOf(part)!=-1){
+            int occurenceindex = sb.indexOf(part);
+            sb.delete(occurenceindex, occurenceindex+part.length());
+        }
+    return sb.toString();
+    }
+}
+
+/*
+LOGIC---
+We are required to remove the first occurence of string part from s.
+And we will continue this until we are sure part is not in s.
+
+We are aware of the inbuilt function :-
+indexOf whic will help us ascertain the occurence part and remove it every time until we are sure it no longer exist in s.
+*/
+
+/*********************************************************************************************************/
 PS- 214. Shortest Palindrome
 Given string s. You can convert s to a palindrome by adding characters in front of it.
 Return the shortest palindrome you can find by performing this transformation.

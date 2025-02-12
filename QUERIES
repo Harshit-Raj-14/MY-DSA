@@ -25,7 +25,7 @@ class Solution {
 LOGIC---
 XOR too is an accumulation like sum.
 Magar xor khud ka hi patta kat deta hai.
-You don't need to subtract soemthing possitive in case of a prefix sum.
+You don't need to subtract something positive in case of a prefix sum.
 
 For prefix xor array:
 xor rnage(l,r) = xor_prefix[r]^xor_prefix[l-1] => xor will itself subtract from the accumulation for subquery

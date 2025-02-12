@@ -1,4 +1,8 @@
 THEORY---
+In a min heap, when you pop an element, it removes the minimum element, which is the smallest element in the heap. 
+This is because the structure of a min heap ensures that the smallest element is always at the root (the top of the heap), 
+so removing or "popping" an element will always yield the minimum.
+
 99% on questions in Heap will use the the words : "K" and "smallest/largest/closest".
 So, whenever you see a question involving these words, always run your mind to Heaps.
 
@@ -26,6 +30,18 @@ or throws an IllegalStateException if no space is currently available.
 poll() and remove() => The poll() method returns an object of type Element, which represents a queue element. 
 The remove() method throws an exception if the queue is empty, and it returns nothing otherwise.
 
+
+Note: If in a question when you want to repeatedly apply operation on the smallest elemnt of an array. 
+But its value changes such that the smallest element in array keeps on changing and it can be anywhere.
+Use priority queue to keep the min element on top. And as soon as operation is applied. 
+The priority queue will reexamine for the correct min element.
+
+eg: For array [2,4,5,6] find smallest element if the min element of the array is doubled every k times.
+while (k-- > 0) {
+   long minElement = pq.poll(); // Get and remove the smallest element
+    minElement = (2 * minElement); // Double it 
+    pq.add(minElement); // Insert back into the priority queue
+}
 
 
 /*******************************************************************************************************/

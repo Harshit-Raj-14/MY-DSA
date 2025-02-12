@@ -161,9 +161,9 @@ The difference between the two scenarios is the last term. If ti​dj​<tj​di
 /****************************************************************************************************/
 PS- Perfect Meeting
 You are given a 2D array arr[][] of size nx2, where each element represents the start and end times of a meeting. 
-Your task is to determine if there exists a time during which all the meetings are occurring simultaneously.
+Determine if there exists a time during which all the meetings are occurring simultaneously.
 Note :- The time of a particular meeting is inclusive of starting and ending time.
-Example 1:
+
 Input: n = 3 arr = [[1, 3], [2, 5], [3, 11]]
 Output: 1
 Explanation: At 3rd hour all the meeting will be occuring simultaneously. 

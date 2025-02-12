@@ -1,1 +1,3 @@
-pair
+In Java, Arrays.sort() is implemented using a variant of the Quick Sort algorithm which has a space complexity of O(logM).
+In C++, the sort() function is implemented as a hybrid of Quick Sort, Heap Sort, and Insertion Sort, with a worst-case space complexity of O(logM).
+In Python, the sort() method sorts a list using the Timsort algorithm which is a combination of Merge Sort and Insertion Sort and has a space complexity of O(M).

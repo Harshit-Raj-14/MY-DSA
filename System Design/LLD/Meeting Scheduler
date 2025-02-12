@@ -1,0 +1,55 @@
+PS- Design Meeting Scheduler 
+
+Requirements: 
+- there are n given meeting rooms 
+- Book a meeting in any meeting room at given interveral (start time, end time, capacity) 
+- Send notification to all the persons who are invitied to the meeting 
+- Use Meeting Room Calendar to track the meetings date and time 
+
+
+# Condition to book a meeting room : no of people<=capacity of meeting room
+
+# How to write flow first:
+You are the user who wants to booka  meeting room
+
+1. User who wants to book the meeting(5 person, start time, end time)  # you can add date as well
+
+2. user asks the meeting scheduler to book a meeting (available rooms)
+    2.1 meeting scheduler will check all available rooms from start and end time and capacity of room 
+        => getMeetingRoom => fetch call 
+        => List<MeetingRooms> getMeetingRoom(requirements)
+
+    2.2 Book a meeting room
+    2.3 Block the meeting room booked
+
+3. Send invite notification to all people
+    => sendNotification()
+
+User -> MeetingScheduler(st,et,capacity) -> meeting rooms -> check meeting room calendar -> book available meeting room -> send notification
+
+# Entities (core objects to make)
+user
+meeting scheduler
+meeting room
+meeting room calendar
+Notification
+
+
+class MeetingRoom{
+    int id;
+    int capacity;
+    // String location; (floor, building no)
+    boolean isAvailable;
+}
+
+class MeetingRoomManager{
+    List<MeetingRoom>
+    CRUD to book, create, update, get all rooms for particular capacity and particular time interval
+}
+
+
+class MeetingCalendar{
+    Day -> enum(mon, sun)
+    start
+    end
+}

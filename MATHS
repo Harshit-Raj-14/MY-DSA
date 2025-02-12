@@ -30,7 +30,7 @@ is the same number as the number of numbers between the sqrt of the two.
 
 There is a little caveat. As both n and m are inclusive, if n is a perfect square, we will get an answer which is less than one the actual answer. 
 To understand this, consider range [4, 36]. Answer is 5 i.e., numbers 4, 9, 16, 25 and 36. 
-But if we do (36**0.5) – (4**0.5) we get 4. So to avoid this semantic error, we take n-1.
+But if we do (36**0.5) - (4**0.5) we get 4. So to avoid this semantic error, we take n-1.
 
 no of perfect squares between m and n = (int)Math.pow(m,0.5) - (int)Math.pow(n-1,0.5);
 

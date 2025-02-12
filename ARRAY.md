@@ -77,7 +77,7 @@ Note : if she could have distributed 8 chocolate we would have checked till min-
 */
 ```
 
-/********************************************************************************************************/
+/******************************************************************************************************/
 PS-Nth Natural Number [GOOGLE]
 Given a positive integer n. You have to find n-th natural number after removing all the numbers containing the digit 9.
 
@@ -118,13 +118,13 @@ base 9 => (0,8) => 9 possilbities => number system won't contain digit 9
 10,11,12,13,14,15,16,17,18
 20,21,22,.....,28
 you see number 9 has disappeared.
-In fact the 9th number of base 10 when excluding digits containing 9 = 9th number of base 9 =10 {tc 2)
+In fact the 9th number of base 10 when excluding digits containing 9 = 9th number of base 9 = 10 {tc 2)
 
 GOAL--- We need to return the nth number in base 9
 n is itself in base 10
 => In other words we need to convert n into base 9 and that will be our answer
 
-How to ocnvert a number from one base to another?
+How to convert a number from one base to another?
 Remember how you converted any decimal number into binary by dividing it by 2 repeatedly.
 
 So, to convert n to base 9:(we are decreasing base so we divide)
@@ -165,7 +165,7 @@ Long.parseLong(...) => converts the base-9 string back into a long integer.
 ```
 
 
-/*********************************************************************************************************/
+/******************************************************************************************************/
 PS- 1481. Least Number of Unique Integers after K Removals || Minimum number of distinct elements after removing m items
 Given an array of integers arr and an integer k. Find the least number of unique integers after removing exactly k elements.
 
@@ -184,7 +184,7 @@ class Solution {
         for(int count : map.values()) countoffreq[count]++;
         int unique = map.size();
         for(int i=1;i<=n;i++){ //traversing possible frequencies
-            int elementstoremove = Math.min(k/i, countoffreq[i]); //there could be more freq than k
+            int elementstoremove = Math.min(k/i, countoffreq[i]); //no of elements whose freq is i
             if(elementstoremove>0){
                 k -= i*elementstoremove; //subtract k by how many times frequency i occurs
                 unique-=elementstoremove;
@@ -210,7 +210,7 @@ Output: 3
 
 */
 
-/***********************************************************************************************************/
+/******************************************************************************************************/
 PS- 347. Top K Frequent Elements
 Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order.
 
@@ -219,8 +219,8 @@ Output: [1,2]
 
 /* CODE */
 /* BUCKET SORT O(n), O(n) */
-class Solution {
-    public int[] topKFrequent(int[] arr, int k) {
+class Solution{
+    public int[] topKFrequent(int[] arr, int k){
         HashMap<Integer, Integer> map = new HashMap<>();
         for(int i=0;i<arr.length;i++) map.put(arr[i], map.getOrDefault(arr[i],0)+1);
         int n=arr.length;
@@ -253,7 +253,7 @@ class Solution {
         if (k == nums.length) return nums;
         HashMap<Integer, Integer> map = new HashMap();
         for (int n: nums) map.put(n, map.getOrDefault(n, 0) + 1);
-        // init pq 'the less frequent element first'
+        // Min-Heap, with elements ordered by their frequency in ascending order.
         Queue<Integer> pq = new PriorityQueue<>((n1, n2) -> map.get(n1) - map.get(n2));
         for (int n: map.keySet()){
           pq.add(n);
@@ -266,3 +266,54 @@ class Solution {
         return top;
     }
 }
+
+/*******************************************************************************************************/
+2563. Count the Number of Fair Pairs
+Given array nums and two integers lower and upper, return the number of fair pairs.
+A pair (i, j) is fair if: 0<=i<j<n, and lower <= nums[i] + nums[j] <= upper
+
+Input: nums = [0,1,7,4,4,5], lower = 3, upper = 6, Output: 6
+Explanation: There are 6 fair pairs: (0,3), (0,4), (0,5), (1,3), (1,4), and (1,5).
+
+/* CODE */
+/* SORTING + TWO POINTER O(nlogn) */
+class Solution {
+    public long countFairPairs(int[] nums, int lower, int upper) {
+        Arrays.sort(nums);
+        return solve(nums, upper) - solve(nums, lower-1);
+    }
+
+    public static long solve(int nums[], int target){    //return number of pairs with sum<=target
+        int i=0;
+        int j=nums.length-1;
+        long ans=0;
+        while(i<j){
+            if(nums[i]+nums[j]<=target){    //calculate pairs for the next number
+                ans+=(j-i);
+                i++;
+            }
+            else j--;   //shrink window
+        }
+        return ans;
+    }
+}
+
+
+/*
+LOGIC----
+To find number of pairs in array whose sum lies in range [lower, upper]
+Now total pairs in array = n-1+n-2+...+2+1 = n(n-1)/2
+Now lets say there are x pairs that have sum less than lower
+And then there are y pairs that have sum less than equal to upper
+
+--------- x
+-------------------------y
+          --------------- x-y => required answer which means pairs sum range [lower, upper]
+pairs whose sum between [lower, upper] = y-x
+
+find total pairs having sum < lower => x
+find total pairs having sum <= upper => y
+ans=y-x
+
+Now you can find the above pairs using two pointer approach on a sorted array.
+*/

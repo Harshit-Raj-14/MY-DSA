@@ -1,5 +1,29 @@
-PS-
-FIND PEAK ELEMENT
+PS- 33. Search in Rotated Sorted Array
+
+/* CODE */
+class Solution {
+    public int search(int[] nums, int target) {
+        if(nums==null || nums.length==0) return -1;
+        int l=0;
+        int r=nums.length-1;
+        while(l<=r){
+            int mid = l+(r-l)/2;
+            if(nums[mid]==target) return mid;
+            if(nums[mid]>=nums[l]){ //searching in the left sorted part between l and mid
+                if(nums[l]<=target && target<=nums[mid]) r=mid-1;   //if it lies between l and mid
+                else l=mid+1; 
+            }
+            else{       //searching in the right sorted part between mid and r
+                if(nums[mid]<=target && target<=nums[r]) l=mid+1;   //if it lies between mid and r
+                else r=mid-1;
+            }
+        }
+        return -1;
+    }
+}
+
+/***********************************************************************************************/
+PS- FIND PEAK ELEMENT
 A peak element is an element that is strictly greater than its neighbors.
 Given a 0-indexed integer array nums, find a peak element, and return its index. 
 If the array contains multiple peaks, return the index to any of the peaks.
@@ -117,6 +141,24 @@ An array where the last element is the peak
 
 */
 
+/***************************************************************************************************/
+PS- 69. Sqrt(x)
+
+/* CODE */
+class Solution {
+    public int mySqrt(int x) {     
+        long l=0;
+        long r=x;
+        while(l<=r){
+            long mid = l + (r-l)/2;
+            if(mid*mid==x) return (int)mid;
+            else if(mid*mid<x) l=mid+1;
+            else r=mid-1;
+        }
+        return (int)r;  //the reason we return high here is becuase that's where mid will be in the final stage, while l would have corssed over
+    }
+}
+
 /*****************************************************************************************************/
 PS- 540. Single Element in a Sorted Array
 You are given a sorted array consisting of only integers where every element appears exactly twice, 
@@ -168,7 +210,7 @@ Now consider another array:
 Observation: each new element will start from even index.
 So, if a new element starts from odd index that is our answer.
 
-So, becuase array is sorted and the elements appearing twice.
+So, because array is sorted and the elements appearing twice.
 If the discrepancy has till yet not occured till mid. it should appear further.
 If the discrepancy has occured, there are still chances it might have started much before.
 
@@ -205,3 +247,4 @@ check if array[group_start] index == array[group_start+k-1]: if yes move left to
 Do this till left< right.
 
 */
+

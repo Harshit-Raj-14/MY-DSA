@@ -1,6 +1,6 @@
-17. Letter Combinations of a Phone Number
-PS-
-Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
+PS- 17. Letter Combinations of a Phone Number
+Given a string containing digits from 2-9, return all possible letter combinations that the number could represent. 
+Return the answer in any order.
 Input: digits = "23"
 Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
 
@@ -22,7 +22,7 @@ class Solution {
         }
     }
 
-    public List<String> letterCombinations(String digits) {
+    public List<String> letterCombinations(String digits){
         HashMap<Character, String> map = new HashMap<>();
         map.put('2', "abc");
         map.put('3', "def");
@@ -50,7 +50,7 @@ Then think first you press first digit of pad. that is something you must increa
 What you have a choice is to choose which alphabet of that number or not.
 So, first consider taking that alphabet or not taking it(backtrack to previous state).
 
-Now choose only those formed string sthat will be equal to the length of digits. only that much character we cna type after all.
+Now choose only those formed strings that will be equal to the length of digits. only that much character we can type after all.
 
 Time complexity: O(3^n) or O(4^n) [Simple permutation ways]
 n is length of input string. Each digit has 3 or 4 letters. For example, if you get "23"(n) as input string, we will create 9 combinations which is O(3^2) = 9
@@ -61,16 +61,12 @@ n is length of input string. This is for recursive call stack.
 
 
 /*************************************************************************************************/
-
-22. Generate Parentheses
-PS-
+PS- 22. Generate Parentheses
 Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
-
 Input: n = 3
 Output: ["((()))","(()())","(())()","()(())","()()()"]
 
-
-/* BACKTRACKING */
+/* BACKTRACKING O(2n×n), O(n) */
 class Solution {
     public List<String> generateParenthesis(int n){
         ArrayList<String> ans = new ArrayList<>();
@@ -719,17 +715,15 @@ We can start calling our recursive function by putting our first queen in each b
 
 => How to know which row is safe?
 Since we putting queens from top to bottom. Our downward board is unmarked from where we are putting the queen.
-So, instead we just look upwards. Instead of tryign to put the queen where the above already placed queens cannot kill her.
+So, instead we just look upwards. Instead of trying to put the queen where the above already placed queens cannot kill her.
 We say, why not put the queen where the queen to be put is unable to kill the above placed queens.
 So, we only need to look upward, upward-left and upward-right direction(3 directions only).
 If no above queen is killed if we place our queen in that cell then it is safe.
-
 
 =>row=0, column=i => for first queen => we have freedom to loop for first array to place it anywhere
 
 TC-O(n!)
 SC-O(n^2)
-
 */
 
 FOLLOW UP----

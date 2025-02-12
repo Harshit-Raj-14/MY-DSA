@@ -226,7 +226,7 @@ class Solution {
 }
 
 /*********************************************************************************************************/
-PS- 32. Longest Valid Parentheses
+PS- 32. Longest Valid Parentheses [Amazon]
 Given a string containing just the characters '(' and ')', return the length of the longest valid parentheses substring.
 
 /* CODE */
@@ -255,9 +255,12 @@ The -1 acts as a base index for calculating lengths of valid substrings starting
 eg : s="()" ans=1-(-1)= 2 length substring
 
 Why when stack becomes empty we push index of ")"?
-Since we encountered a closing bracket when stack is empty, meaning now we don't have a valid substring parenthesis in our hand at that index. So to act as base for the next substring calculation we need to push the closign bracket index, otherwise in all cases we would alsways add index of opening bracket.
+Since we encountered a closing bracket when stack is empty, meaning now we don't have a valid substring parenthesis in our hand at that index. 
+So to act as base for the next substring calculation we need to push the closing bracket index, 
+otherwise in all cases we would alsways add index of opening bracket.
+
 eg: s="())()"
-At i=2 our stack becoems empty as index 0 and -1 are popped.
+At i=2 our stack becomes empty as index 0 and -1 are popped.
 So we add index 2 now.
 At i=3 => "(" stack is again pushed with index 3.
 At i=4 => ")" stack is popped. now it contains only index 2 again.
@@ -295,7 +298,7 @@ class Solution {
 
 /*
 LOGIC---
-Transform the parnathesis string into an array of 0 and 1.
+Transform the paranthesis string into an array of 0 and 1.
 Where 1 marks a successsful valid substring length and 0 would mark as false substring.
 Longest valid parathesis = longest consecutive sequence of 1
 
@@ -362,15 +365,4 @@ Also, in backward case left>right should reset becuase at this point we have enc
 */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+/********************************************************************************************************/

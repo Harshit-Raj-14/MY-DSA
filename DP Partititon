@@ -12,7 +12,7 @@ After each cut the cost of length is added to cuts.
 class Solution {
     public int minCost(int n, int[] cut){
         ArrayList<Integer> cuts = new ArrayList<>();
-        cuts.add(0);    //adding 0 and n to cuts array for corrct length calculation.
+        cuts.add(0);    //adding 0 and n to cuts array for correct length calculation.
         for(int i=0;i<cut.length;i++){
             cuts.add(cut[i]);
         }

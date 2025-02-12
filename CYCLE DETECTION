@@ -16,20 +16,54 @@ This helps us to reduce space compelxity and iterations
 
 /*****************************************************************************************************/
 PS- 207. Course Schedule
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. 
+You are given an array prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+Return true if you can finish all courses. Otherwise, return false.
 
+/* CODE */
+class Solution {
+    public boolean canFinish(int n, int[][] grid) {
+        ArrayList<Integer> adj[] = new ArrayList[n];
+        for(int i=0;i<n;i++) adj[i]=new ArrayList<>();
+        for(int row[] : grid){
+            int u=row[0];
+            int v=row[1];
+            adj[u].add(v);
+        }
+        int visited[] = new int[n];
+        for(int i=0;i<n;i++){   //do DFS for each of the array nodes to check a cycle
+            if(!dfs(adj, i, visited)) return false;
+        }
+        return true;
+    }
 
+    public boolean dfs(ArrayList<Integer> adj[], int node, int visited[]){
+        if(visited[node]==1) return false;   // cycle detected
+        if(visited[node]==2) return true;     // already visited and safe
+        visited[node]=1;    // mark node as visiting
+        for(int i=0;i<adj[node].size();i++){   //do DFS for all nodes connected to the current node
+            if(!dfs(adj, adj[node].get(i), visited)) return false;
+        }
+        visited[node] = 2;  //marking as fully processed node
+        return true;
+    }
+}
 
+/*
+LOGIC---
+Infact from the grid, we can assume that if the grid ever forms a circle means we will never be able to complete.
+eg : [A,B][B,C][C,A]
+A circle occuring would mean the doing course A depends on course B and course B requires C but course C requires A.
+Meaning without C we cant do A and, for doign C we require B which in turn requires A. Impossible.
 
+This problem is equivalent to finding if a cycle exists in a directed graph. If a cycle exists, no topological ordering exists and therefore it will be impossible to take all courses.
 
-
-
-
-
-
-
-
-
-
+time complexity is O(V+E)
+space complexity is O(V+E), where:
+V represents the number of courses n.
+E represents the number of prerequisites in grid.
+*/
 
 
 /*******************************************************************************************************/
@@ -46,7 +80,7 @@ public class Solution {
         while(fast!=null && fast.next!=null){   //remember these two checks always exist for fast pointer
             slow=slow.next;
             fast=fast.next.next;
-            if (slow == fast) return true;  // Check after moving pointers
+            if(slow==fast) return true;  // Check after moving pointers
         }
         return false;
     }
@@ -61,10 +95,14 @@ In case of no cycle -> eventually our fast pointer will hit null first either as
 Incase of a cycle:
 At one point fast would enter cycle first.  If at some point the two pointers meet on the same node, then that means a cycle exists.
 
-Why does this work? For a visual animation, please see the video, but for a simple explanation, think of two people running on a circular track. If both people run and one of them runs faster than the other, then the faster person will eventually catch up to the slower one and "lap" them. In other words, they will be back at the same position again. This is what we're looking for in the algorithm and it's how we detect a cycle.
+Why does this work? For a visual animation, please see the video, but for a simple explanation, think of two people running on a circular track. 
+If both people run and one of them runs faster than the other, then the faster person will eventually catch up to the slower one and "lap" them. 
+In other words, they will be back at the same position again. This is what we're looking for in the algorithm and it's how we detect a cycle.
 
 Why equality check after moving pointers?
-The reason you should move the slow and fast pointers first and then check for equality is that at the start of the loop, both slow and fast are pointing to the same node (the head of the list). If you check if (slow == fast) before moving them, the condition will be true right away, even if there is no cycle, because both pointers are still at the starting node.
+The reason you should move the slow and fast pointers first and then check for equality is that at the start of the loop, 
+both slow and fast are pointing to the same node (the head of the list). If you check if (slow == fast) before moving them, 
+the condition will be true right away, even if there is no cycle, because both pointers are still at the starting node.
 */
 
 
@@ -105,7 +143,7 @@ class Solution {
         while(fast!=1 && sum(fast)!=1){ //double check fast twice here
             slow=sum(slow);
             fast=sum(sum(fast));
-            if(slow==fast) return false;    //slow ==fast check always comes after movign the pointers
+            if(slow==fast) return false;    //slow ==fast check always comes after moving the pointers
         }
         return true;
     }
@@ -127,8 +165,6 @@ If sum of one number again yileds a previously calculated sum. it menas it is a 
 
 BRUTE FORCE---- use hashset 
 */
-
-
 
 /**********************************************************************************************************/
 PS- 287. Find the Duplicate Number

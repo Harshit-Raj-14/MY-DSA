@@ -14,7 +14,7 @@ class Solution {
     public String convert(String s, int r){
         if(r==1 || s.length()<=r) return s;  //edge case: one row only case
         StringBuilder matrix[] = new StringBuilder[r];  //matrix we want to make
-        for(int i=0;i<r;i++) matrix[i] = new StringBuilder();   //making empty matrix by intiallizing strignbuilder, could have gone with a arraylist as well
+        for(int i=0;i<r;i++) matrix[i] = new StringBuilder();   //making empty matrix by intiallizing stringbuilder, could have gone with a arraylist as well
         int idx=0;
         int currlevel=0;
         int maxlevel = r-1;
@@ -82,7 +82,7 @@ Work on looping from 0 -> 3 then a dcreasing loop
 We make a string array of the required no of levels.
 
 HOW TO SAVE TIME COMPLEXITY FROM O(n^2) -> O(n) ?
-⭐️ Points -> Use 2d array instead of 1d array
+Points -> Use 2d array instead of 1d array
 Why?
 That's because if we use 1d array, we have to concatenate all characters in the same row when we add a new character which is O(n). 
 We will repeat the process length of s times, so that is O(n^2). n is the length of the string s.
